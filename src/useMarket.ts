@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Symbol } from "./model";
+import type { Network } from "./networks";
+import { useLiveCandles } from "./useLiveCandles";
 import type { MarketReply, MarketState, Period } from "./market-data";
 import { PERIODS } from "./market-data";
 import { MAX_CHART_BARS, mergeCandles } from "./market-history";
@@ -13,8 +15,8 @@ function remembered(key: string): MarketState {
     ? { ...cached, status: "loading", stale: true }
     : { key, status: "loading", bars: [] };
 }
-export function useMarket(symbol: Symbol, period: Period, enabled = true) {
-  const key = `${symbol}:${period}`;
+export function useMarket(symbol: Symbol, period: Period, enabled = true, network: Network = "solana") {
+  const key = `${network}:${symbol}:${period}`;
   const [state, setState] = useState<MarketState>(() => remembered(key));
   const [retry, setRetry] = useState(0);
   const [history, setHistory] = useState<{
@@ -70,7 +72,7 @@ export function useMarket(symbol: Symbol, period: Period, enabled = true) {
       const timeout = setTimeout(() => request.abort(), 10000);
       try {
         const response = await fetch(
-          `/api/market?symbol=${encodeURIComponent(symbol)}&period=${period}&before=${before}`,
+          `/api/market?symbol=${encodeURIComponent(symbol)}&period=${period}&network=${network}&before=${before}`,
           { signal: request.signal, cache: "no-store" },
         );
         if (!response.ok) {
@@ -148,7 +150,7 @@ export function useMarket(symbol: Symbol, period: Period, enabled = true) {
         const incremental =
           since > Math.floor(Date.now() / 1000) - PERIODS[period].seconds;
         const response = await fetch(
-          `/api/market?symbol=${encodeURIComponent(symbol)}&period=${period}${incremental ? `&since=${since}` : ""}`,
+          `/api/market?symbol=${encodeURIComponent(symbol)}&period=${period}&network=${network}${incremental ? `&since=${since}` : ""}`,
           { signal: request.signal, cache: "no-store" },
         );
         if (!response.ok) {
@@ -230,6 +232,7 @@ export function useMarket(symbol: Symbol, period: Period, enabled = true) {
     const wake = () => {
       clearTimeout(timer);
       if (!document.hidden && navigator.onLine) void update();
+      else { controller?.abort(); historyController?.abort(); }
     };
     void update();
     document.addEventListener("visibilitychange", wake);
@@ -245,9 +248,14 @@ export function useMarket(symbol: Symbol, period: Period, enabled = true) {
       window.removeEventListener("online", wake);
       window.removeEventListener("offline", wake);
     };
-  }, [key, symbol, period, retry, enabled]);
+  }, [key, symbol, period, retry, enabled, network]);
+  const stream = useLiveCandles(symbol, network, enabled && period === "1S", retry);
+  const visible = state.key === key ? state : remembered(key);
+  const liveBars = stream.key === `${network}:${symbol}` ? stream.bars : [];
   return {
-    market: state.key === key ? state : remembered(key),
+    stream: stream.status,
+    streamMessage: stream.message,
+    market: liveBars.length ? { ...visible, status: "ready" as const, bars: mergeCandles(visible.bars, liveBars), fetchedAt: stream.updatedAt, stale: stream.status !== "live" } : state.key === key ? state : remembered(key),
     retry: () => setRetry((n) => n + 1),
     history: history.key === key ? history.status : ("ready" as HistoryStatus),
     loadEarlier,

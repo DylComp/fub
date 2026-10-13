@@ -1,6 +1,8 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { PERIODS } from "../src/market-data.js";
 import type { Candle, MarketReply, Period } from "../src/market-data.js";
+import { assetAddress, isNetwork, NETWORKS } from "../src/networks.js";
+import type { Network } from "../src/networks.js";
 import { mintFor } from "../src/assets.js";
 const query = `query Chart($symbol: String!, $from: Int!, $to: Int!, $resolution: String!, $count: Int!) {
   getTokenBars(symbol: $symbol, from: $from, to: $to, resolution: $resolution, currencyCode: USD, countback: $count, removeLeadingNullValues: true) { s t o h l c volume }
@@ -65,6 +67,7 @@ async function fetchMarket(
   period: Period,
   apiKey: string,
   page: { before?: number; since?: number } = {},
+  network: Network = "solana",
 ): Promise<MarketReply> {
   const now = Math.floor(Date.now() / 1000);
   const config = PERIODS[period];
@@ -76,7 +79,7 @@ async function fetchMarket(
     body: JSON.stringify({
       query,
       variables: {
-        symbol: `${symbol}:1399811149`,
+        symbol: `${symbol}:${network === "solana" ? 1399811149 : NETWORKS[network].chainId}`,
         from,
         to,
         resolution: config.resolution,
@@ -138,6 +141,8 @@ export async function handleMarket(
   const url = new URL(req.url || "/", "http://localhost");
   const symbol = url.searchParams.get("symbol") || "";
   const period = url.searchParams.get("period") || "";
+  const network = url.searchParams.get("network") || "solana";
+  const mint = isNetwork(network) ? (network === "solana" ? mintFor(symbol) : assetAddress(network, symbol)) : null;
   const beforeText = url.searchParams.get("before");
   const sinceText = url.searchParams.get("since");
   const timestamp = (value: string | null) =>
@@ -146,10 +151,10 @@ export async function handleMarket(
     Number(value) >= 1577836800 &&
     Number(value) <= Math.floor(Date.now() / 1000);
   if (
-    !mintFor(symbol) ||
+    !mint || !isNetwork(network) || url.searchParams.getAll("network").length > 1 ||
     !Object.hasOwn(PERIODS, period) ||
     [...url.searchParams.keys()].some(
-      (k) => !["symbol", "period", "before", "since"].includes(k),
+      (k) => !["symbol", "period", "before", "since", "network"].includes(k),
     ) ||
     url.searchParams.getAll("symbol").length !== 1 ||
     url.searchParams.getAll("period").length !== 1 ||
@@ -163,9 +168,8 @@ export async function handleMarket(
   if (!apiKey)
     return send(200, {
       status: "unconfigured",
-      message: "Market feed not connected. Showing sample candles.",
+      message: "Chart data is not connected.",
     });
-  const mint = mintFor(symbol)!;
   const page = {
     before: beforeText === null ? undefined : Number(beforeText),
     since: sinceText === null ? undefined : Number(sinceText),
@@ -178,7 +182,7 @@ export async function handleMarket(
     return send(400, {
       message: "Refresh window is too old. Reload the chart.",
     });
-  const key = `${mint}:${period}:${page.before ?? ""}:${page.since ?? ""}`;
+  const key = `${network}:${mint}:${period}:${page.before ?? ""}:${page.since ?? ""}`;
   const cached = cache.get(key);
   if (cached && cached.expires > Date.now()) return send(200, cached.value);
   if (providerRetryAt > Date.now()) {
@@ -205,7 +209,7 @@ export async function handleMarket(
       });
     }
     requests++;
-    request = fetchMarket(mint, period as Period, apiKey, page).catch(
+    request = fetchMarket(mint, period as Period, apiKey, page, network as Network).catch(
       (): MarketReply => ({
         status: "unavailable",
         message: "Market feed unavailable. Try again shortly.",

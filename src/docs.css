@@ -89,11 +89,19 @@
   color: #aaa4b7;
   line-height: 1.5;
 }
-.orders-scope .word-link {
-  margin-top: 15px;
+.orders-scope-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px 28px;
+}
+.orders-scope-actions .word-link {
+  margin: 0;
 }
 .orders-scope button:focus-visible {
   outline: 2px solid #ad94f3;
   outline-offset: 3px;
 }
 @media(max-width:560px){.orders-strategies{grid-template-columns:1fr}}
+
+.copy-plan-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 28px; margin: 16px 0 24px; }

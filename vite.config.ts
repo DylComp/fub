@@ -15,6 +15,7 @@ import { handleTokenDirectory } from "./server/token-directory-api";
 import react from "@vitejs/plugin-react";
 import { handlePortfolio } from "./server/portfolio";
 import { handleBalance } from "./server/wallet";
+import { handleMarketStream } from "./server/codex-stream";
 import { handleMarket } from "./server/codex";
 import { handleSearch } from "./server/discovery";
 import { handleNetworkRoute } from './server/network-routes';
@@ -102,6 +103,7 @@ export default defineConfig(({ mode }) => {
             if (new URL(req.url || '/', 'https://localhost').searchParams.has('route')) { void handleNetworkRoute(req, res); return; }
             void handleSearch(req, res);
           });
+          server.middlewares.use("/api/market-stream", (req,res) => { void handleMarketStream(req,res,{apiKey:env.CODEX_API_KEY || process.env.CODEX_API_KEY}); });
           server.middlewares.use("/api/market", (req, res) => {
             void handleMarket(
               req,

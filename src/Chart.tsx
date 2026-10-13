@@ -130,7 +130,7 @@ export function Chart({
       timeScale: {
         borderVisible: false,
         timeVisible: true,
-        secondsVisible: false,
+        secondsVisible: period === "1S",
         rightOffset: 5,
       },
       crosshair: {
@@ -219,6 +219,7 @@ export function Chart({
       priceFormat: { type: "price", precision, minMove: 10 ** -precision },
     });
   }, [precision, ready]);
+  useEffect(() => { api.current?.applyOptions({timeScale:{secondsVisible:period === "1S"}}); }, [period, ready]);
 
   useEffect(() => {
     const series = candles.current;
@@ -324,7 +325,7 @@ export function Chart({
           </div>
         )}
         <div className="periods" aria-label="Chart timeframe">
-          {(["1H", "1D", "1W"] as Period[]).map((p) => (
+          {(["1S", "1H", "1D", "1W"] as Period[]).map((p) => (
             <button
               key={p}
               className={period === p ? "selected" : ""}

@@ -8,12 +8,10 @@ import {
   Check,
   ChevronDown,
   ChevronRight,
-  CircleHelp,
   Clock3,
   FlaskConical,
   Layers3,
   Plus,
-  RotateCcw,
   Search,
   Settings2,
   ShieldCheck,
@@ -28,7 +26,6 @@ import {
   cancelOrder,
   createOrder,
   defaultDraft,
-  initialAccount,
   loadAccount,
   priceLabel,
   quantityLabel,
@@ -74,7 +71,6 @@ const TokenDirectory = lazy(() =>
 type Dialog =
   | "review"
   | "connection"
-  | "settings"
   | "simulation"
   | "tokens"
   | "position"
@@ -116,7 +112,7 @@ function Rule({ order }: { order: Order }) {
 }
 
 export default function App() {
-  const { connection, canImport, openConnect, openImport, openPermissions, openDirectExits } = useWalletSetup();
+  const { connection, modalOpen, canImport, openConnect, openImport, openPermissions, openDirectExits } = useWalletSetup();
   const [orderMode, setOrderMode] = useState<"live" | "plans" | "builder">(
     () =>
       window.location.hash === "#orders/planner"
@@ -135,7 +131,7 @@ export default function App() {
   const [draft, setDraft] = useState(() => defaultDraft(account, "BONK"));
   const [amountReady,setAmountReady]=useState(false);
   const [mcReady,setMcReady]=useState(true),[mcSummary,setMcSummary]=useState<string|null>(null);
-  const [period, setPeriod] = useState<Period>("1D");
+  const [period, setPeriod] = useState<Period>("1S");
   const [page, setPage] = usePage();
   const {
     market,
@@ -145,7 +141,7 @@ export default function App() {
   } = useMarket(
     draft.symbol,
     period,
-    page === "Orders" && orderMode === "builder",
+    page === "Orders" && orderMode === "builder" && !modalOpen,
   );
   const draftDirty = useRef(false);
   const anchoredToken = useRef<string | null>(null);
@@ -503,15 +499,6 @@ export default function App() {
               </p>
             </div>
             <div className="heading-actions">
-              {page !== "Docs" && page !== "Activity" && (
-                <button
-                  className="icon-button"
-                  aria-label="Preview settings"
-                  onClick={() => setDialog("settings")}
-                >
-                  <Settings2 size={18} />
-                </button>
-              )}
               <a
                 className="word-link fomo-link"
                 href="https://fomo.family/"
@@ -1126,8 +1113,10 @@ export default function App() {
             <section className="orders-scope" aria-label="Fomo limit orders">
               <h2>Limit orders for your Fomo wallet.</h2>
               <p>Choose your buy or sell level, amount and expiry. Review a fixed SOL buy or a sale from your existing wallet.</p>
-              <button className="button primary" onClick={connection.session?()=>openDirectExits():()=>setDialog('connection')}>{connection.session?'Manage limit orders':'Connect Fomo wallet'}</button>
-              <button className="word-link" onClick={()=>newPlan('Limit')}>Open limit planner <ArrowUpRight size={14}/></button>
+              <div className="orders-scope-actions">
+                <button className="button primary" onClick={connection.session?()=>openDirectExits():()=>setDialog('connection')}>{connection.session?'Manage limit orders':'Connect Fomo wallet'}</button>
+                <button className="word-link" onClick={()=>newPlan('Limit')}>Open limit planner <ArrowUpRight size={14}/></button>
+              </div>
             </section>
             <div
               className="wallet-view-tabs order-mode"
@@ -1226,11 +1215,6 @@ export default function App() {
             </span>
             <div>
               <button onClick={() => go("Docs")}>Docs</button>
-              {page !== "Docs" && page !== "Activity" && page !== "Overview" && (
-                <button onClick={() => setDialog("settings")}>
-                  Preview settings
-                </button>
-              )}
               <a href="https://fomo.family/" target="_blank" rel="noreferrer">
                 fomo.family <ArrowUpRight size={12} />
               </a>
@@ -1425,38 +1409,6 @@ export default function App() {
               go("Wallets");
             }}
           />
-        </Modal>
-      )}
-      {dialog === "settings" && (
-        <Modal
-          title="Make yourself at home."
-          description="This preview is saved only in this browser. It uses separate storage from the old Fomo Pay demo."
-          close={() => setDialog(null)}
-        >
-          <div className="connection-item">
-            <CircleHelp size={20} />
-            <div>
-              <b>What can I try?</b>
-              <p>
-                Create bracket, limit and trailing orders. Test sample prices,
-                inspect fills, cancel allocations, and export activity.
-              </p>
-            </div>
-          </div>
-          <button
-            className="button secondary full"
-            onClick={() => {
-              commit(() => initialAccount());
-              setDraft(defaultDraft(accountRef.current, "BONK"));
-              draftDirty.current = false;
-              anchoredToken.current = null;
-              setDialog(null);
-              notify("Sample account reset.");
-            }}
-          >
-            <RotateCcw size={16} />
-            Reset sample account
-          </button>
         </Modal>
       )}
       {dialog === "simulation" && (

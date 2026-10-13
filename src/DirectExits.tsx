@@ -1,3 +1,4 @@
+import {ViewedTokenChart} from "./ViewedTokenChart";
 import {directOrderRecovery,sameDirectOrderPolicy,type PendingDirectOrder} from './direct-order-recovery';
 import {limitBuyTokens} from './order-market-cap';
 import {NativeSellAmount} from "./NativeSellAmount";
@@ -70,6 +71,20 @@ export function DirectExits({config,identity,origin,getToken,sign,manageAccess,i
   const value=exitBalanceReview(await send('direct-exit-review',{walletId:identity.walletId,wallet:identity.wallet,mint:mint.trim()},signal),identity.wallet,mint.trim());check(signal);
   setHolding(value);setEnabled(value.executionEnabled);setReview(null);setDraft(d=>({...d,amount:''}));
  }
+ useEffect(()=>{
+  if(!loaded||recoveryBlocked||! /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(mint.trim()))return;
+  let cancelled=false;
+  const checkBalance=()=>{
+   if(cancelled||!current()||pending.current)return;
+   if(locked.current){timer=setTimeout(checkBalance,250);return;}
+   void run(loadHolding);
+  };
+  let timer=setTimeout(checkBalance,350);
+  return()=>{cancelled=true;clearTimeout(timer);};
+  // Only a selected contract or owner change starts an automatic read. Editing
+  // an amount, refreshing history or signing must not reset the user's draft.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+ },[mint,loaded,recoveryBlocked,binding]);
  async function reviewOrder(signal:AbortSignal){
   if(!holding||!mcReady||side==='sell'&&!amountReady)throw Error('Refresh the market cap conversion.');
   let balance=holding;
@@ -132,9 +147,12 @@ export function DirectExits({config,identity,origin,getToken,sign,manageAccess,i
   {!review?<>
    <div className="filter-tabs" aria-label="Limit order side">{(['buy','sell'] as const).map(value=><button type="button" key={value} disabled={busy} aria-pressed={side===value} className={side===value?'selected':''} onClick={()=>{setSide(value);setDraft(initial);setBuyPrice('');setMcReady(false);setMcSummary(null);}}>{value==='buy'?'Buy':'Sell'}</button>)}</div>
    <label className="field"><span>Token contract</span><input value={mint} disabled={busy} autoComplete="off" spellCheck={false} onChange={e=>{setMint(e.target.value);setHolding(null);setError('');}} /></label>
-   <button className="button secondary full" disabled={busy||!loaded||recoveryBlocked} onClick={()=>void run(loadHolding)}>Check token and balance</button>
+   <button className="button secondary full" disabled={busy||!loaded||recoveryBlocked} onClick={()=>void run(loadHolding)}>{busy?'Checking…':holding?'Refresh balance':'Check token and balance'}</button>
+   {holding&&<ViewedTokenChart address={holding.mint}/> }
    {holding&&<>
     <p className="copy-help">Available: {side==='buy'?`${holding.solBalanceRaw===undefined?'Unverified':exitUnits(holding.solBalanceRaw,9)} SOL`:`${exitUnits(holding.balanceRaw,holding.decimals)} tokens`}.</p>
+    {side==='sell'&&<p className="copy-help">Sell only tokens already in this wallet. Your balance is checked again before approval; keep the selected amount available until the order fills.</p>}
+    {side==='sell'&&BigInt(holding.balanceRaw)===0n&&<p className="wallet-notice">This wallet does not hold this token. Choose a token you own to place a limit sell.</p>}
     {side==='buy'&&!holding.buyEnabled&&<p className="wallet-notice">Limit-buy activation is not enabled. You can prepare and review the order.</p>}
     <p className="copy-help">{side==='buy'?'One fixed SOL purchase. Keep enough SOL for the spend, network fees and account rent.':holding?.outputMint===WSOL?'Supported Pump bonding curves return native SOL. Supported Raydium CLMM and PumpSwap pools return wrapped SOL (WSOL), in the same wallet.':'This exit returns USDC.'}</p>
     {!holding.permissionReady&&<p className="wallet-notice">Approve or renew wallet access before activating an order. <button className="word-link" disabled={busy} onClick={manageAccess}>Manage wallet access</button></p>}

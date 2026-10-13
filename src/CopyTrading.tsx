@@ -1,3 +1,6 @@
+import {ViewedTokenChart} from "./ViewedTokenChart";
+import {TokenSearch} from "./TokenSearch";
+import type {DiscoveredToken} from "./assets";
 import {useWalletSetup} from './WalletSetup';
 import type {Token22Permission} from "./native-copy-permission";
 import { useEffect, useRef, useState } from "react";
@@ -35,6 +38,7 @@ export function CopyTrading({
   onInspect: (address: string) => void;
 }) {
   const setup=useWalletSetup();
+  const [chartToken,setChartToken]=useState<DiscoveredToken|null>(null),[chartPicker,setChartPicker]=useState(false);
   const [loaded] = useState(loadCopyPlans);
   const [plans, setPlans] = useState(loaded.plans);
   const [draft, setDraft] = useState(() => ({
@@ -96,8 +100,13 @@ export function CopyTrading({
           Wallet access and an available trading service are required for execution.
         </p>
       </div>
+      <div className="copy-plan-actions">
       {import.meta.env.VITE_CASH_COPY_SETUP==='true'&&(!import.meta.env.VITE_CASH_COPY_PILOT_WALLET||wallet===import.meta.env.VITE_CASH_COPY_PILOT_WALLET)&&<button className="word-link" disabled={!wallet||!isMint(draft.address)} onClick={()=>setup.openCashCopy(draft.address,draft.identity?.handle)}>Copy this trader with USDC across chains</button>}
       {setup.canImport&&<button className="word-link" disabled={!wallet} onClick={()=>setup.openCashPlans()}>Your USDC copy plans</button>}
+      </div>
+      <div className="copy-chart-picker"><button className="word-link" onClick={()=>setChartPicker(true)}>{chartToken?"Change chart token":"View a token chart"}</button></div>
+      {chartToken&&<ViewedTokenChart address={chartToken.address} network={chartToken.chain||"solana"} label={chartToken.symbol} active={active && !setup.modalOpen}/>}
+      {chartPicker&&<TokenSearch close={()=>setChartPicker(false)} select={token=>{setChartToken(token);setChartPicker(false);}}/>}
       <div className="copy-grid">
         <section className="copy-builder" aria-label="Copy plan builder">
           <div className="section-heading">
@@ -121,7 +130,7 @@ export function CopyTrading({
             <FomoLeaderPicker
               address={draft.address}
               identity={draft.identity}
-              active={active}
+              active={active && !setup.modalOpen}
               inputRef={addressInput}
               onChange={(address, identity) => patch({
                 address,
@@ -347,7 +356,7 @@ export function CopyTrading({
         signNativeCopy={signNativeCopy}
         key={wallet || "disconnected"}
         wallet={wallet}
-        active={active}
+        active={active && !setup.modalOpen}
         plans={plans}
         signSession={signSession}
         onConnect={onConnect}

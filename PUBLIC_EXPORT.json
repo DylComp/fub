@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T14:12:52.668Z",
+  "generatedAt": "2026-10-13T14:32:03.175Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -64,8 +64,8 @@
     },
     {
       "path": "vite.config.ts",
-      "sha256": "08103ff83f29dfae44fb813b54faa60caa16fefe000daef38a4ccbfd389c3a9a",
-      "bytes": 5246
+      "sha256": "23edb21b96c70fd13af9d89af3524942505441b2b15d141dbda1c473c8589920",
+      "bytes": 5470
     },
     {
       "path": "vitest.config.ts",
@@ -164,8 +164,8 @@
     },
     {
       "path": "src/App.tsx",
-      "sha256": "7e84717c297d2eda8d125012d8ba902ab584a5f5b8c44c19ce809e1f00f9fcb6",
-      "bytes": 60683
+      "sha256": "2b34bf4215c57253eb6c214326fe5a5f037716bfacd35f6c307824649f7c33cb",
+      "bytes": 59039
     },
     {
       "path": "src/AppRecovery.tsx",
@@ -214,8 +214,8 @@
     },
     {
       "path": "src/Chart.tsx",
-      "sha256": "8d8dff8e3fa11ce5399fac30ced2b09df9ba79ab9aa6765f2fb5e4fb2fe3cdfd",
-      "bytes": 16458
+      "sha256": "a9ed30f4b454cd280f6d16b5eb919428dca3565ca90a61bc88fd8439e0cc8090",
+      "bytes": 16588
     },
     {
       "path": "src/CopyAccount.tsx",
@@ -259,13 +259,13 @@
     },
     {
       "path": "src/CopyTrading.tsx",
-      "sha256": "d326dc1a908ff0f3a4940d4cc7fe12aa7bd6b30a40b389269adb310303f9b56b",
-      "bytes": 15610
+      "sha256": "07bec90fc6646195e011861751e5ea11d54aefd0199e1062cbe704a313ffd051",
+      "bytes": 16442
     },
     {
       "path": "src/DirectExits.tsx",
-      "sha256": "b6176280e20e52da61f66f93b2ded8cda554fc457e9b07e9d212328e1d8fe4ba",
-      "bytes": 22610
+      "sha256": "c662f10539e3411d7f8a332c74a0a4e0dc4e7442d74fa73c26b9b16aa75f6072",
+      "bytes": 23798
     },
     {
       "path": "src/DirectPay.tsx",
@@ -374,8 +374,8 @@
     },
     {
       "path": "src/NativeSellAmount.tsx",
-      "sha256": "e5be4dfcfbb8b0cd994302516bc42a2e4cc44fc35a133e6d04c2c4558bcf4209",
-      "bytes": 2879
+      "sha256": "228b16d96dabd22802575674e696d021a29848f4e9d4e8256b48f74247221514",
+      "bytes": 3312
     },
     {
       "path": "src/NetworkTokenPreview.tsx",
@@ -474,8 +474,8 @@
     },
     {
       "path": "src/WalletSetup.tsx",
-      "sha256": "2eec5eaa17b4f9578a5b0a06a7dc3e313a490014c870201b8f2d883c12cd8a7a",
-      "bytes": 6616
+      "sha256": "8f1ffe34e2d5908a0d7281e693ee24ded669742c8ccd085354094132e89e7c96",
+      "bytes": 6653
     },
     {
       "path": "src/WalletTransactionRow.tsx",
@@ -669,8 +669,8 @@
     },
     {
       "path": "src/docs.css",
-      "sha256": "e77c17fdb5feb8705215f38852797694b30ff08fd685eeaf5b6f361d9ed4570a",
-      "bytes": 7116
+      "sha256": "7f0006e7b49b11d7531ae3a75e9e98e0b0bf3484b8ebc400b3cf4c70a81ff6f6",
+      "bytes": 7334
     },
     {
       "path": "src/enrollment-client.ts",
@@ -824,8 +824,8 @@
     },
     {
       "path": "src/market-data.ts",
-      "sha256": "23bb3ca36851b9287659e4f314e6c525500969b7bfba62076644040b4b3b4ae3",
-      "bytes": 1586
+      "sha256": "9d79214032900ddd037b6c822a7b1427295112a152f9806feed62a7a3df2518e",
+      "bytes": 1639
     },
     {
       "path": "src/market-history.ts",
@@ -1044,8 +1044,8 @@
     },
     {
       "path": "src/useMarket.ts",
-      "sha256": "696c3487b3189a72c7e1b02807b21d09c4a8a89aa1d18b0ce159757cebe5f99b",
-      "bytes": 8659
+      "sha256": "25ac5dd97095f3738ed8656fc6260e251dc667d8930a50bdbe93dd1222ed16fb",
+      "bytes": 9358
     },
     {
       "path": "src/usePortfolio.ts",
@@ -1639,8 +1639,8 @@
     },
     {
       "path": "server/codex.ts",
-      "sha256": "9e353d1c752c05bc35d632e33ba8e61cea579a3547d47879eb0dc07f1dc5608d",
-      "bytes": 7992
+      "sha256": "2027c0919431d3753d9e615004d8273d712cce1d52cae4e7af9cd904b5524cdc",
+      "bytes": 8428
     },
     {
       "path": "server/controlled-carryover.ts",
@@ -3726,6 +3726,31 @@
       "path": "server/cash-copy-return-credit.ts",
       "sha256": "013de8a94940713057dd94f04d194dea11cf9b781debb52d77b87b09f8c81265",
       "bytes": 1215
+    },
+    {
+      "path": "src/ViewedTokenChart.tsx",
+      "sha256": "eb78139fa59a622de46381a2c4bb93f029c8b0ede181035eef912a8361988b06",
+      "bytes": 3611
+    },
+    {
+      "path": "src/viewed-token-chart.css",
+      "sha256": "52569a2b641e178b72c2595573d012f0711135ee12a61ed070949fe1fb54d97e",
+      "bytes": 985
+    },
+    {
+      "path": "src/useLiveCandles.ts",
+      "sha256": "90d04b1644347477540d8b3369521b6758dfca8c5a271084f7dc792c50ff9727",
+      "bytes": 2832
+    },
+    {
+      "path": "server/codex-stream.ts",
+      "sha256": "d7e2bc408c8720a3076f0507ab7e643a823cef517a0ae19f68d23f7552171e02",
+      "bytes": 8351
+    },
+    {
+      "path": "api/market-stream.ts",
+      "sha256": "38585eac3677b87a940c93c851b24db860469e38dd8b9bfe165cfdefd8e2eb59",
+      "bytes": 284
     }
   ],
   "secretPatternScan": {

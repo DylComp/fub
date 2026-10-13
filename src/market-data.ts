@@ -1,4 +1,5 @@
 export const PERIODS = {
+  "1S": { resolution: "1S", seconds: 300, step: 1 },
   "1H": { resolution: "1", seconds: 3600, step: 60 },
   "1D": { resolution: "15", seconds: 86400, step: 900 },
   "1W": { resolution: "60", seconds: 604800, step: 3600 },
