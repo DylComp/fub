@@ -156,8 +156,11 @@ export async function prepareAmmBuyback(
     classic.quote,
     amm.userVolumeAccumulatorPda(user),
   ];
+  // Quote against the same commitment used by simulation; finalized reserves
+  // can lag a moving pool enough to reject otherwise valid 1% slippage limits.
+  // Fee-revenue eligibility remains finalized independently in the worker.
   const r = await connection.getMultipleAccountsInfoAndContext(addresses, {
-    commitment: "finalized",
+    commitment: "confirmed",
     minContextSlot,
   });
   if (integer(r.context.slot) < integer(minContextSlot))
