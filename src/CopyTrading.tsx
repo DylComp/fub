@@ -100,7 +100,7 @@ export function CopyTrading({
           Wallet access and an available trading service are required for execution.
         </p>
       </div>
-      <div className="copy-plan-actions">
+      <div className="copy-entry-actions">
       {import.meta.env.VITE_CASH_COPY_SETUP==='true'&&(!import.meta.env.VITE_CASH_COPY_PILOT_WALLET||wallet===import.meta.env.VITE_CASH_COPY_PILOT_WALLET)&&<button className="word-link" disabled={!wallet||!isMint(draft.address)} onClick={()=>setup.openCashCopy(draft.address,draft.identity?.handle)}>Copy this trader with USDC across chains</button>}
       {setup.canImport&&<button className="word-link" disabled={!wallet} onClick={()=>setup.openCashPlans()}>Your USDC copy plans</button>}
       </div>

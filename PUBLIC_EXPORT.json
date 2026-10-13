@@ -259,8 +259,8 @@
     },
     {
       "path": "src/CopyTrading.tsx",
-      "sha256": "07bec90fc6646195e011861751e5ea11d54aefd0199e1062cbe704a313ffd051",
-      "bytes": 16442
+      "sha256": "e719601db2940575cabc855e93545c6a120c8e6c97672876f356bd01692cece2",
+      "bytes": 16443
     },
     {
       "path": "src/DirectExits.tsx",
@@ -669,8 +669,8 @@
     },
     {
       "path": "src/docs.css",
-      "sha256": "7f0006e7b49b11d7531ae3a75e9e98e0b0bf3484b8ebc400b3cf4c70a81ff6f6",
-      "bytes": 7334
+      "sha256": "33478c2d720356da2272a6a8295d6bef25093a3c2a5e5ccd77e1d66a80453862",
+      "bytes": 7353
     },
     {
       "path": "src/enrollment-client.ts",
