@@ -1,4 +1,4 @@
-import {LaunchQuoteBalanceError} from './launch-errors.js';
+import {LaunchQuoteBalanceError,LaunchNotExpiredError} from './launch-errors.js';
 import {preparePumpLaunchTable} from './pump-pair-table.js';
 import {resolvePumpQuote} from './pump-pair-resolver.js';
 import {inspectLaunch,type LaunchQuoteReview} from '../src/launch-signing.js';
@@ -173,6 +173,7 @@ export function launchExecutionChain(connection:Connection,recoveryRpc?:()=>Rpc,
   async expiredUnsigned(p:LaunchExecutionPlan){
    validateLaunchPlan(p);await mainnet();
    const epoch=await connection.getEpochInfo('finalized');
+   if(Number.isSafeInteger(epoch.blockHeight)&&epoch.blockHeight!<=p.lastValidBlockHeight)throw new LaunchNotExpiredError();
    const proof={blockHeight:epoch.blockHeight!,slot:epoch.absoluteSlot,checkedAt:Date.now()};
    validateLaunchExpiry(p,proof);
    // Read at or after the finalized height used to prove expiration. A mint

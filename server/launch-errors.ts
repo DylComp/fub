@@ -16,3 +16,8 @@ export class LaunchQuoteBalanceError extends Error{
   this.name='LaunchQuoteBalanceError';this.requiredRaw=required.toString();this.availableRaw=available.toString();
  }
 }
+
+export class LaunchNotExpiredError extends Error {
+ readonly code = 'launch_not_expired';
+ constructor(){super('Waiting for the previous unsigned transaction’s expiry before refreshing.');this.name='LaunchNotExpiredError';}
+}

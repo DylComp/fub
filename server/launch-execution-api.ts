@@ -1,4 +1,4 @@
-import {LaunchQuoteBalanceError} from './launch-errors.js';
+import {LaunchQuoteBalanceError,LaunchNotExpiredError} from './launch-errors.js';
 import {configuredPairSponsor} from './launch-pair-sponsor.js';
 import {SOL_PAIR_MINT} from '../src/launch-pairs.js';
 import {LaunchPairSetupRequired,LaunchPairSetupPending,pairLaunchTables} from './launch-pair-preparation.js';
@@ -136,7 +136,7 @@ export function launchExecutionHandler(options:{
    config=(options.config||launchExecutionConfig)(process.env,{wallet:owner,publicationId,quoteMint:attempt.plan.publication.draft.quoteMint});
    if(!launchWithinBudget(config,attempt.plan))return send(409,{message:'This launch exceeds its supervised spending limit or uses another treasury.',blocked:true});
    return send(200,{launch:publicAttempt(attempt),existing:false});
-  }catch(error){if(error instanceof LaunchQuoteBalanceError)return send(422,{code:error.code,message:error.message,balance:{mint:error.mint,requiredRaw:error.requiredRaw,availableRaw:error.availableRaw,decimals:error.decimals}});if(error instanceof LaunchPairSetupPending)return send(200,{preparingPair:true,state:error.state});if(error instanceof LaunchPairSetupRequired)return send(200,{setup:publicTable(error.setup)});if(error instanceof LaunchPublicationMissing)return send(404,{message:'This saved draft was not found for your wallet. Save your coin details before launching.'});return send(503,{message:setupRequest?'Treasury setup could not be confirmed. Use Check confirmation to retry the saved transaction. Do not sign a replacement while its result is unknown.':'Launch verification could not complete. Reload your existing attempt before retrying. A signed attempt is never replaced while its result is unknown.'});}
+  }catch(error){if(error instanceof LaunchNotExpiredError)return send(409,{code:error.code,message:error.message});if(error instanceof LaunchQuoteBalanceError)return send(422,{code:error.code,message:error.message,balance:{mint:error.mint,requiredRaw:error.requiredRaw,availableRaw:error.availableRaw,decimals:error.decimals}});if(error instanceof LaunchPairSetupPending)return send(200,{preparingPair:true,state:error.state});if(error instanceof LaunchPairSetupRequired)return send(200,{setup:publicTable(error.setup)});if(error instanceof LaunchPublicationMissing)return send(404,{message:'This saved draft was not found for your wallet. Save your coin details before launching.'});return send(503,{message:setupRequest?'Treasury setup could not be confirmed. Use Check confirmation to retry the saved transaction. Do not sign a replacement while its result is unknown.':'Launch verification could not complete. Reload your existing attempt before retrying. A signed attempt is never replaced while its result is unknown.'});}
   finally{pending--;}
  };
 }

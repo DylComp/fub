@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T22:09:53.593Z",
+  "generatedAt": "2026-10-13T22:31:40.073Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -349,8 +349,8 @@
     },
     {
       "path": "src/LaunchFlow.tsx",
-      "sha256": "6ee0859335b0cb1a8b0682db7cfeeea1de2b7bbd9d9e51ab5e2abdb64873e396",
-      "bytes": 13163
+      "sha256": "457d40540bcb8b34c93a5c629888b858249fde215f8ab71dd4ff74dc205f5a8c",
+      "bytes": 13404
     },
     {
       "path": "src/LaunchHistory.tsx",
@@ -2389,18 +2389,18 @@
     },
     {
       "path": "server/launch-errors.ts",
-      "sha256": "0734a6317b13f82225eec49fee6395d13dbf152ce962f0368096bb86d9d208cc",
-      "bytes": 1167
+      "sha256": "1f3b0be29f13b24c5d5ac1dcc69e6ae0b42f300bd0a5c5987b8ecf38aeddc082",
+      "bytes": 1396
     },
     {
       "path": "server/launch-execution-api.ts",
-      "sha256": "20bc0a154c9628ac93f5bb52db7f1c3277b23e439a38a717f9d8601a3afed11c",
-      "bytes": 13711
+      "sha256": "3db3a3ea860eb2a52c9f6e0ecc7379798a089918ec165bf7840bd6a13cd1e8aa",
+      "bytes": 13832
     },
     {
       "path": "server/launch-execution-chain.ts",
-      "sha256": "ee8aeae174d9b34cd576f51b4f6f778554d8af7a14f2d13594fb8dac9204da04",
-      "bytes": 24753
+      "sha256": "395a53eeb5991f13a6878dcce415d903174cafe0841e87e6df1f735368a13e3e",
+      "bytes": 24900
     },
     {
       "path": "server/launch-execution-config.ts",
