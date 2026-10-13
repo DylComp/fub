@@ -66,6 +66,8 @@ async function run() {
   const cashSources=env.CASH_SOLANA_WS_URL&&sourceEndpoint&&sourceWallets.length?cashSourceMonitor({endpoint:env.CASH_SOLANA_WS_URL,wallets:sourceWallets,rpc:signal=>copyReadRpc(sourceEndpoint,signal)}):null;
   cashSources?.start();
   const cashStatuses=cashStatusStream();
+  cashStatuses.maintain();
+  const cashStatusInterval=setInterval(()=>cashStatuses.maintain(),1000);cashStatusInterval.unref();
   await cash?.restoreLeaders();
   const cashStreams=cashDynamicStreams({networks:(Object.keys(CASH_NETWORKS) as CashNetwork[]).filter(n=>!!env[`CASH_${n.toUpperCase()}_WS_URL`]),create:(network,leaders)=>{
     const mode=env[`CASH_${network.toUpperCase()}_WS_MODE`]||(network==='base'?'pendingLogs':'logs');
@@ -162,7 +164,7 @@ async function run() {
     console.error(JSON.stringify({ event: "isolated_signer_not_ready", reason: "Database isolation checks failed. Signing and new grants are withheld." }));
   }); }, 15000);
   interval.unref();
-  const stop = () => { clearInterval(cashStreamInterval); cashSources?.close(); cashStatuses.stop(); cashStreams.close(); clearInterval(cashInterval); clearInterval(expiryInterval); backups?.stop(); clearInterval(queueInterval); clearInterval(exitInterval); clearInterval(recoveryInterval); recoveryController.abort(); clearInterval(interval); readiness.stop(); for (const c of controllers) c.abort(); server.closeAllConnections(); server.close(); };
+  const stop = () => { clearInterval(cashStreamInterval); clearInterval(cashStatusInterval); cashSources?.close(); cashStatuses.stop(); cashStreams.close(); clearInterval(cashInterval); clearInterval(expiryInterval); backups?.stop(); clearInterval(queueInterval); clearInterval(exitInterval); clearInterval(recoveryInterval); recoveryController.abort(); clearInterval(interval); readiness.stop(); for (const c of controllers) c.abort(); server.closeAllConnections(); server.close(); };
   process.once("SIGINT", stop); process.once("SIGTERM", stop);
 }
 run().catch(() => { console.error(JSON.stringify({ event: "isolated_signer_stopped", reason: "Private host configuration or service initialization failed." })); process.exitCode = 1; });

@@ -3684,8 +3684,8 @@
     },
     {
       "path": "tests/cash-status-stream.test.ts",
-      "sha256": "64f283315f1170167281c03242e4421d5e35abeea8f407ae67dcba77ee3ad219",
-      "bytes": 2481
+      "sha256": "f6f0043efa34e90b71b2ff94267a358ad1ecea1ffb15a3d67f1261bda8db98ae",
+      "bytes": 3177
     },
     {
       "path": "server/cash-status-proof.ts",
@@ -3694,13 +3694,13 @@
     },
     {
       "path": "server/cash-status-stream.ts",
-      "sha256": "26190480e747cb80f16ab0f39fb4124ba393c07dfbf7ca0937f65458189a9222",
-      "bytes": 2669
+      "sha256": "871ec6ea112b64f2568815e1b9b8a3ca79a3d25cbb7385bf62fcf2c4f17f066b",
+      "bytes": 2857
     },
     {
       "path": "workers/signer.ts",
-      "sha256": "c5f579ac40f1ce8ce7accbe47cd549c2b7d3b7f78e9d8f276d79a64385cae5ec",
-      "bytes": 15668
+      "sha256": "0b27491abf2e761e2aedc53fcd3b06701d3a4fe435b22f76671df30d8aca18a2",
+      "bytes": 15831
     }
   ],
   "secretPatternScan": {

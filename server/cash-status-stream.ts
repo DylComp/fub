@@ -4,12 +4,12 @@ type Socket=Pick<WebSocket,'addEventListener'|'send'|'close'>;
 export function cashStatusStream(options:{connect?:()=>Socket;now?:()=>number}={}){
  const now=options.now||Date.now;
  const entries=new Map<string,{expires:number;status?:any}>();
- let socket:Socket|null=null,ready=false,closed=false,retryAt=0;
+ let socket:Socket|null=null,ready=false,closed=false,retryAt=0,openedAt=0;
  const send=(id:string,type='subscribe')=>socket?.send(JSON.stringify({type,event:'request.status.updated',filters:{id}}));
  function disconnect(){const old=socket;socket=null;ready=false;retryAt=now()+1000;for(const e of entries.values())delete e.status;try{old?.close();}catch{}}
  function open(){
   if(closed||socket||now()<retryAt)return;
-  const current=(options.connect||(()=>new WebSocket('wss://ws.relay.link')))();socket=current;
+  const current=(options.connect||(()=>new WebSocket('wss://ws.relay.link')))();socket=current;openedAt=now();
   current.addEventListener('message',event=>{
    if(closed||socket!==current)return;
    try{
@@ -28,10 +28,17 @@ export function cashStatusStream(options:{connect?:()=>Socket;now?:()=>number}={
   });
   for(const event of ['close','error'])current.addEventListener(event,()=>{if(socket===current)disconnect();});
  }
+ function maintain(){
+  if(closed)return;
+  for(const [key,e]of entries)if(e.expires<=now()){if(ready)try{send(key,'unsubscribe');}catch{disconnect();}entries.delete(key);}
+  if(socket&&!ready&&now()-openedAt>=3000)disconnect();
+  try{open();}catch{disconnect();}
+ }
  return{
+  maintain,
   read(id:string):unknown{
    if(closed||!/^0x[0-9a-f]{64}$/.test(id))return undefined;
-   for(const [key,e]of entries)if(e.expires<=now()){if(ready)try{send(key,'unsubscribe');}catch{disconnect();}entries.delete(key);}
+   maintain();
    if(!entries.has(id)){if(entries.size>=128)return undefined;entries.set(id,{expires:now()+10000});if(ready)try{send(id);}catch{disconnect();}}
    try{open();}catch{disconnect();}
    const d=entries.get(id)?.status;
