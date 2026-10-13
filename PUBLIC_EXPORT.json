@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T15:43:00.872Z",
+  "generatedAt": "2026-10-13T15:45:42.894Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -284,8 +284,8 @@
     },
     {
       "path": "src/FomoLeaderPicker.tsx",
-      "sha256": "59d3be94284fe7536f824cf344a3acfc4c0004fcb80c8708dbd9153a6095e494",
-      "bytes": 8051
+      "sha256": "e97b10048c76e5fb86c9499cece7e012dab95e0dab7a5b5dc53e47bd32360f50",
+      "bytes": 8251
     },
     {
       "path": "src/FomoRecipientCard.tsx",

@@ -67,13 +67,17 @@ export function FomoLeaderPicker({ address, identity, active, inputRef, onChange
     }
   }
   const profile = identity?.handle || handle;
+  const walletReady = lookup?.state === "matched" && isMint(wallet.trim());
+  const selectionBlocked = !active || (looking && !walletReady) || lookup?.state === "conflict";
   function selectWallet() {
-    if (!active || looking || lookup?.state==='conflict') return;
+    if (selectionBlocked) return;
     const selected = wallet.trim();
     if (!handle || !isMint(selected)) {
       setError(purpose === "owner" ? "Enter your public Solana wallet address." : purpose === "recipient" ? "Enter your friend’s public Solana wallet address." : "Enter the trader's public Solana wallet address.");
       return;
     }
+    request.current?.abort();
+    setLooking(false);
     onChange(selected, { source: "user-selected", handle, address: selected, selectedAt: Date.now() });
   }
   return (
@@ -113,7 +117,7 @@ export function FomoLeaderPicker({ address, identity, active, inputRef, onChange
           ) : (
             <>
               <button type="button" className="button secondary full" disabled={!active || looking} onClick={() => void findWallet()}>
-                {looking ? "Finding wallet…" : "Find wallet"}
+                {looking ? walletReady ? "Updating profile…" : "Finding wallet…" : "Find wallet"}
               </button>
               {lookup ? <FomoRecipientCard profile={lookup} purpose="wallet" confirmed={false} onConfirm={()=>{}} onRetry={()=>void findWallet()} busy={looking}/> : <p className="copy-help">{purpose === "owner" ? "Look up your wallet, or copy its public address from Fomo." : "Look up their wallet, or paste it from their Fomo profile."}</p>}
               <label className="field">
@@ -132,7 +136,7 @@ export function FomoLeaderPicker({ address, identity, active, inputRef, onChange
                 />
               </label>
               {error && <p className="error-message" role="alert">{error}</p>}
-              <button type="button" className="button secondary full" disabled={!active || looking || lookup?.state==='conflict'} onClick={selectWallet}>
+              <button type="button" className="button secondary full" disabled={selectionBlocked} onClick={selectWallet}>
                 Use this wallet
               </button>
               <p className="copy-help">{purpose === "owner" ? "The import must match the exact address you confirm." : purpose === "recipient" ? "Confirm the receiving wallet before sending. Your wallet reviews every payment." : "Your plan follows the exact wallet you confirm. A profile match does not authorize trading."}</p>
