@@ -111,7 +111,7 @@ export function useWallet({externalLaunchOnly=false}:{externalLaunchOnly?:boolea
   }, []);
 
   async function connect(wallet: SupportedWallet, expectedAddress?: string) {
-    if(externalLaunchOnly&&!walletMayConnect(wallet,location.hash)){setError("Set up your Fomo wallet to use this feature. External wallets are available for launches.");return false;}
+    if(externalLaunchOnly&&!walletMayConnect(wallet,location.hash)){setError("Set up your Fomo wallet to use this feature. External wallets are available for launches and copy trading.");return false;}
     if (connecting.current || active.current) return false;
     const id = ++attempt.current;
     connecting.current = wallet;
@@ -207,9 +207,9 @@ export function useWallet({externalLaunchOnly=false}:{externalLaunchOnly?:boolea
     clearAttempt();
     setError("Stopped waiting. Close the pending request in your wallet too.");
   }
-  function signingSession(launchAction=false){
+  function signingSession(launchAction=false,copyAction=false){
     const value=active.current;
-    if(value&&externalLaunchOnly&&!walletMaySign(value.wallet,location.hash,launchAction))throw Error("Set up your Fomo wallet to use this feature. External wallets can sign launches only.");
+    if(value&&externalLaunchOnly&&!walletMaySign(value.wallet,location.hash,launchAction,copyAction))throw Error("Set up your Fomo wallet to use this feature. External wallets can sign launch and copy-trading actions only.");
     return value;
   }
   async function signTriggerChallenge(message: string, address: string) {
@@ -283,7 +283,7 @@ export function useWallet({externalLaunchOnly=false}:{externalLaunchOnly?:boolea
     return bs58.encode(result.signature);
   }
   async function signEnrollment(authorization: import("./signer-enrollment-model").EnrollmentChallenge) {
-    const current = signingSession(), account = current?.accounts.find(a => a.address === authorization.wallet);
+    const current = signingSession(false,true), account = current?.accounts.find(a => a.address === authorization.wallet);
     const feature = current?.wallet.features["solana:signMessage"] as SolanaSignMessageFeature["solana:signMessage"] | undefined;
     if (!current || current.address !== authorization.wallet || !account || !account.features.includes("solana:signMessage") ||
         !feature || !["1.0.0", "1.1.0"].includes(feature.version) || bs58.encode(new Uint8Array(account.publicKey)) !== authorization.wallet) throw Error("Connect this wallet to review background access.");
@@ -292,7 +292,7 @@ export function useWallet({externalLaunchOnly=false}:{externalLaunchOnly?:boolea
     const message = new TextEncoder().encode(enrollmentMessage(authorization));
     const results = await feature.signMessage({ account, message });
     const result = results[0];
-    if (signingSession() !== current || results.length !== 1 || !result || result.signature.length !== 64 ||
+    if (signingSession(false,true) !== current || results.length !== 1 || !result || result.signature.length !== 64 ||
         (result.signatureType && result.signatureType !== "ed25519") || result.signedMessage.length !== message.length ||
         !message.every((b, i) => result.signedMessage[i] === b)) throw Error("Wallet changed or altered the permission message.");
     return bs58.encode(result.signature);
@@ -309,7 +309,7 @@ export function useWallet({externalLaunchOnly=false}:{externalLaunchOnly?:boolea
     return bs58.encode(result.signature);
   }
   async function signProviderWallet(message: string, address: string) {
-    const current = signingSession(), account = current?.accounts.find(a => a.address === address);
+    const current = signingSession(false,true), account = current?.accounts.find(a => a.address === address);
     const feature = current?.wallet.features['solana:signMessage'] as SolanaSignMessageFeature['solana:signMessage'] | undefined;
     if (!current || current.address !== address || !account || !account.features.includes('solana:signMessage') || !feature || !['1.0.0', '1.1.0'].includes(feature.version) || bs58.encode(new Uint8Array(account.publicKey)) !== address) throw Error('Connect a wallet that supports ownership verification.');
     const { verifyProviderWalletMessage } = await import('./provider-wallet-auth');
@@ -317,7 +317,7 @@ export function useWallet({externalLaunchOnly=false}:{externalLaunchOnly?:boolea
     const bytes = new TextEncoder().encode(message);
     const results = await feature.signMessage({ account, message: bytes });
     const result = results[0];
-    if (signingSession() !== current || results.length !== 1 || !result || result.signature.length !== 64 || (result.signatureType && result.signatureType !== 'ed25519') || result.signedMessage.length !== bytes.length || !bytes.every((b, i) => result.signedMessage[i] === b)) throw Error('Wallet changed or altered the ownership message.');
+    if (signingSession(false,true) !== current || results.length !== 1 || !result || result.signature.length !== 64 || (result.signatureType && result.signatureType !== 'ed25519') || result.signedMessage.length !== bytes.length || !bytes.every((b, i) => result.signedMessage[i] === b)) throw Error('Wallet changed or altered the ownership message.');
     return btoa(String.fromCharCode(...result.signature));
   }
   async function signWalletSession(challenge: import('./wallet-session-model').WalletLogin) {
@@ -332,36 +332,36 @@ export function useWallet({externalLaunchOnly=false}:{externalLaunchOnly?:boolea
     return bs58.encode(result.signature);
   }
   async function signCashCopy(scope: import('./cash-copy-model').CashCopyScope) {
-    const current=signingSession(),account=current?.accounts.find(a=>a.address===scope.sourceWallet);
+    const current=signingSession(false,true),account=current?.accounts.find(a=>a.address===scope.sourceWallet);
     const feature=current?.wallet.features['solana:signMessage'] as SolanaSignMessageFeature['solana:signMessage']|undefined;
     if(!current||current.address!==scope.sourceWallet||!account||!account.features.includes('solana:signMessage')||!feature||!['1.0.0','1.1.0'].includes(feature.version)||bs58.encode(new Uint8Array(account.publicKey))!==scope.sourceWallet)throw Error('Connect the funding wallet shown in these copy limits.');
     if(scope.origin!==location.origin||scope.issuedAt>Date.now()||scope.acceptBy<=Date.now())throw Error('Review fresh copy limits before signing.');
     const {cashCopyPermissionMessage}=await import('./cash-copy-model');
     const message=new TextEncoder().encode(cashCopyPermissionMessage(scope));
     const results=await feature.signMessage({account,message}),result=results[0];
-    if(signingSession()!==current||results.length!==1||!result||result.signature.length!==64||(result.signatureType&&result.signatureType!=='ed25519')||result.signedMessage.length!==message.length||!message.every((b,i)=>result.signedMessage[i]===b))throw Error('Wallet changed or altered the copy limits.');
+    if(signingSession(false,true)!==current||results.length!==1||!result||result.signature.length!==64||(result.signatureType&&result.signatureType!=='ed25519')||result.signedMessage.length!==message.length||!message.every((b,i)=>result.signedMessage[i]===b))throw Error('Wallet changed or altered the copy limits.');
     return bs58.encode(result.signature);
   }
   async function signCashWallet(challenge: import('./cash-wallet-model').CashWalletChallenge) {
-    const current=signingSession(),account=current?.accounts.find(a=>a.address===challenge.sourceWallet);
+    const current=signingSession(false,true),account=current?.accounts.find(a=>a.address===challenge.sourceWallet);
     const feature=current?.wallet.features['solana:signMessage'] as SolanaSignMessageFeature['solana:signMessage']|undefined;
     if(!current||current.address!==challenge.sourceWallet||!account||!account.features.includes('solana:signMessage')||!feature||bs58.encode(new Uint8Array(account.publicKey))!==challenge.sourceWallet)throw Error('Connect the Solana wallet shown in this verification.');
     if(challenge.origin!==location.origin||challenge.issuedAt>Date.now()||challenge.expiresAt<=Date.now())throw Error('Wallet verification expired or belongs to another site.');
     const {cashWalletMessage}=await import('./cash-wallet-model');
     const message=new TextEncoder().encode(cashWalletMessage(challenge));
     const results=await feature.signMessage({account,message}),result=results[0];
-    if(signingSession()!==current||results.length!==1||!result||result.signature.length!==64||(result.signatureType&&result.signatureType!=='ed25519')||result.signedMessage.length!==message.length||!message.every((b,i)=>result.signedMessage[i]===b))throw Error('Wallet changed or altered the verification message.');
+    if(signingSession(false,true)!==current||results.length!==1||!result||result.signature.length!==64||(result.signatureType&&result.signatureType!=='ed25519')||result.signedMessage.length!==message.length||!message.every((b,i)=>result.signedMessage[i]===b))throw Error('Wallet changed or altered the verification message.');
     return bs58.encode(result.signature);
   }
   async function signNativeCopy(terms: import('./native-copy-permission').Token22Permission) {
-    const current=signingSession(),account=current?.accounts.find(a=>a.address===terms.wallet);
+    const current=signingSession(false,true),account=current?.accounts.find(a=>a.address===terms.wallet);
     const feature=current?.wallet.features['solana:signMessage'] as SolanaSignMessageFeature['solana:signMessage']|undefined;
     if(!current||current.address!==terms.wallet||!account||!account.features.includes('solana:signMessage')||!feature||!['1.0.0','1.1.0'].includes(feature.version)||bs58.encode(new Uint8Array(account.publicKey))!==terms.wallet)throw Error('Connect the wallet shown in these copy limits.');
     if(terms.origin!==location.origin||terms.issuedAt>Date.now()||terms.acceptBy<=Date.now()||terms.expiresAt<=Date.now())throw Error('The copy review expired or belongs to another site.');
     const {token22PermissionMessage}=await import('./native-copy-permission');
     const message=new TextEncoder().encode(token22PermissionMessage(terms));
     const results=await feature.signMessage({account,message}),result=results[0];
-    if(signingSession()!==current||results.length!==1||!result||result.signature.length!==64||(result.signatureType&&result.signatureType!=='ed25519')||result.signedMessage.length!==message.length||!message.every((b,i)=>result.signedMessage[i]===b))throw Error('Wallet changed or altered the copy approval.');
+    if(signingSession(false,true)!==current||results.length!==1||!result||result.signature.length!==64||(result.signatureType&&result.signatureType!=='ed25519')||result.signedMessage.length!==message.length||!message.every((b,i)=>result.signedMessage[i]===b))throw Error('Wallet changed or altered the copy approval.');
     return bs58.encode(result.signature);
   }
   async function signPayHistory(authorization: import("./pay-history-auth").PayHistoryAuthorization) {

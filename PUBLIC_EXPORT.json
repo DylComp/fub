@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T03:00:38.659Z",
+  "generatedAt": "2026-10-13T03:40:27.062Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -144,8 +144,8 @@
     },
     {
       "path": "tests/wallet-route-policy.test.ts",
-      "sha256": "873bac5a7fd9ea7cb5aedd9d378a69b247989f4bad3a60231ee6c5d7fd23bc59",
-      "bytes": 943
+      "sha256": "373ace25e6e3eb48ceded4638a37ff57bd252b68391589796d6efd00bc9412fe",
+      "bytes": 1363
     },
     {
       "path": "tests/provider-wallet-auth.test.ts",
@@ -164,8 +164,8 @@
     },
     {
       "path": "src/App.tsx",
-      "sha256": "5b418e88a8c5a74e8cdf8dc4eaa3a75b703ac19ba2f32659b3bef1daa35e6a30",
-      "bytes": 60703
+      "sha256": "7e84717c297d2eda8d125012d8ba902ab584a5f5b8c44c19ce809e1f00f9fcb6",
+      "bytes": 60683
     },
     {
       "path": "src/AppRecovery.tsx",
@@ -259,8 +259,8 @@
     },
     {
       "path": "src/CopyTrading.tsx",
-      "sha256": "fbdfef3198cb46aa3b5294a9ec32d5aafb30cc6cab54783ba024964163f3cc4c",
-      "bytes": 15585
+      "sha256": "d326dc1a908ff0f3a4940d4cc7fe12aa7bd6b30a40b389269adb310303f9b56b",
+      "bytes": 15610
     },
     {
       "path": "src/DirectExits.tsx",
@@ -274,8 +274,8 @@
     },
     {
       "path": "src/Docs.tsx",
-      "sha256": "c6eb7bb36b9403b4b4aa5cdf93b642fcfae91a3bd30947304af1a42061f0522e",
-      "bytes": 19265
+      "sha256": "ba46c157f0bc7a13bc23a367aee9d266a0708c5df0db5c7d57e88c15f6999105",
+      "bytes": 20515
     },
     {
       "path": "src/EvmCashImport.tsx",
@@ -414,8 +414,8 @@
     },
     {
       "path": "src/PrivyImport.tsx",
-      "sha256": "e84ca5e1602bd869f4322b706c6d4533309af2ce1fba6566951e911ef3d011aa",
-      "bytes": 25829
+      "sha256": "ea83c00709a40ef902f88f8ed297550945637018808199dd8e73feb78ef19ad7",
+      "bytes": 27177
     },
     {
       "path": "src/PumpPairFinder.tsx",
@@ -464,8 +464,8 @@
     },
     {
       "path": "src/WalletPanel.tsx",
-      "sha256": "8d7c39d0dd0858efeba4b6fff01aa3207e4d2b695d0f12c8438cf0c88bc610fc",
-      "bytes": 9132
+      "sha256": "75db0cb586f758e1e16655be2694f6d916c7f991f6fbe2463f1ce6ea135c6db9",
+      "bytes": 9485
     },
     {
       "path": "src/WalletReadiness.tsx",
@@ -474,8 +474,8 @@
     },
     {
       "path": "src/WalletSetup.tsx",
-      "sha256": "ee3ed77ecfccf7bc12777ad1984abff8e0c04183f57f1dd54ae2cb1db3355b9a",
-      "bytes": 6146
+      "sha256": "2eec5eaa17b4f9578a5b0a06a7dc3e313a490014c870201b8f2d883c12cd8a7a",
+      "bytes": 6616
     },
     {
       "path": "src/WalletTransactionRow.tsx",
@@ -1059,8 +1059,8 @@
     },
     {
       "path": "src/useWallet.ts",
-      "sha256": "712c554bad7178fd913ca5502bea907f25c9dfe236387569cec5a67d1ca3238f",
-      "bytes": 37260
+      "sha256": "f0e9d3c61733c541cf9aebcd43f5e3c6444d2a680585ac7e35e097deba57466b",
+      "bytes": 37428
     },
     {
       "path": "src/wallet-import.ts",
@@ -1079,8 +1079,8 @@
     },
     {
       "path": "src/wallet-route-policy.ts",
-      "sha256": "49b90f233a2da2206b39d37bba1c7715e9685663159acdecadd3e6351bc385e6",
-      "bytes": 532
+      "sha256": "cc9a0947a8fdd600d97b2d3db22040420c0b2748d88bd5762002f28657c5082c",
+      "bytes": 776
     },
     {
       "path": "src/wallet-session-client.ts",
@@ -1424,8 +1424,8 @@
     },
     {
       "path": "server/cash-leader-sale.ts",
-      "sha256": "eff466c143301d580324c61466b40e44aa1b3ac229e0d2f52300916348d3445e",
-      "bytes": 10780
+      "sha256": "57c07056485e003ffddd7f546dedef0449a6c7285414f45cf59a0b6eef0aba19",
+      "bytes": 11512
     },
     {
       "path": "server/cash-leader-stream.ts",
@@ -3664,8 +3664,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "afe95d87cb8abafcaaf8f876db2ae98458fd66e85ee4be00033c1164c80a1adb",
-      "bytes": 7872
+      "sha256": "bce6a5b3f9c9d02b4dac6cba338c68aa7d54ca6bd8c83dc87e366d1ccf88434c",
+      "bytes": 8054
     },
     {
       "path": "SECURITY.md",

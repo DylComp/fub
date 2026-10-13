@@ -1,7 +1,7 @@
 import {cashLeaderZeroArcSale} from './cash-leader-zero-arc-sale.js';
 import {cashLeaderZeroMonadSale} from './cash-leader-zero-monad-sale.js';
 import {cashLeaderZeroSale} from './cash-leader-zero-sale.js';
-import {decodeEventLog,decodeFunctionData,encodeFunctionData,keccak256} from 'viem';
+import {decodeEventLog,decodeFunctionData,encodeFunctionData,keccak256,parseAbi} from 'viem';
 import {readCashLeaderBalance,readCashLeaderProvisionalBalance,readCashLeaderCapturedBalance} from './cash-leader-receipt.js';
 import {cashReturnAbi} from './cash-return-route.js';
 import {cashReturnNetwork,cashLeaderFynd,ZEROX_ALLOWANCE_HOLDER} from './cash-return-networks.js';
@@ -14,6 +14,9 @@ import {readFomoSmartCalls} from './cash-fomo-smart-wallet.js';
 
 // Relay's immutable transfer-and-multicall deployment, checked on all six
 // supported chains. An observation never selects its own contract anchors.
+// TychoRouterV3 split graph entrypoint; kept separate so other adapters do not
+// mistake its extra nTokens argument for a receiver.
+const splitSaleAbi=parseAbi(['function splitSwap(uint256 amountIn,address tokenIn,address tokenOut,uint256 expectedAmountOut,uint256 minAmountOut,uint256 nTokens,address receiver,(uint32 clientFeeBps,address clientFeeReceiver,uint256 maxClientContribution,uint256 deadline,bytes clientSignature) clientFeeParams,bytes swaps) payable returns (uint256)']);
 const PROXY_HASH='0xa3b36a6aa3c2fb588b92336d88b0735b40dea0282c110d2034edf688ca661b5b';
 const same=(a:unknown,b:string)=>typeof a==='string'&&a.toLowerCase()===b.toLowerCase();
 const hash=(a:unknown):a is `0x${string}`=>typeof a==='string'&&/^0x[0-9a-f]{64}$/i.test(a);
@@ -85,7 +88,11 @@ async function readSale(input:{network:CashNetwork;leader:string;token:string;tr
  }else if(fynd){
   const fomoTracking='0x70726f70656c6c65722f52656c61792d464f4d4f';
   const fomoClient=b.network==='base'&&calls[1].callData.toLowerCase().endsWith(fomoTracking.slice(2));
-  const [amount,tokenIn,tokenOut,expected,min,receiver,fee,swaps]=decode(cashReturnAbi.fynd,calls[1].callData,fomoClient?fomoTracking:'0x70726f70656c6c65722f52656c6179');
+  const split=calls[1].callData.slice(0,10).toLowerCase()==='0xfe745a0f';
+  const args=decode(split?splitSaleAbi:cashReturnAbi.fynd,calls[1].callData,fomoClient?fomoTracking:'0x70726f70656c6c65722f52656c6179');
+  if(split&&(args[5]<2n||args[5]>256n))throw Error('Leader Tycho token count changed.');
+  const [amount,tokenIn,tokenOut,expected,min]=args;
+  const [receiver,fee,swaps]=args.slice(split?6:5);
   // The pinned router validates Fomo's client signature on-chain. It still
   // must charge zero client fees and permit no extra client contribution.
   const clientValid=fomoClient?same(fee.clientFeeReceiver,'0xda7da7acd714c407a37c635a42d5354d0c5b9136')&&/^0x[0-9a-f]{130}$/i.test(fee.clientSignature):/^0x0{40}$/i.test(fee.clientFeeReceiver)&&fee.clientSignature==='0x';

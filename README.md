@@ -19,7 +19,7 @@ Fub brings wallet research, orders, copy trading, token launches and crypto paym
 
 Pay and trading use a privately imported Fomo Solana wallet. The address and funds stay the same; ownership is verified before Privy imports the wallet. No raw key is sent to Fub’s server. Manual payments require their own confirmation, and automation requires separate bounded permissions.
 
-Phantom and other external Solana wallets are available only for coin launches. Leaving Launch clears an external connection; non-launch signing methods reject it. Cross-chain trades use a separate linked destination wallet.
+Phantom and other external Solana wallets can connect for coin launches and copy trading. Automatic copying still requires private signing setup for that same wallet and approved plan limits. Pay and orders use the imported Fomo wallet. SOL and Solana USDC share its address; cross-chain buys spend its USDC and return sale proceeds there, while purchased tokens use a separately linked destination wallet.
 
 ## Release status
 

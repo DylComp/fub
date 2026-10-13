@@ -116,7 +116,7 @@ function Rule({ order }: { order: Order }) {
 }
 
 export default function App() {
-  const { connection, canImport, openImport, openPermissions, openDirectExits } = useWalletSetup();
+  const { connection, canImport, openConnect, openImport, openPermissions, openDirectExits } = useWalletSetup();
   const [orderMode, setOrderMode] = useState<"live" | "plans" | "builder">(
     () =>
       window.location.hash === "#orders/planner"
@@ -442,7 +442,7 @@ export default function App() {
               aria-label={
                 connection.session ? "Connected wallet" : "Connect wallet"
               }
-              onClick={() => { if (!connection.session && page !== "Launch" && canImport) openImport(); else setDialog("connection"); }}
+              onClick={() => { if (!connection.session) openConnect(); else setDialog("connection"); }}
             >
               <Wallet size={15} />
               <span>

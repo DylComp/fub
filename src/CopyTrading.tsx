@@ -247,7 +247,7 @@ export function CopyTrading({
           <div className="copy-prerequisites">
             <b>Before activation</b>
             <p>
-              Approve access to your imported Fomo wallet and sign the plan’s
+              Set up your Fomo or connected Solana wallet for automatic signing and approve the plan’s
               trading limits. Once activated, the service copies supported new
               trades within those limits, even when you close Fub. Saving a plan
               alone does not start trading.

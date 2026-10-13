@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { ArrowUpRight, Copy, RefreshCw, Wallet } from "lucide-react";
 import type { WalletConnection } from "./useWallet";
 import { walletIcon, walletName } from "./useWallet";
-import {isLaunchWalletRoute} from "./wallet-route-policy";
+import {isLaunchWalletRoute,isCopyWalletRoute} from "./wallet-route-policy";
 import { shortAddress } from "./assets";
 
 type Balance = { address: string; lamports: string; fetchedAt: number };
@@ -39,7 +39,7 @@ export function WalletPanel({
     cancel,
   } = connection;
   const address = session?.address;
-  const launchRoute=isLaunchWalletRoute(location.hash);
+  const launchRoute=isLaunchWalletRoute(location.hash),copyRoute=isCopyWalletRoute(location.hash);
   const [balance, setBalance] = useState<Balance | null>(null);
   const [balanceError, setBalanceError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -85,10 +85,10 @@ export function WalletPanel({
   }, [address, refresh]);
   const currentBalance = balance?.address === address ? balance : null;
   return (
-    <section className="wallet-panel" aria-label={launchRoute?"Launch wallet":"Fomo wallet"}>
+    <section className="wallet-panel" aria-label={launchRoute?"Launch wallet":copyRoute?"Copy wallet":"Fomo wallet"}>
       <div className="wallet-panel-heading">
         <h3>
-          {session ? walletName(session.wallet) : launchRoute?"Connect a launch wallet":"Set up Fomo wallet"}
+          {session ? walletName(session.wallet) : launchRoute?"Connect a launch wallet":copyRoute?"Connect a copy wallet":"Set up Fomo wallet"}
         </h3>
         {session && (
           <button className="word-link" onClick={() => void disconnect()}>
@@ -97,7 +97,7 @@ export function WalletPanel({
         )}
       </div>
       <p className="wallet-explanation">
-        {session ? "Your funds stay in this wallet." : launchRoute?"Use Phantom or another Solana wallet for this launch. Connecting does not move funds.":"Use your privately imported Fomo wallet for Pay, orders and copy trading. Your Fomo address and balance stay the same."}
+        {session ? "Your funds stay in this wallet." : launchRoute?"Use Phantom or another Solana wallet for this launch. Connecting does not move funds.":copyRoute?"Use Phantom or another Solana wallet to copy a Fomo trader. Automatic copying requires private signing setup and approved limits.":"Use your privately imported Fomo wallet for Pay and orders. Your Fomo address and balance stay the same."}
       </p>
       {session ? (
         <div className="wallet-account">
@@ -194,7 +194,7 @@ export function WalletPanel({
         </div>
       ) : (
         <div className="wallet-choices">
-          {!launchRoute&&onImport&&<button className="button primary full" onClick={onImport}>Set up Fomo wallet</button>}
+          {!launchRoute&&!copyRoute&&onImport&&<button className="button primary full" onClick={onImport}>Set up Fomo wallet</button>}
           {wallets.length ? (
             wallets.map((wallet, index) => (
               <button
@@ -222,7 +222,7 @@ export function WalletPanel({
                 </span>
               </button>
             ))
-          ) : launchRoute ? (
+          ) : launchRoute||copyRoute ? (
             <div className="wallet-empty">
               <b>No compatible wallet detected.</b>
               <p>
@@ -239,9 +239,9 @@ export function WalletPanel({
           )}
         </div>
       )}
-      {!session && launchRoute && onImport && <details className="wallet-advanced">
+      {!session && (launchRoute||copyRoute) && onImport && <details className="wallet-advanced">
         <summary>Fomo wallet setup</summary>
-        <p className="wallet-explanation">Pay, orders and copy trading use your privately imported Fomo wallet. This setup keeps its existing address and balance.</p>
+        <p className="wallet-explanation">Pay and orders use your privately imported Fomo wallet. Copy trading also accepts an external wallet with separate automatic-trading setup. This setup keeps its existing address and balance.</p>
         <button className="button secondary full" onClick={onImport}>Set up Fomo wallet</button>
       </details>}
       {error && (

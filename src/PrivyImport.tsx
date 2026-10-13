@@ -9,6 +9,7 @@ import { PrivyProvider, useLinkWithSiws, useLoginWithSiws, useModalStatus, usePr
 import {cashWalletChains} from './cash-wallet-chains';
 import { useImportWallet, useStandardWallets, defaultSolanaRpcsPlugin } from "@privy-io/react-auth/solana";
 import { getWallets } from "@wallet-standard/app";
+import {isCopyWalletRoute} from "./wallet-route-policy";
 import { Modal } from "./ui";
 import { FomoLeaderPicker } from "./FomoLeaderPicker";
 import type { WalletConnection } from "./useWallet";
@@ -27,7 +28,7 @@ const TARGET = "fomo-orders.import-address.v1";
 function previousTarget() {
   try { const value = localStorage.getItem(TARGET) || ""; return isMint(value) ? value : ""; } catch { return ""; }
 }
-type Props = { open: boolean; mode: "import" | "permissions" | "exits" | "cash" | "managed-cash" | "cash-trade" | "cash-copy" | "cash-plans"; cashCopyPlan?:CashCopyPlan;onOpenCashPlan?:(plan:CashCopyPlan)=>void;cashCopyLeader?:string; cashCopyHandle?:string; cashTrade?:{token:string;amount:string}; cashNetwork?:CashNetwork; onManagedCash?:(account:ManagedCashAccount)=>void; cashAddress?:string; onCashWallet?:(wallet:CashEvmConnection)=>void; close: () => void; connection: WalletConnection; appId: string; onModalChange: (open: boolean) => void; onConnected: () => void; onManageAccess:()=>void; initialExitMint?:string };
+type Props = { onSetupCopyWallet:()=>void; onSetupCopyDestination:()=>void; open: boolean; mode: "import" | "permissions" | "exits" | "cash" | "managed-cash" | "cash-trade" | "cash-copy" | "cash-plans"; cashCopyPlan?:CashCopyPlan;onOpenCashPlan?:(plan:CashCopyPlan)=>void;cashCopyLeader?:string; cashCopyHandle?:string; cashTrade?:{token:string;amount:string}; cashNetwork?:CashNetwork; onManagedCash?:(account:ManagedCashAccount)=>void; cashAddress?:string; onCashWallet?:(wallet:CashEvmConnection)=>void; close: () => void; connection: WalletConnection; appId: string; onModalChange: (open: boolean) => void; onConnected: () => void; onManageAccess:()=>void; initialExitMint?:string };
 export default function PrivyImport({ appId, ...props }: Props) {
   return <PrivyProvider appId={appId} config={{
     loginMethods: ["wallet"],
@@ -37,7 +38,7 @@ export default function PrivyImport({ appId, ...props }: Props) {
     embeddedWallets: { showWalletUIs: true, ethereum: { createOnLogin: "off" }, solana: { createOnLogin: "off" } },
   }}><ImportFlow appId={appId} {...props} /></PrivyProvider>;
 }
-function ImportFlow({ open, mode, close, connection, onModalChange, onConnected, onManageAccess, initialExitMint, cashAddress, onCashWallet, cashNetwork, onManagedCash, cashTrade, cashCopyLeader, cashCopyHandle, cashCopyPlan,onOpenCashPlan, appId }: Props) {
+function ImportFlow({ onSetupCopyWallet,onSetupCopyDestination,open, mode, close, connection, onModalChange, onConnected, onManageAccess, initialExitMint, cashAddress, onCashWallet, cashNetwork, onManagedCash, cashTrade, cashCopyLeader, cashCopyHandle, cashCopyPlan,onOpenCashPlan, appId }: Props) {
   const { ready, authenticated, user, logout, getAccessToken } = usePrivy();
   const { addSigners, removeSigners } = useSigners();
   const { isOpen: providerModal } = useModalStatus();
@@ -96,7 +97,7 @@ function ImportFlow({ open, mode, close, connection, onModalChange, onConnected,
       if (generation.current !== id || currentAddress.current !== address) return;
       const signature = await connection.signProviderWallet(message, address);
       if (generation.current !== id || currentAddress.current !== address) return;
-      await loginWithSiws({ message, signature, disableSignup: mode !== 'import' && mode !== 'managed-cash', connectorType: 'injected', walletClientType });
+      await loginWithSiws({ message, signature, disableSignup: mode !== 'import' && mode !== 'managed-cash' && !isCopyWalletRoute(location.hash), connectorType: 'injected', walletClientType });
       if (generation.current !== id || currentAddress.current !== address) await logout();
     } catch (failure) {
       if (generation.current === id && currentAddress.current === address) {
@@ -225,7 +226,7 @@ function ImportFlow({ open, mode, close, connection, onModalChange, onConnected,
       {needsWalletLink && <section aria-label="Wallet login"><p className="copy-help">Confirm this wallet once to replace email sign-in for your existing account. This does not move funds or change trading permissions.</p><button className="button primary full" disabled={loginStarting} onClick={() => void linkWalletLogin()}>{loginStarting ? 'Confirm in your wallet…' : 'Enable wallet login'}</button>{error && <p className="error-message" role="alert">{error}</p>}</section>}
       {notice && <p className="wallet-notice" role="status">{notice}</p>}
       {!authenticated ? <><p className="copy-help">{loginStarting ? 'Confirm ownership in your connected wallet. This does not move funds or approve trades.' : 'Use your connected wallet to verify ownership. No email is required.'}</p>{error && <p className="error-message" role="alert">{error}</p>}<button className="button primary full" disabled={!ready || loginStarting || !address} onClick={() => void authenticateWallet()}>{loginStarting ? 'Confirm in your wallet…' : 'Retry wallet verification'}</button></>
-        : !address || !walletId || !user ? <p className="wallet-notice">Connect the same Fomo wallet imported into this Fub account to manage its background permissions.</p>
+        : !address || !walletId || !user ? <><p className="wallet-notice">Automatic access requires this same Solana wallet to be privately imported into your Fub account. Connecting Phantom alone does not authorize background signing.</p>{isCopyWalletRoute(location.hash)&&<button className="button primary full" onClick={onSetupCopyWallet}>Set up this wallet for automatic copying</button>}</>
         : mode==='exits'?<DirectExits key={`${user.id}:${address}:${walletId}:${initialExitMint}`} config={config} origin={location.origin} identity={{wallet:address,walletId,userId:user.id}} getToken={getAccessToken} sign={connection.signDirectExit} manageAccess={onManageAccess} initialMint={initialExitMint}/>
         : <SigningPermissions key={`${user.id}:${address}:${walletId}`} config={config} origin={location.origin} identity={{ wallet: address, walletId, userId: user.id }} getToken={getAccessToken} onDone={close}
           sign={connection.signEnrollment}
@@ -243,7 +244,7 @@ function ImportFlow({ open, mode, close, connection, onModalChange, onConnected,
     if(mode==='cash-plans'&&authenticated&&owner&&source&&onOpenCashPlan)return <CashCopyPlans key={`${owner}:${source}`} serviceOrigin={import.meta.env.VITE_SIGNER_SERVICE_ORIGIN||''} wallet={source} getToken={getAccessToken} current={()=>userId.current===owner&&currentAddress.current===source} close={close} open={onOpenCashPlan}/>;
     if(authenticated&&owner&&source&&walletId&&evm&&cashCopyLeader)return <CashCopyActivation existingScope={cashCopyPlan?.scope} key={`${owner}:${source}:${evm.address}:${cashCopyLeader}:${cashCopyHandle||''}:${cashCopyPlan?.scope.planId||''}`} serviceOrigin={import.meta.env.VITE_SIGNER_SERVICE_ORIGIN||''} wallet={source} walletId={walletId} recipient={evm.address} evmWalletId={evm.walletId} leaderSource={cashCopyLeader} leaderHandle={cashCopyHandle} getToken={getAccessToken} current={()=>userId.current===owner&&currentAddress.current===source} close={close} hidden={providerModal||cashSigning} onSigningChange={setCashSigning} signSolana={connection.signCashCopy} addSigner={async(address,signerId,policyId)=>{await addSigners({address,signers:[{signerId,policyIds:[policyId]}]});}}/>;
     if(providerModal||cashSigning)return null;
-    return <Modal title="Copy with USDC." close={close}><p className="copy-help">{!authenticated?'Verify your connected wallet to continue.':'Connect your imported Fomo Solana wallet and set up your cross-chain wallet before approving automatic copying.'}</p>{!authenticated&&<button className="button primary full" disabled={!ready||loginStarting||!source} onClick={()=>void authenticateWallet()}>{loginStarting?'Confirm in your wallet…':'Verify connected wallet'}</button>}{error&&<p role="alert" className="error-message">{error}</p>}</Modal>;
+    return <Modal title="Copy with USDC." close={close}><p className="copy-help">{!authenticated?'Verify your connected wallet to continue.':'Automatic copying requires this Solana wallet’s private import and a linked cross-chain wallet. Connecting Phantom alone does not grant background signing.'}</p>{!authenticated&&<button className="button primary full" disabled={!ready||loginStarting||!source} onClick={()=>void authenticateWallet()}>{loginStarting?'Confirm in your wallet…':'Verify connected wallet'}</button>}{authenticated&&!walletId&&<button className="button primary full" onClick={onSetupCopyWallet}>Set up this wallet for automatic copying</button>}{authenticated&&walletId&&!evm&&<button className="button primary full" onClick={onSetupCopyDestination}>Set up cross-chain wallet</button>}{error&&<p role="alert" className="error-message">{error}</p>}</Modal>;
   }
   if (open && (mode === 'managed-cash' || mode === 'cash-trade') && cashNetwork && onManagedCash) {
     const sourceWallet = connection.session?.address;
@@ -277,19 +278,19 @@ function ImportFlow({ open, mode, close, connection, onModalChange, onConnected,
       {error&&<p role="alert" className="error-message">{error}</p>}
     </Modal>;
   }
-  return <Modal title="Connect Fomo wallet." close={() => { if (!busy) close(); }}>
-    <p className="wallet-explanation">Use your existing Fomo Solana wallet for Pay, limit orders and copy trading. Import it privately once; your address and balance stay the same. Trading permissions and limits are separate.</p>
-    <p className="copy-help">Pay uses this Fomo wallet’s USDC balance. No Phantom connection, separate deposit or background trading permission is needed for manual payments.</p>
-    <FomoLeaderPicker purpose="owner" address={target} active={!busy} inputRef={addressInput} onChange={changeTarget} />
+  return <Modal title={isCopyWalletRoute(location.hash)?"Set up copy wallet.":"Connect Fomo wallet."} close={() => { if (!busy) close(); }}>
+    <p className="wallet-explanation">{isCopyWalletRoute(location.hash)?"Use your connected Solana wallet to copy Fomo traders. Import this same wallet privately for automatic signing; your address and balance stay the same. Approve background access and plan limits separately.":"Use your existing Fomo Solana wallet for Pay and limit orders. Import it privately once; your address and balance stay the same. Trading permissions and limits are separate."}</p>
+    {!isCopyWalletRoute(location.hash)&&<p className="copy-help">Pay uses this Fomo wallet’s USDC balance. No Phantom connection, separate deposit or background trading permission is needed for manual payments.</p>}
+    {isCopyWalletRoute(location.hash)?<label className="field"><span>Your Solana wallet address</span><input ref={addressInput} value={target} disabled={busy} autoComplete="off" spellCheck={false} maxLength={44} onChange={event=>changeTarget(event.target.value)}/></label>:<FomoLeaderPicker purpose="owner" address={target} active={!busy} inputRef={addressInput} onChange={changeTarget} />}
     {matched ? <>
       <p className="wallet-notice" role="status">This exact wallet is available through Privy.</p>
       <p className="fomo-identity-address">{target}</p>
       <button className="button primary full" disabled={busy} onClick={() => void useImported()}>Connect imported wallet</button>
     </> : <>
-      <p className="copy-help">Export this Solana wallet's private key in Fomo. Enter it only here. This page checks the address locally, then Privy's SDK encrypts the import to its wallet infrastructure. Our server does not receive the key.</p>
+      <p className="copy-help">Export this Solana wallet's private key from its wallet app. Enter it only here. This page checks the address locally, then Privy's SDK encrypts the import to its wallet infrastructure. Our server does not receive the key.</p>
       <label className="field"><span>Solana private key</span><input ref={keyInput} type="password" aria-label="Solana import key" autoComplete="off" spellCheck={false} maxLength={88} disabled={busy || !ready || !isMint(target)} /></label>
-      <label className="copy-toggle"><input type="checkbox" checked={accepted} disabled={busy} onChange={event => setAccepted(event.target.checked)} /><span>I own this Fomo wallet and agree to verify ownership and import it into Privy for Fub.</span></label>
-      <button className="button primary full" disabled={busy || !accepted || !ready || !isMint(target)} onClick={() => void doImport()}>{busy ? "Verifying Fomo wallet…" : "Set up Fomo wallet"}</button>
+      <label className="copy-toggle"><input type="checkbox" checked={accepted} disabled={busy} onChange={event => setAccepted(event.target.checked)} /><span>I own this Solana wallet and agree to verify ownership and import it into Privy for Fub.</span></label>
+      <button className="button primary full" disabled={busy || !accepted || !ready || !isMint(target)} onClick={() => void doImport()}>{busy ? "Verifying wallet…" : "Set up wallet"}</button>
     </>}
     {notice && <p className="wallet-notice" role="status">{notice}</p>}
     {error && <p className="error-message" role="alert">{error}</p>}
