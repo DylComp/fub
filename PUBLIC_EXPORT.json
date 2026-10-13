@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T10:26:20.705Z",
+  "generatedAt": "2026-10-13T10:37:42.650Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -1604,8 +1604,8 @@
     },
     {
       "path": "server/cash-source-pool.ts",
-      "sha256": "0c4107ad6a8d5c53a799c9ddc0b216df62f703b0e8165b205c17eecb9a22f45b",
-      "bytes": 2087
+      "sha256": "d35a96dc7a9ab3b1fe0ed990f7ce4fe8db4a92126f1c4e2e42d3d734af6b6234",
+      "bytes": 3038
     },
     {
       "path": "server/cash-stream-monitor.ts",
