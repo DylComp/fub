@@ -85,7 +85,7 @@ export function nativeSigningGate(options: {
         if (decision.kind !== 'swap' || decision.side !== (selling ? 'sell' : 'buy') || decision.mint !== r.review.accounts.mint || decision.tokenDecimals !== r.review.accounts.decimals || decision.tokenProgram !== (r.review.accounts.tokenProgram??TOKEN_2022) || decision.quoteMint !== WSOL)
             throw Error('Leader receipt does not authorize this native trade.');
         stage = 'independent-review';
-        const fresh = await rebuildNativeReview(r.review, r.reviewHash, rpc, NATIVE_COPY_MAX_SELL_RAW, r.permission.scope.slippageBps);
+        const fresh = await rebuildNativeReview(r.review, r.reviewHash, rpc, NATIVE_COPY_MAX_SELL_RAW, r.permission.scope.slippageBps,r.permission.scope.buyLamports);
         if (BigInt(fresh.maximumSetupRentLamports) > BigInt(r.permission.scope.maxRentLamports))
             throw Error('Permission does not cover the transaction account-creation limit.');
         stage = 'owner';

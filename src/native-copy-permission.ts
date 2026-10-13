@@ -3,6 +3,7 @@ import {isMint} from "./assets.js";
 import {WSOL,operationId} from "./funding-model.js";
 import {tokenUnits} from "./token-fees.js";
 // A separate, explicit native-SOL policy. No old USDC signature can authorize it.
+export const NATIVE_COPY_MAX_BUY_LAMPORTS = '100000000000';
 type Token22PermissionBase = {
   origin: FubWebOrigin;
   network: "solana:mainnet";
@@ -52,7 +53,7 @@ export function parseToken22Permission(value: Token22Permission) {
     s.expiresAt < s.acceptBy ||
     s.expiresAt > s.issuedAt + 86400000 ||
     tokenUnits(s.buyLamports) < 1n ||
-    tokenUnits(s.buyLamports) > 10000000n ||
+    tokenUnits(s.buyLamports) > BigInt(NATIVE_COPY_MAX_BUY_LAMPORTS) ||
     tokenUnits(s.maxFeeLamports) < 1n ||
     tokenUnits(s.maxFeeLamports) > 50000n ||
     tokenUnits(s.maxRentLamports) > 5000000n ||

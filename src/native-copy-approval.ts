@@ -1,7 +1,7 @@
-import {token22PermissionMessage,parseToken22Permission,type Token22Permission} from './native-copy-permission';
-import {isMint} from './assets';
-import {WSOL} from './funding-model';
-import type {AccountCopyPlan} from './copy-account';
+import {NATIVE_COPY_MAX_BUY_LAMPORTS,token22PermissionMessage,parseToken22Permission,type Token22Permission} from './native-copy-permission.js';
+import {isMint} from './assets.js';
+import {WSOL} from './funding-model.js';
+import type {AccountCopyPlan} from './copy-account.js';
 export type NativeLimitDraft={buy:string;daily:string;fee:string;rent:string;duration:number;mint?:string};
 export function solLamports(value:string){
  if(!/^(0|[1-9]\d{0,3})(\.\d{1,9})?$/.test(value))throw Error('Enter SOL with at most nine decimal places.');
@@ -30,7 +30,7 @@ export async function freshNativeApproval(review:Token22Permission,refresh:()=>P
 export function validateNativeCopyLimits(limits:{buyLamports:string;dailySpendLamports:string;maxFeeLamports:string;maxRentLamports:string;durationMs:number}){
  const raw=(value:string)=>{if(typeof value!=='string'||!/^(0|[1-9]\d{0,18})$/.test(value))throw Error('Enter valid SOL amounts with at most nine decimal places.');return BigInt(value);};
  const buy=raw(limits.buyLamports),daily=raw(limits.dailySpendLamports),fee=raw(limits.maxFeeLamports),rent=raw(limits.maxRentLamports);
- if(buy<1n||buy>10000000n)throw Error('SOL per buy must be between 0.000000001 and 0.01 SOL.');
+ if(buy<1n||buy>BigInt(NATIVE_COPY_MAX_BUY_LAMPORTS))throw Error('SOL per buy must be between 0.000000001 and 100 SOL.');
  if(fee<1n||fee>50000n)throw Error('Network fee cap must be between 0.000000001 and 0.00005 SOL.');
  if(rent>5000000n)throw Error('Account rent cap cannot exceed 0.005 SOL.');
  if(daily>1000000000000n)throw Error('Daily SOL cap cannot exceed 1,000 SOL.');

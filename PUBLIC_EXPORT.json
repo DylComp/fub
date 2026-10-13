@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T19:13:15.895Z",
+  "generatedAt": "2026-10-13T19:17:04.144Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -259,8 +259,8 @@
     },
     {
       "path": "src/CopyNativeApproval.tsx",
-      "sha256": "33d9d0f391713aeda4a2bcc74aae2052035765d906f643148871a7eb404846ee",
-      "bytes": 7455
+      "sha256": "578a8484a7ea626e9e8043068ab353daf5cc49d7e861ef8fcf8dec3febb77f67",
+      "bytes": 7454
     },
     {
       "path": "src/CopyNativeHistory.tsx",
@@ -869,13 +869,13 @@
     },
     {
       "path": "src/native-copy-approval.ts",
-      "sha256": "f74865aac6223f17eedba50fef8aadec36355b2e9ed5b116ede94e554ba60a17",
-      "bytes": 4054
+      "sha256": "0b4080b2aca7488ad9145acc371650ffc69d788d7158a8215021edd16d5d8045",
+      "bytes": 4121
     },
     {
       "path": "src/native-copy-permission.ts",
-      "sha256": "a7c4b3aad1cc07fe1d47005252dabdba352fbf446c0f6c4024fe7c812f0cf4a8",
-      "bytes": 6683
+      "sha256": "7e90d6c4b46b64b92b3c035c512d1636f22a0389eeb9d182a8fd9200ebc3d477",
+      "bytes": 6770
     },
     {
       "path": "src/native-copy.ts",
@@ -2359,8 +2359,8 @@
     },
     {
       "path": "server/isolated-native-signer.ts",
-      "sha256": "2f96609408d5dab09dcaf9d47f74737c2580716ab849bb2aa440cc35c30dbad0",
-      "bytes": 11354
+      "sha256": "7496872c27df1325d62d2bc03ca35e08001c8dc0697b043b0d0e41f40fd225e9",
+      "bytes": 11385
     },
     {
       "path": "server/isolated-signer-transport.ts",
@@ -2569,8 +2569,8 @@
     },
     {
       "path": "server/native-copy-review.ts",
-      "sha256": "1b39e1e115a998c247725262a4c8cc67da427e740e20f2404b1bd60c18ec4b74",
-      "bytes": 1556
+      "sha256": "8b6dce7759b7715a786ac211db9807caad28afe617915d53abf02147c2cef8a1",
+      "bytes": 1809
     },
     {
       "path": "server/native-expiry-proof.ts",
@@ -2984,13 +2984,13 @@
     },
     {
       "path": "server/token2022-prepare-worker.ts",
-      "sha256": "12805f2f4c48531ab1c286c9b6b6651f5a6a8865eec7eedb8d5d47ed9e7dee8d",
-      "bytes": 8645
+      "sha256": "25d38025ff8d21e5fa955bfdb3adfbe1689684581df21680945e7d5c7651d290",
+      "bytes": 8733
     },
     {
       "path": "server/token2022-queue.ts",
-      "sha256": "6add1696685a030a3afe340838b2bf1bd3dc000130abf382f628f7305b5e7a36",
-      "bytes": 15190
+      "sha256": "9c83d18e28d84856d8407675bf873da06b1f449739a770440710dcb1b1569116",
+      "bytes": 15246
     },
     {
       "path": "server/token2022-raydium-simulation.ts",

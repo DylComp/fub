@@ -1,4 +1,4 @@
-import {nativePermissionSellLimit} from "../src/native-copy-permission.js";
+import {NATIVE_COPY_MAX_BUY_LAMPORTS,nativePermissionSellLimit} from "../src/native-copy-permission.js";
 import { randomUUID } from "node:crypto";
 import { neon } from "@neondatabase/serverless";
 import {
@@ -63,7 +63,7 @@ export function nativeJobRequest(
   if (
     tokenUnits(inputRaw) < 1n ||
     (d.side==="sell" && tokenUnits(inputRaw)>nativePermissionSellLimit(job.permission)) ||
-    tokenUnits(inputRaw) > (d.side === "buy" ? 10000000n : tokenUnits(positionRaw))
+    tokenUnits(inputRaw) > (d.side === "buy" ? BigInt(NATIVE_COPY_MAX_BUY_LAMPORTS) : tokenUnits(positionRaw))
   )
     throw Error("Native trade size is outside the supported policy.");
   return {

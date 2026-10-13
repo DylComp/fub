@@ -152,7 +152,7 @@ export async function runNativePreparation(
       return { outcome: "ineligible" as const };
     }
     if(job.permission.version>=9&&await deps.curveAvailable(request.mint,rpc)){
-      const simulated=await deps.simulateCurve({wallet:request.wallet,mint:request.mint,direction:request.direction,inputRaw:request.inputRaw,slippageBps:request.slippageBps},rpc,undefined,BigInt(job.permission.maxFeeLamports)>=10000n?5000:0);
+      const simulated=await deps.simulateCurve({wallet:request.wallet,mint:request.mint,direction:request.direction,inputRaw:request.inputRaw,slippageBps:request.slippageBps},rpc,undefined,BigInt(job.permission.maxFeeLamports)>=10000n?5000:0,job.permission.buyLamports);
       options.signal?.throwIfAborted();if(!(await queue.current(job)))return{outcome:'superseded' as const};
       simulated.review.expiresAt=Math.min(simulated.review.expiresAt,job.deadline);
       const result=curveNativeResult(simulated);
@@ -169,13 +169,14 @@ export async function runNativePreparation(
       fetch,
       request.direction === 'sell' ? position : undefined,
       job.permission.version>=7&&job.decision.tokenProgram===TOKEN_PROGRAM,
+      job.permission.buyLamports,
     );
     options.signal?.throwIfAborted();
     if (!(await queue.current(job))) return { outcome: "superseded" as const };
     const priorityMicroLamports=BigInt(job.permission.maxFeeLamports)>=7000n?5000:0;
     const pump=isPumpNativeBuild(build);
     if(pump&&(job.permission.version<7||job.decision.tokenProgram!==TOKEN_PROGRAM))throw Error('PumpSwap is outside this permission.');
-    const result = await (pump?deps.simulatePump:job.decision.tokenProgram===TOKEN_PROGRAM?deps.simulateStandard:deps.simulate)(build, request, rpc, request.direction === 'sell' ? position : undefined, request.direction === "sell",priorityMicroLamports,true);
+    const result = await (pump?deps.simulatePump:job.decision.tokenProgram===TOKEN_PROGRAM?deps.simulateStandard:deps.simulate)(build, request, rpc, request.direction === 'sell' ? position : undefined, request.direction === "sell",priorityMicroLamports,true,job.permission.buyLamports);
     options.signal?.throwIfAborted();
     if(BigInt(result.maximumSetupRentLamports)>BigInt(job.permission.maxRentLamports)){
       await queue.finish(job,false);return{outcome:"ineligible" as const};
