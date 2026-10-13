@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T10:09:13.234Z",
+  "generatedAt": "2026-10-13T10:26:20.705Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -84,8 +84,8 @@
     },
     {
       "path": "vercel.json",
-      "sha256": "5bf5773c0a5739d5c5056e53493826c2736e6d43a35f458a5e284956ec899ec7",
-      "bytes": 2948
+      "sha256": "b9bab07617778d32f165d34470461962dc8ebb69b2658e2f943249e75ce32603",
+      "bytes": 2956
     },
     {
       "path": "docs/jupiter-swap-layouts.json",
@@ -169,8 +169,8 @@
     },
     {
       "path": "src/AppRecovery.tsx",
-      "sha256": "e4a269aa88280945b95e5927c8d545f76dea37383477451ca5bd8bb8dd7a9941",
-      "bytes": 1142
+      "sha256": "96653c9b838c1f598617d1e6255b286b729bca9616442dff574c4d100d1dca21",
+      "bytes": 2409
     },
     {
       "path": "src/Brand.tsx",
