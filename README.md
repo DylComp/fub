@@ -21,13 +21,23 @@ Fub brings wallet research, orders, copy trading, token launches and crypto paym
 
 The code is available for inspection, not as proof that no trust is required. No independent security audit is claimed, and automatic cross-chain acceptance is not complete.
 
+## What you can use
+
+As of October 13, 2026, supported Solana limit buys and sells are enabled publicly. Launches, creator-fee distribution, merchant gift cards, Split/Treat and wallet research are available within their documented scope. Automatic cross-chain copying remains under acceptance and is not presented as an unrestricted public service. See [feature status](FEATURE-STATUS.md) for the distinction between tested workflows and public activation.
+
 ## Features
 
 - **Wallets:** search Fomo profiles and public addresses; inspect supported balances, holdings and transaction data. Provider coverage and freshness determine which statistics are available.
-- **Limit orders:** review and authorize bounded Solana purchases or token sales, with market-cap and price targets, expiry, cancellation and transaction recovery.
+- **Limit orders:** place supported Solana limit buys and sells using market-cap or price targets, with signed amounts, expiry, cancellation and transaction recovery. Public activation does not remove wallet-access or order approvals.
 - **Copy trading:** observe supported leader trades, verify their source payments and route, enforce signed limits, and reconcile copied positions and returns. Manual cross-chain buy-and-return workflows exist alongside automatic-copy execution.
 - **Launches:** create SOL-paired Pump tokens with creator fees split 80% to the selected Fomo recipient and 20% to the Fub buyback treasury. Fee collection, distribution and buybacks are separate transaction workflows.
 - **Pay:** pay supported merchant gift-card invoices with Solana USDC, reopen private receipts, and use direct Split/Treat transfers.
+
+## Privy and private-key handling
+
+Fub uses **Privy** for importing the existing wallet and requesting wallet signatures. The import form validates the address locally and passes the entered key to Privy’s SDK. Fub’s intended import path does not send the raw key to its own backend or save it in browser storage. The key still exists in the browser during setup, and importing adds a provider trust dependency.
+
+Background trading requires a separate provider signer delegation and signed order or copy limits. Fub’s service checks those limits before requesting signatures; importing a wallet is not blanket permission to trade. Users can pause plans and revoke background access, but neither action reverses a submitted transaction. Read [the full security model](WALLET-SECURITY.md), including browser exposure, service credentials and revocation limits. No independent security audit or risk-free custody claim is made.
 
 ## Wallet model
 
@@ -37,7 +47,7 @@ Phantom and other external Solana wallets can connect for coin launches and copy
 
 ## Release status
 
-Funded Solana limit-order and manual cross-chain purchase/return workflows have acceptance evidence. Automatic cross-chain copying is still under acceptance: rapid consecutive cycles and several chain-specific buy/sale routes remain release gates. A working route or a successful simulation does not establish support for every token or every provider route.
+Supported Solana limit buys and sells are publicly enabled; funded buy/sell/cancel workflows have acceptance evidence. Manual cross-chain purchase/return workflows also have acceptance evidence, separately from their public admission settings. Automatic cross-chain copying is still under acceptance: rapid consecutive cycles and several chain-specific buy/sale routes remain release gates. A working route or a successful simulation does not establish support for every token or every provider route.
 
 The official Fub mint and its buyback configuration are separate from engineering-test tokens. Community launches use the 80/20 split above; the intended official-token split is 80% for buybacks and 20% for development. No official mint address or production signing credentials are supplied by this repository.
 
