@@ -6,7 +6,7 @@ import type { Rpc } from './funding.js';
 // Robinhood's default public RPC lacks finalized historical state. The dRPC
 // endpoint passed the pinned chain-ID and finalized-code checks.
 const PUBLIC = {base:'https://mainnet.base.org',bnb:'https://bsc-rpc.publicnode.com',monad:'https://rpc.monad.xyz',robinhood:'https://robinhood.drpc.org',arc:'https://rpc.drpc.mainnet.arc.io',ethereum:'https://ethereum-rpc.publicnode.com'};
-const METHODS=new Set(['eth_chainId','eth_getStorageAt','eth_getLogs','eth_getCode','eth_call','eth_getTransactionReceipt','eth_getBlockByNumber','eth_simulateV1','eth_getBalance','eth_getTransactionCount','eth_feeHistory','eth_getTransactionByHash']);
+const METHODS=new Set(['debug_traceTransaction','eth_chainId','eth_getStorageAt','eth_getLogs','eth_getCode','eth_call','eth_getTransactionReceipt','eth_getBlockByNumber','eth_simulateV1','eth_getBalance','eth_getTransactionCount','eth_feeHistory','eth_getTransactionByHash']);
 export function cashEvmRpc(network:CashNetwork,fetcher:typeof fetch=fetch,options:{endpoint?:string;archive?:boolean;signal?:AbortSignal;timeoutMs?:number}={}):Rpc{
  const timeoutMs=options.timeoutMs??10000;
  if(!Number.isSafeInteger(timeoutMs)||timeoutMs<100||timeoutMs>10000)throw Error('Invalid cash RPC timeout.');
@@ -32,6 +32,7 @@ export function cashEvmRpc(network:CashNetwork,fetcher:typeof fetch=fetch,option
   return body.result;
  };
  return async(method,params)=>{
+  if(method==='debug_traceTransaction'&&(params.length!==2||typeof params[0]!=='string'||!/^0x[0-9a-f]{64}$/i.test(params[0])||JSON.stringify(params[1])!==JSON.stringify({tracer:'prestateTracer',tracerConfig:{diffMode:true}})))throw Error('Invalid gas delivery trace.');
   if(!METHODS.has(method))throw Error('This cash RPC is read-only.');
   if(method==='eth_getStorageAt'&&(params.length!==3||typeof params[0]!=='string'||!/^0x[0-9a-f]{40}$/i.test(params[0])||typeof params[1]!=='string'||!/^0x[0-9a-f]{64}$/i.test(params[1])||typeof params[2]!=='string'||!/^0x(0|[1-9a-f][0-9a-f]{0,63})$/i.test(params[2])))throw Error('Storage evidence requires an exact address, slot and block.');
   if(method==='eth_getLogs'){
@@ -44,7 +45,7 @@ export function cashEvmRpc(network:CashNetwork,fetcher:typeof fetch=fetch,option
   }
   // Recent-state/simulation access does not establish archive capability.
   // Preserve exact block tags and receipt hashes on the independent reader.
-  const historical=method==='eth_getStorageAt'||method==='eth_getLogs'||['eth_getTransactionReceipt','eth_getTransactionByHash'].includes(method)||
+  const historical=method==='debug_traceTransaction'||method==='eth_getStorageAt'||method==='eth_getLogs'||['eth_getTransactionReceipt','eth_getTransactionByHash'].includes(method)||
    method==='eth_getBlockByNumber'&&typeof params[0]==='string'&&params[0].startsWith('0x')||
    ['eth_call','eth_getCode','eth_getBalance','eth_getTransactionCount'].includes(method)&&typeof params[1]==='string'&&params[1].startsWith('0x');
   try{

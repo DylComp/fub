@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T17:36:51.776Z",
+  "generatedAt": "2026-10-13T18:38:49.993Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -269,8 +269,8 @@
     },
     {
       "path": "src/CopyTrading.tsx",
-      "sha256": "e719601db2940575cabc855e93545c6a120c8e6c97672876f356bd01692cece2",
-      "bytes": 16443
+      "sha256": "9ea0d305e34d73e54e4cb7d4f0ebfeaadfb355f5c2976ba4b0794df3a62ea078",
+      "bytes": 16341
     },
     {
       "path": "src/DirectExits.tsx",
@@ -714,8 +714,8 @@
     },
     {
       "path": "src/fomo-profile-details.ts",
-      "sha256": "bf56ff8ed5464820011db9901209cdc8b8c482f902d4d561bf42ebf2dc7240b6",
-      "bytes": 3321
+      "sha256": "85cdff8ec4021ad047a0fa2f246c56e22edba6a5f116a1436273018082db4995",
+      "bytes": 3346
     },
     {
       "path": "src/fomo-recipient.ts",
@@ -1299,8 +1299,8 @@
     },
     {
       "path": "server/cash-copy-hosted.ts",
-      "sha256": "a6139eaf4c99fc1a91fee060264a60072fc507a80ea159244e45772d62bb524b",
-      "bytes": 24331
+      "sha256": "2af9006b498ea056667bf0e0ff066d57ff09f76e66650cee964e36f022070674",
+      "bytes": 24472
     },
     {
       "path": "server/cash-copy-inventory.ts",
@@ -1324,8 +1324,8 @@
     },
     {
       "path": "server/cash-copy-owner-sale.ts",
-      "sha256": "395c5e26e0b8552dd51f70a5cb2531accdafee25b07672a7d9dea989b9b78c37",
-      "bytes": 4951
+      "sha256": "77262489aa040ce62f3862817d72a2629f6a6bbfbd29f21a738100fc6531caab",
+      "bytes": 5415
     },
     {
       "path": "server/cash-copy-permission.ts",
@@ -1399,8 +1399,8 @@
     },
     {
       "path": "server/cash-evm-rpc.ts",
-      "sha256": "676cf76cd71a68feaf6893f035a62d48c092cb5a95b89a525ce432a19317e857",
-      "bytes": 5674
+      "sha256": "71bf1e8041215fb6a35cd05c98f023bc58228351f1d07c4686f6e7b379d86bad",
+      "bytes": 6005
     },
     {
       "path": "server/cash-fast-followup.ts",
@@ -1636,6 +1636,11 @@
       "path": "server/cash-owned-leader.ts",
       "sha256": "a7342056c50e8c67db45cb76c95b7f8d16311a5257a37bf4817fa7e1523f9b2c",
       "bytes": 2253
+    },
+    {
+      "path": "server/cash-owner-sale-gas.ts",
+      "sha256": "030b6c1d4ef52d059311e35b100ee1e6620844e0943e39662f82e538e094c7c2",
+      "bytes": 2898
     },
     {
       "path": "server/cash-pending-buys.ts",
@@ -2229,8 +2234,8 @@
     },
     {
       "path": "server/fomo-resolver-store.ts",
-      "sha256": "cde80cf3c3c78c82e009ff5f08ca7e6e8e05f0b3a2d0117f6990d74d678522e7",
-      "bytes": 17638
+      "sha256": "d348fddb952118a4ced43322ca33909a1ce3df705a7adc7e5d3556c8969a5a98",
+      "bytes": 19824
     },
     {
       "path": "server/fomo-resolver-worker.ts",
@@ -3219,8 +3224,8 @@
     },
     {
       "path": "workers/fomo-browser.ts",
-      "sha256": "6c8767274425333d53c562f0a5b65638a5e579786656e64890b8c2f4fff4d983",
-      "bytes": 10936
+      "sha256": "e6309f3a8e59e77690a5d5549977e0f6df3d44b2b06fc87d1a8263a38c343f64",
+      "bytes": 11477
     },
     {
       "path": "workers/fomo-main-chrome.ts",
@@ -3859,8 +3864,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "de6ac9f75a6dafca9393b5cd65f4a919fa3c9a33385c0d19c6f6512bce5d7db1",
-      "bytes": 11367
+      "sha256": "d819fc12b2d21b2881651f744946fe6367cd3f32348ccc843c2c4d69cd584abf",
+      "bytes": 11430
     },
     {
       "path": "SECURITY.md",
@@ -3879,8 +3884,8 @@
     },
     {
       "path": "FEATURE-STATUS.md",
-      "sha256": "bcc0b3e910fb6506efd22f91e552e27c7a57c16636c62956c9dace16e49c6d2d",
-      "bytes": 4977
+      "sha256": "c24dc2a6f961a7f73e4260b746210a8a7bedea1fbb5d49161b648fd25a8369ef",
+      "bytes": 5058
     },
     {
       "path": "FEES.md",

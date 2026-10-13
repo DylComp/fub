@@ -23,7 +23,7 @@ The code is available for inspection, not as proof that no trust is required. No
 
 ## What you can use
 
-As of October 13, 2026, supported Solana limit buys and sells and manual USDC buy/return routes on six EVM networks are enabled publicly. Cross-chain limit execution remains disabled pending funded acceptance. Launches, creator-fee distribution, merchant gift cards, Split/Treat and wallet research are available within their documented scope. Automatic cross-chain copying remains under acceptance and is not presented as an unrestricted public service. See [feature status](FEATURE-STATUS.md) for the distinction between tested workflows and public activation.
+As of October 13, 2026, supported Solana limit buys and sells and manual USDC buy/return routes on six EVM networks are enabled publicly. Cross-chain limit execution remains disabled pending funded acceptance. Launches, creator-fee distribution, merchant gift cards, Split/Treat and wallet research are available within their documented scope. Automatic cross-chain copying is publicly available for Robinhood on verified routes; other networks remain under acceptance. See [feature status](FEATURE-STATUS.md) for the distinction between tested workflows and public activation.
 
 ## Features
 
@@ -47,7 +47,7 @@ Phantom and other external Solana wallets can connect for coin launches and copy
 
 ## Release status
 
-Supported Solana limit buys and sells are publicly enabled; funded buy/sell/cancel workflows have acceptance evidence. Manual cross-chain purchase/return workflows also have acceptance evidence, separately from their public admission settings. Automatic cross-chain copying is still under acceptance: rapid consecutive cycles and several chain-specific buy/sale routes remain release gates. A working route or a successful simulation does not establish support for every token or every provider route.
+Supported Solana limit buys and sells are publicly enabled; funded buy/sell/cancel workflows have acceptance evidence. Manual cross-chain purchase/return workflows also have acceptance evidence, separately from their public admission settings. Automatic cross-chain copying is public for Robinhood on verified routes. Rapid consecutive cycles and the other chain-specific buy/sale routes remain release gates for expanding public support. A working route or a successful simulation does not establish support for every token or every provider route.
 
 The official Fub mint and its buyback configuration are separate from engineering-test tokens. Community launches use the 80/20 split above; the intended official-token split is 80% for buybacks and 20% for development. No official mint address or production signing credentials are supplied by this repository.
 

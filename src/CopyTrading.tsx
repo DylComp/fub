@@ -101,7 +101,7 @@ export function CopyTrading({
         </p>
       </div>
       <div className="copy-entry-actions">
-      {import.meta.env.VITE_CASH_COPY_SETUP==='true'&&(!import.meta.env.VITE_CASH_COPY_PILOT_WALLET||wallet===import.meta.env.VITE_CASH_COPY_PILOT_WALLET)&&<button className="word-link" disabled={!wallet||!isMint(draft.address)} onClick={()=>setup.openCashCopy(draft.address,draft.identity?.handle)}>Copy this trader with USDC across chains</button>}
+      {import.meta.env.VITE_CASH_COPY_SETUP==='true'&&<button className="word-link" disabled={!wallet||!isMint(draft.address)} onClick={()=>setup.openCashCopy(draft.address,draft.identity?.handle)}>Copy this trader with USDC across chains</button>}
       {setup.canImport&&<button className="word-link" disabled={!wallet} onClick={()=>setup.openCashPlans()}>Your USDC copy plans</button>}
       </div>
       <div className="copy-chart-picker"><button className="word-link" onClick={()=>setChartPicker(true)}>{chartToken?"Change chart token":"View a token chart"}</button></div>

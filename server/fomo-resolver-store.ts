@@ -158,7 +158,12 @@ export function fomoResolverStore(url: string) {
       const rows = await sql`UPDATE fomo_resolver_jobs j SET
         state=CASE WHEN (j.profile_id IS NOT NULL AND j.profile_id<>${profileId}) OR (j.matched_address IS NOT NULL AND ${profile.address}::text IS NOT NULL AND j.matched_address<>${profile.address}::text) THEN 'conflict' ELSE ${profile.state==='matched'?'ready':'unresolved'} END,
         matched_address=COALESCE(j.matched_address,${profile.address}),
-        profile_id=COALESCE(j.profile_id,${profileId}),profile=${JSON.stringify(profile)}::jsonb,
+        profile_id=COALESCE(j.profile_id,${profileId}),profile=CASE
+          WHEN j.profile_id=${profileId} AND jsonb_typeof(j.profile->'profileStats'->'details'->'positions')='array'
+            AND ${profile.profileStats?.details?.positions==null}
+            AND (j.profile->'profileStats'->>'observedAt')::bigint<=${profile.fetchedAt}
+          THEN jsonb_set(${JSON.stringify(profile)}::jsonb,'{profileStats}',j.profile->'profileStats')
+          ELSE ${JSON.stringify(profile)}::jsonb END,
         evidence=CASE WHEN (j.profile_id IS NOT NULL AND j.profile_id<>${profileId}) OR (j.matched_address IS NOT NULL AND ${profile.address}::text IS NOT NULL AND j.matched_address<>${profile.address}::text)
           THEN jsonb_build_object('previous',j.evidence,'candidate',${JSON.stringify(evidence)}::jsonb,'candidateProfileId',${profileId}::text) ELSE ${JSON.stringify(evidence)}::jsonb END,
         expires_at=clock_timestamp()+${profile.state==='matched'?300:60}*interval '1 second',updated_at=clock_timestamp(),lease_until=NULL
@@ -166,10 +171,31 @@ export function fomoResolverStore(url: string) {
         AND EXISTS(SELECT 1 FROM fomo_resolver_control WHERE id=1 AND lease_token=${job.lease}::uuid AND lease_until>clock_timestamp() AND pause_reason IS NULL) RETURNING handle`;
       if (rows.length!==1) throw Error('Discovery lease lost');
     },
+    // Authenticated public-profile refresh only. Never renews wallet proof, its
+    // expiry, or the discovery lease; no transfer draft is needed for display data.
+    async refreshPublicProfile(profileId:string,profile:FomoRecipient):Promise<boolean> {
+      const observed=profile.profileStats?.observedAt;
+      if(!validFomoRecipient(profile,profile.handle)||profile.source!=='fomo-direct'||profile.state!=='unresolved'||profile.address!==null||
+        !profileId||profileId.length>100||typeof observed!=='number'||observed>Date.now()||Date.now()-observed>60000)throw Error('Invalid public profile refresh');
+      const fields={fetchedAt:profile.fetchedAt,displayName:profile.displayName,avatarUrl:profile.avatarUrl,profileStats:profile.profileStats};
+      const rows=await db()`UPDATE fomo_resolver_jobs SET profile=profile || ${JSON.stringify(fields)}::jsonb
+        WHERE handle=${profile.handle} AND profile_id=${profileId} AND state='ready'
+        AND profile->>'source'='fomo-direct' AND profile->>'state'='matched'
+        AND profile->>'address'=matched_address
+        AND COALESCE((profile->'profileStats'->>'observedAt')::bigint,0)<=${observed}
+        AND NOT (COALESCE(jsonb_typeof(profile->'profileStats'->'details'->'positions')='array',false) AND ${profile.profileStats?.details?.positions==null})
+        RETURNING handle`;
+      return rows.length===1;
+    },
     async observe(job:ResolverJob,profileId:string,profile:FomoRecipient) {
       if(!validFomoRecipient(profile,job.handle)||profile.source!=='fomo-direct'||profile.address!==null||profile.state!=='unresolved'||!profileId||profileId.length>100)throw Error('Invalid profile observation');
       await db()`UPDATE fomo_resolver_jobs j SET state=CASE WHEN j.profile_id IS NOT NULL AND j.profile_id<>${profileId} THEN 'conflict' ELSE j.state END,
-        profile_id=COALESCE(j.profile_id,${profileId}),profile=${JSON.stringify(profile)}::jsonb,updated_at=clock_timestamp()
+        profile_id=COALESCE(j.profile_id,${profileId}),profile=CASE
+          WHEN j.profile_id=${profileId} AND jsonb_typeof(j.profile->'profileStats'->'details'->'positions')='array'
+            AND ${profile.profileStats?.details?.positions==null}
+            AND (j.profile->'profileStats'->>'observedAt')::bigint<=${profile.fetchedAt}
+          THEN jsonb_set(${JSON.stringify(profile)}::jsonb,'{profileStats}',j.profile->'profileStats')
+          ELSE ${JSON.stringify(profile)}::jsonb END,updated_at=clock_timestamp()
         WHERE handle=${job.handle} AND state='working' AND lease_token=${job.lease}::uuid AND lease_until>clock_timestamp()
         AND EXISTS(SELECT 1 FROM fomo_resolver_control WHERE id=1 AND lease_token=${job.lease}::uuid AND lease_until>clock_timestamp() AND pause_reason IS NULL)`;
     },

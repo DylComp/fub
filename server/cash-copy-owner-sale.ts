@@ -9,7 +9,7 @@ export type OwnerSale={retired:CashSale;preparedAt:number};
 /** Owner-signed recovery only. Never invokes a delegated signer or broadcasts.
  * The retired automatic attempt is fenced before a new review is saved. The
  * original grant, spending, inventory and signing history remain unchanged. */
-export function cashCopyOwnerSale(c:{cas:CashCopyCas;parts:CashSigningParts;authorize:(token:string,planId:string,wallet:string,signal:AbortSignal)=>Promise<void>;prepare:(job:CashCopyJob)=>Promise<CashSale>;recheck:(sale:CashSale)=>Promise<void>;now?:()=>number}){
+export function cashCopyOwnerSale(c:{cas:CashCopyCas;parts:CashSigningParts;authorize:(token:string,planId:string,wallet:string,signal:AbortSignal)=>Promise<void>;prepare:(job:CashCopyJob)=>Promise<CashSale>;recheck:(sale:CashSale,job:CashCopyJob)=>Promise<void>;now?:()=>number}){
  const now=c.now||Date.now;
  async function read(planId:string,wallet:string,id:string){
   const row=await c.cas.read(planId,wallet),d=row?.value as Document|undefined,j=d?.jobs[id],s=d?.execution?.sales[id];
@@ -20,6 +20,10 @@ export function cashCopyOwnerSale(c:{cas:CashCopyCas;parts:CashSigningParts;auth
   return{row,d,j,s};
  }
  function matches(j:CashCopyJob,s:CashSale){const i=s.simulation.route.intent;
+  // Retain the original prepared worst-case budget across every refresh.
+  // Public admission changes cannot discard a stricter engineering ceiling.
+  const cost=(v:CashSale)=>v.gas.transactions.reduce((n,t)=>n+BigInt(t.value)+BigInt(t.gas)*BigInt(t.maxFeePerGas),BigInt(v.gas.maxL1FeeWei||'0'));
+  const retired=j.ownerSale?.retired||j.sale;if(!retired||cost(s)>cost(retired))throw Error('Recovery exceeds its original prepared gas budget.');
   if(s.id!==j.id||s.wallet!==j.scope.sourceWallet||i.cashWallet!==j.scope.sourceWallet||i.wallet!==j.scope.recipient||i.network!==j.event.network||i.token!==j.event.token||i.amountRaw!==j.amountRaw||i.slippageBps!==j.scope.slippageBps||s.gas.maxCostWei!==j.scope.maxSaleGas[j.event.network])throw Error('Recovery sale changed its limits.');
  }
  return{
@@ -44,7 +48,7 @@ export function cashCopyOwnerSale(c:{cas:CashCopyCas;parts:CashSigningParts;auth
    if(!j.ownerSale)throw Error('Review the recovery sale first.');matches(j,s);
    const hashes=await saleHashes(s,signed);
    if(s.signed){if(!same(s.signed,signed)||!same(s.hashes,hashes))throw Error('Different sale signatures are recorded.');return s;}
-   await c.recheck(s);signal.throwIfAborted();await c.authorize(token,planId,wallet,signal);
+   await c.recheck(s,j);signal.throwIfAborted();await c.authorize(token,planId,wallet,signal);
    const next=structuredClone(d),bound={...s,signed,hashes,state:'submitted' as const};next.execution!.sales[id]=bound;
    next.jobs[id].sale=bound;next.jobs[id].signed=signed;next.jobs[id].state='submitted';
    if(!await c.cas.write(planId,wallet,row.revision,next))throw Error('Recovery changed. Check the existing sale.');return bound;

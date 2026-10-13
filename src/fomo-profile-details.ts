@@ -20,7 +20,7 @@ export function fomoTokenImage(value: unknown): string | null {
   if (typeof value !== 'string' || value.length > 2048) return null;
   try {
     const u = new URL(value);
-    const allowed = ['cdn.dexscreener.com','prod-fomo-profile-pics.s3.amazonaws.com','pbs.twimg.com','ipfs.io','gateway.pinata.cloud','arweave.net','image-cdn.solana.fm','metadata.pumplify.eu','pump.mypinata.cloud','cf-ipfs.com','metadata.mobula.io','assets.coingecko.com'];
+    const allowed = ['cdn.dexscreener.com','prod-fomo-profile-pics.s3.amazonaws.com','pbs.twimg.com','ipfs.io','gateway.pinata.cloud','arweave.net','image-cdn.solana.fm','metadata.pumplify.eu','pump.mypinata.cloud','cf-ipfs.com','metadata.mobula.io','assets.coingecko.com','token-media.defined.fi'];
     if (u.protocol !== 'https:' || u.username || u.password || u.port || !allowed.includes(u.hostname)) return null;
     return u.href;
   } catch { return null; }

@@ -67,7 +67,10 @@ export function hostedCashCopy(config:{origin:string;reviewLimits?:import('../sr
  const owner=cashCopyEnrollment({listPlans:config.ownerPlans,origin:config.origin,cas:config.cas,authenticate,solanaOwnership,evmOwnership,solanaPolicy:config.solanaPolicy,evmPolicy:config.evmPolicy,leaderSource:async wallet=>{const l=config.registry?.find(wallet);return l?l.sourceWallet:source(wallet);}});
  const ownerSale=cashCopyOwnerSale({cas:config.cas,parts:config.parts,authorize:owner.authorizeOwnerSale,
   prepare:async j=>{
-   if(!config.ready()||!config.allows(j.scope.sourceWallet)||!config.allowsAsset(j.event.network,j.event.token))throw Error('Sale recovery is unavailable.');
+   // New-plan admission must not strand an existing owned position after a
+   // release scope changes. cashCopyOwnerSale authenticates both owners and
+   // fences the exact recorded inventory; this path never delegates signing.
+   if(!config.ready())throw Error('Sale recovery is unavailable.');
    const intent={network:j.event.network,wallet:j.scope.recipient,cashWallet:j.scope.sourceWallet,token:j.event.token,amountRaw:j.amountRaw,slippageBps:j.scope.slippageBps};
    const rpc=config.evm(intent.network);
    const {quote,simulation}=await prepareCashReturnQuote(intent,cashRelay(config.fetcher).quote,rpc);

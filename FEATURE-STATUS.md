@@ -9,7 +9,7 @@ Status as documented on **October 13, 2026**. This is an engineering summary, no
 | Solana limit orders | Price/market-cap orders, bounded buys/sales, cancellation and recovery | **Public buys and sells enabled.** Funded curve/PumpSwap buy, sell and cancel workflows passed. Wallet access and signed order limits remain required. |
 | Manual cross-chain trading | Solana USDC purchases and sale returns on supported routes across Base, BNB, Monad, Robinhood, Arc and Ethereum | Public manual access is enabled for these six networks on supported routes. Funded buy/return workflows passed on all six; availability, minimums and liquidity vary by token and route. |
 | Cross-chain limit orders | Independent signed USDC-price buy/sell orders, wallet-balance checks, durable signing and recovery | Implementation and isolated database workflows pass. Public execution remains disabled pending funded acceptance. These use guaranteed route execution prices, including route costs, rather than chart prices or market cap. |
-| Automatic cross-chain copying | Leader detection, scoped signing, budget/inventory tracking and buy/sale recovery | **Final acceptance remains incomplete.** Rapid cycles and chain-specific paths still need closure; manual trade tests do not substitute for automatic-copy tests. |
+| Automatic cross-chain copying | Leader detection, scoped signing, budget/inventory tracking and buy/sale recovery | Public automatic copying supports Robinhood on verified routes. Other networks remain outside public automatic admission pending complete acceptance; manual trade tests do not substitute for automatic-copy tests. |
 | Phantom copy connection | External Solana connection and applicable ownership/plan messages | Unattended execution still requires same-wallet private signing setup and approvals. Connection alone is insufficient. |
 | Pump launches | SOL-paired creation, optional opening buy, recipient selection and fixed fee split | Engineering launch and fee-payout workflows exercised. Custom pair-token launches are not part of the current public flow. |
 | Buy and burn | Treasury purchase/burn worker with transaction checks and spending limits | Engineering workflow exercised. Official-mint configuration and activation are separate final steps. |
@@ -25,7 +25,7 @@ Selected-token charts display one-second candles and refresh approximately every
 ## Remaining release work
 
 - Finish automatic-copy acceptance for quick sales, consecutive reuse and the remaining chain-specific buy/return paths. A repaired route verified against a recorded transaction is not a completed funded cycle.
-- Verify public admission against the accepted chains and routes. Solana limit buys and sells are already enabled; automatic cross-chain copying remains separately gated.
+- Verify public admission against the accepted chains and routes. Solana limit buys and sells are already enabled; automatic cross-chain copying is admitted separately by network, currently Robinhood.
 - Configure and activate the official token’s buybacks after its mint is supplied and the final policy is approved. Community fee distribution already runs independently of that mint.
 
 ## Before the official mint

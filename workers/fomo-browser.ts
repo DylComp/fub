@@ -51,10 +51,18 @@ export async function fomoPageRequest({kind,value,mint,amount}:FomoRequest) {
         if(kind==='profile'&&p?.private===false&&typeof p.id==='string'&&/^[a-zA-Z0-9_-]{1,100}$/.test(p.id)&&typeof p.userHandle==='string'&&p.userHandle.toLowerCase()===value){
           const pick=(v:unknown,keys:string[])=>{const r=v&&typeof v==='object'?v as Record<string,unknown>:{};return Object.fromEntries(keys.map(k=>[k,r[k]]));};
           const trade=(v:unknown)=>pick(v,['tokenAddress','networkId','humanTokenAmount','sumSwapOpen','sumTransferIn','avgEntryPrice','avgTransferInPrice','realizedPnlUsd']);
+          // Public enrichment reads can fail transiently while identity succeeds.
+          // Retry a failed read once; never replay a draft or an explicit denial.
+          const publicRead=async(path:string)=>{
+            for(let attempt=0;;attempt++){
+              try{const response=await module.f(path,{timeoutMs:8000});if(attempt===0&&response.statusCode>=500){await new Promise(resolve=>setTimeout(resolve,250));continue;}return response;}
+              catch(error){if(attempt!==0)throw error;await new Promise(resolve=>setTimeout(resolve,250));}
+            }
+          };
           const results=await Promise.allSettled([
-            module.f('/v2/users/'+encodeURIComponent(p.id)+'/balances',{timeoutMs:8000}),
-            module.f('/v2/users/'+encodeURIComponent(p.id)+'/spotlight',{timeoutMs:8000}),
-            module.f('/v2/userTokens/aggregatedSnapshotById?userId='+encodeURIComponent(p.id)+'&snapshotId='+Math.floor((Date.now()-86400000)/3600000)*3600,{timeoutMs:8000}),
+            publicRead('/v2/users/'+encodeURIComponent(p.id)+'/balances'),
+            publicRead('/v2/users/'+encodeURIComponent(p.id)+'/spotlight'),
+            publicRead('/v2/userTokens/aggregatedSnapshotById?userId='+encodeURIComponent(p.id)+'&snapshotId='+Math.floor((Date.now()-86400000)/3600000)*3600),
           ]);
           const balances=results[0].status==='fulfilled'&&results[0].value.statusCode===200?results[0].value.responseObject:null;
           if(Array.isArray(balances?.balances)&&balances.balances.length<=5000)publicBalances={otherEquity:balances.otherEquity,otherPnlV2:balances.otherPnlV2,livePerpPnl:balances.livePerpPnl,balances:balances.balances.map((row:Record<string,unknown>)=>{
