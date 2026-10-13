@@ -1,5 +1,5 @@
 import {randomUUID} from 'node:crypto';
-import {compareCashCopyEvents,proportionalCashSale,validateCashCopyEvent,type CashCopyEvent} from '../src/cash-copy-model.js';
+import {compareCashCopyEvents,proportionalCashSale,validateCashOwnerSaleEvent,type CashCopyEvent} from '../src/cash-copy-model.js';
 import type {CashCopyCas,CashCopyDocument} from './cash-copy-journal.js';
 import type {CashCopyJob} from './cash-copy-service.js';
 import type {CashSale} from './cash-return-store.js';
@@ -21,7 +21,7 @@ export async function stageCashOwnerSale(c:{cas:CashCopyCas;planId:string;wallet
  const proof=await c.verify({network:buy.event.network,leader:scope.leader,token:buy.event.token,transaction:c.transaction});
  const now=(c.now||Date.now)();
  if(!proof||proof.event.confirmation!=='finalized'||proof.event.side!=='sell'||proof.event.network!==buy.event.network||proof.event.token!==buy.event.token||proof.event.transaction!==c.transaction||compareCashCopyEvents(buy.event,proof.event)>=0)throw Error('Finalized leader sale not verified.');
- validateCashCopyEvent(proof.event,scope,now);
+ validateCashOwnerSaleEvent(proof.event,scope,now);
  const amountRaw=proportionalCashSale(position,proof.event),id=randomUUID();
  const job:CashCopyDocument['jobs'][string]={id,scope:structuredClone(scope),event:structuredClone(proof.event),amountRaw,state:'needs-attention',purchase:null,sale:null,signed:null,day:new Date(now).toISOString().slice(0,10)};
  const sale=await c.prepare(job),i=sale.simulation.route.intent;

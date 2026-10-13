@@ -20,16 +20,28 @@ export function cashCopyPermissionMessage(s:CashCopyScope){
  ...s.networks.slice().sort().map(n=>`Network: ${n} (${CASH_NETWORKS[n].chainId}); maximum sale gas: ${s.maxSaleGas[n]} native units`),`Buy: ${s.buyUsdcRaw} raw Solana USDC`,`Daily cap: ${s.dailyUsdcRaw} raw Solana USDC across these networks`,`Gas allocation: ${s.gasTopupUsdcRaw} raw USDC included in each buy`,`Maximum Solana fee and rent per buy: ${s.maxSourceFeeLamports} lamports`,`Slippage: ${s.slippageBps} basis points`,`Proportional sells: ${s.copySells}`,`Issued: ${s.issuedAt}`,`Accept before: ${s.acceptBy}`,`Expires: ${s.expiresAt}`,'Only copy verified leader swaps. Sell only this plan’s acquired positions. Return sale proceeds to the funding wallet. No unrelated transfers.'].join('\n');
 }
 export type CashCopyEvent={network:CashNetwork;leader:string;transaction:string;blockHash:string;blockNumber:string;blockTime:number;observedAt:number;token:string;side:'buy'|'sell';leaderTokenBeforeRaw:string;leaderTokenDeltaRaw:string;confirmation?:'finalized'|'provisional'|'captured';transactionIndex?:string;sourceOrder?:{wallet:string;signature:string;orderId:string}};
-export function validateCashCopyEvent(e:CashCopyEvent,s:CashCopyScope,now:number){
+function validateCashCopyEventFields(e:CashCopyEvent,s:CashCopyScope,now:number){
  validateCashCopyScope(s);
- if(!e||!s.networks.includes(e.network)||e.leader!==s.leader||!isEvmAddress(e.token)||e.token!==e.token.toLowerCase()||/^0x0{40}$/.test(e.token)||!/^0x[0-9a-f]{64}$/.test(e.transaction)||!/^0x[0-9a-f]{64}$/.test(e.blockHash)||!/^0x(0|[1-9a-f][0-9a-f]*)$/.test(e.blockNumber)||!Number.isSafeInteger(e.blockTime)||e.blockTime>now+5000||e.blockTime<s.issuedAt||!Number.isSafeInteger(e.observedAt)||e.observedAt<e.blockTime||e.observedAt>now+5000||now-e.observedAt>(e.confirmation==='captured'?120000:60000)||now-e.blockTime>1800000||now>=s.expiresAt||!['buy','sell'].includes(e.side)||cashCopyRaw(e.leaderTokenDeltaRaw)<=0n)throw Error('Invalid or stale cross-chain leader event.');
+ if(!e||!s.networks.includes(e.network)||e.leader!==s.leader||!isEvmAddress(e.token)||e.token!==e.token.toLowerCase()||/^0x0{40}$/.test(e.token)||!/^0x[0-9a-f]{64}$/.test(e.transaction)||!/^0x[0-9a-f]{64}$/.test(e.blockHash)||!/^0x(0|[1-9a-f][0-9a-f]*)$/.test(e.blockNumber)||!Number.isSafeInteger(e.blockTime)||e.blockTime>now+5000||e.blockTime<s.issuedAt||!Number.isSafeInteger(e.observedAt)||e.observedAt<e.blockTime||e.observedAt>now+5000||!['buy','sell'].includes(e.side)||cashCopyRaw(e.leaderTokenDeltaRaw)<=0n)throw Error('Invalid or stale cross-chain leader event.');
  if(e.confirmation!==undefined&&!['finalized','provisional','captured'].includes(e.confirmation))throw Error('Invalid leader confirmation.');
- if(e.confirmation==='provisional'&&(now-e.blockTime>10000||now-e.observedAt>10000||e.blockTime>now||e.observedAt>now))throw Error('Provisional leader event expired.');
- if(e.confirmation==='captured'&&(e.side!=='sell'||now-e.blockTime>120000||e.observedAt-e.blockTime>10000||e.blockTime>now||e.observedAt>now))throw Error('Captured leader sale expired.');
  if(e.transactionIndex!==undefined&&!/^0x(0|[1-9a-f][0-9a-f]*)$/.test(e.transactionIndex))throw Error('Invalid leader transaction index.');
  if(e.sourceOrder){const o=e.sourceOrder;if(e.side!=='buy'||Object.keys(o).sort().join(',')!=='orderId,signature,wallet'||!isMint(o.wallet)||! /^[1-9A-HJ-NP-Za-km-z]{87,88}$/.test(o.signature)||!/^0x[0-9a-f]{64}$/.test(o.orderId)||/^0x0{64}$/.test(o.orderId))throw Error('Invalid leader source order.');}
  const before=cashCopyRaw(e.leaderTokenBeforeRaw),delta=cashCopyRaw(e.leaderTokenDeltaRaw);
  if(e.side==='sell'&&(!s.copySells||delta>before))throw Error('Unsupported copied sale.');
+ return e;
+}
+export function validateCashCopyEvent(e:CashCopyEvent,s:CashCopyScope,now:number){
+ validateCashCopyEventFields(e,s,now);
+ if(now-e.observedAt>(e.confirmation==='captured'?120000:60000)||now-e.blockTime>1800000||now>=s.expiresAt)throw Error('Invalid or stale cross-chain leader event.');
+ if(e.confirmation==='provisional'&&(now-e.blockTime>10000||now-e.observedAt>10000||e.blockTime>now||e.observedAt>now))throw Error('Provisional leader event expired.');
+ if(e.confirmation==='captured'&&(e.side!=='sell'||now-e.blockTime>120000||e.observedAt-e.blockTime>10000||e.blockTime>now||e.observedAt>now))throw Error('Captured leader sale expired.');
+ return e;
+}
+// Owner recovery validates a historical finalized sale, not delegated execution.
+// The paused-plan staging endpoint still requires a new exact owner signature.
+export function validateCashOwnerSaleEvent(e:CashCopyEvent,s:CashCopyScope,now:number){
+ validateCashCopyEventFields(e,s,now);
+ if(e.side!=='sell'||e.confirmation!=='finalized'||e.blockTime>=s.expiresAt)throw Error('Sale was outside its original permission.');
  return e;
 }
 export function proportionalCashSale(position:string,event:CashCopyEvent):string {

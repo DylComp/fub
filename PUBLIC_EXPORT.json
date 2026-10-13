@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T10:37:42.650Z",
+  "generatedAt": "2026-10-13T14:12:52.668Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -539,8 +539,8 @@
     },
     {
       "path": "src/cash-copy-model.ts",
-      "sha256": "b4aa63370ba51954852f02a55764763be0e09bbc84187fbfd0232cec1f636400",
-      "bytes": 6891
+      "sha256": "cf58634a72048dbb1193dd53ee33ab8f5a4edb3a0ab58fbd6a79e53fa8a54f6b",
+      "bytes": 7523
     },
     {
       "path": "src/cash-copy-readiness.ts",
@@ -1284,8 +1284,8 @@
     },
     {
       "path": "server/cash-copy-owner-sale-stage.ts",
-      "sha256": "1afc120281224fb1a1c80f2ffa09936c0d18aae4b94da7793109ffff4c798b75",
-      "bytes": 3845
+      "sha256": "cd08c814b6d9d784c25b1023f452cf178a16c82bc54db0b19e84c7c7606450a0",
+      "bytes": 3855
     },
     {
       "path": "server/cash-copy-owner-sale.ts",
@@ -1589,8 +1589,8 @@
     },
     {
       "path": "server/cash-sale-recovery.ts",
-      "sha256": "e58702fde6b5705b7006d7d8953b1476fc36dd2f8dcad161bf59abe1f6838dcc",
-      "bytes": 5218
+      "sha256": "dd6d86e82675b60285c10e2048331a921cad92be1ae24c6cf817cb5865292fc6",
+      "bytes": 6234
     },
     {
       "path": "server/cash-signing-failure.ts",

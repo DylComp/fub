@@ -1,5 +1,5 @@
 import type {CashCopyCas} from './cash-copy-journal.js';
-import type {CashCopyEvent} from '../src/cash-copy-model.js';
+import {compareCashCopyEvents,type CashCopyEvent} from '../src/cash-copy-model.js';
 import type {CashNetwork} from '../src/cash-route.js';
 import type {Rpc} from './funding.js';
 const TRANSFER='0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef';
@@ -18,10 +18,25 @@ export async function recoverCashLeaderSales(c:{cas:CashCopyCas;planId:string;wa
  for(const [key] of holdings){
   signal.throwIfAborted();const [network,token]=key.split(':') as [CashNetwork,string];
   if(!s.networks.includes(network)||!c.allowsAsset(network,token))continue;
-  const buys=Object.values(d.jobs).filter(j=>j.event.side==='buy'&&j.event.network===network&&j.event.token===token&&!j.leaderInvalidatedAt&&(j.state==='complete'||j.provisionalCredit));
+  let buys=Object.values(d.jobs).filter(j=>j.event.side==='buy'&&j.event.network===network&&j.event.token===token&&!j.leaderInvalidatedAt&&(j.state==='complete'||j.provisionalCredit));
+  // Audit history survives renewals. When this permission accounts for all
+  // present inventory, older settled lots must not drag the ten-block scanner
+  // days behind the current purchase. Retain the old anchor for carried lots.
+  const current=Object.values(d.jobs).filter(j=>j.scope?.id===s.id&&j.event.network===network&&j.event.token===token&&!j.leaderInvalidatedAt);
+  let owned=0n,openBuys:typeof buys=[],consistent=true;
+  for(const j of current.sort((a,b)=>compareCashCopyEvents(a.event,b.event))){
+   if(j.event.side==='buy'){
+    const credit=BigInt(j.provisionalCredit?.receivedRaw||(j.state==='complete'?j.purchase?.receipt?.receivedRaw:'0')||'0');
+    owned+=credit;if(credit>0n)openBuys.push(j);
+   }else if(j.state==='complete'||j.provisionalDebit){
+    owned-=BigInt(j.amountRaw);if(owned<0n)consistent=false;if(owned===0n)openBuys=[];
+   }
+  }
+  if(consistent&&owned===BigInt(d.positions[key])&&owned>0n)buys=openBuys;
   if(!buys.length)continue;
   const first=buys.reduce((a,b)=>quantity(a.event.blockNumber)<quantity(b.event.blockNumber)||(a.event.blockNumber===b.event.blockNumber&&quantity(a.event.transactionIndex||'0x0')<quantity(b.event.transactionIndex||'0x0'))?a:b),checkpoint=d.saleRecovery?.[key];
-  const from=checkpoint?.permissionId===s.id?quantity(checkpoint.through)+1n:quantity(first.event.blockNumber);
+  const anchor=quantity(first.event.blockNumber),saved=checkpoint?.permissionId===s.id?quantity(checkpoint.through)+1n:anchor;
+  const from=saved>anchor?saved:anchor;
   const rpc=c.rpc(network),head=await rpc('eth_getBlockByNumber',['finalized',false]) as any;
   const height=quantity(head?.number);if(from>height)continue;
   const to=from+9n<height?from+9n:height;
