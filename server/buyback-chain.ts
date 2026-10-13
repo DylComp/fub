@@ -22,6 +22,7 @@ import {
 } from "@solana/spl-token";
 import { rawLamports } from "./launch-payout-model.js";
 import {
+  buybackInput,
   validateBuybackPolicy,
   validateBuybackPlan,
   buybackReservation,
@@ -192,9 +193,8 @@ export function buybackChain(connection: Connection, policy: BuybackPolicy, reco
   };
   return {
     async prepare(available: string): Promise<BuybackPlan | null> {
-      const input = rawLamports(policy.maxInput),
-        reserve = input + rawLamports(policy.maxOverhead);
-      if (rawLamports(available) < reserve) return null;
+      let input = rawLamports(policy.maxInput), reserve = input + rawLamports(policy.maxOverhead);
+      if (policy.revenueReserve===undefined && rawLamports(available) < reserve) return null;
       await mainnet();
       const mint = new PublicKey(policy.mint),
         user = new PublicKey(policy.treasury);
@@ -225,6 +225,9 @@ export function buybackChain(connection: Connection, policy: BuybackPolicy, reco
         [g, f, m, c, u].some((a) => a.executable)
       )
         throw Error("Unsupported buyback account owner");
+      input=buybackInput(policy,available,integer(u.lamports));
+      if(input===0n)return null;
+      reserve=input+rawLamports(policy.maxOverhead);
       const global = sdk.PUMP_SDK.decodeGlobal(g),
         feeConfig = sdk.PUMP_SDK.decodeFeeConfig(f),
         curve = sdk.PUMP_SDK.decodeBondingCurve(c),
@@ -234,6 +237,7 @@ export function buybackChain(connection: Connection, policy: BuybackPolicy, reco
           connection,
           policy,
           r.context.slot,
+          available,
         );
         await verifyBuybackPlan(plan);
         return plan;

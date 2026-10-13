@@ -114,7 +114,7 @@ export function buybackStore(url: string, policy: BuybackPolicy, schedule: "cont
      AND COALESCE((SELECT sum(a.buyback_lamports) FROM fomo_launch_payout_attempts a JOIN fomo_launch_payouts p ON p.mint=a.mint WHERE a.state='confirmed' AND p.buyback_wallet=t.treasury AND ((p.route_kind='launchpad' AND (p.mint<>${policy.mint} OR ${policy.purpose==='engineering'})) OR (p.route_kind='official' AND p.mint=${policy.mint} AND ${policy.purpose!=='engineering'}))),0)
       + COALESCE((SELECT credits-debits FROM fomo_quote_conversion_sol_accounting WHERE treasury=t.treasury),0)
       - COALESCE((SELECT sum(CASE WHEN state='pending' THEN reserved_lamports ELSE debit_lamports END) FROM fomo_buyback_attempts WHERE treasury=t.treasury),0)>=${reserve}::numeric
-     AND COALESCE((SELECT sum(CASE WHEN state='pending' THEN reserved_lamports ELSE debit_lamports END) FROM fomo_buyback_attempts WHERE treasury=t.treasury AND (state='pending' OR created_at>=date_trunc('day',clock_timestamp() AT TIME ZONE 'UTC') AT TIME ZONE 'UTC' OR finalized_at>=date_trunc('day',clock_timestamp() AT TIME ZONE 'UTC') AT TIME ZONE 'UTC')),0)+${reserve}::numeric<=${policy.dailyCap}::numeric
+     AND (${policy.revenueReserve!==undefined} OR COALESCE((SELECT sum(CASE WHEN state='pending' THEN reserved_lamports ELSE debit_lamports END) FROM fomo_buyback_attempts WHERE treasury=t.treasury AND (state='pending' OR created_at>=date_trunc('day',clock_timestamp() AT TIME ZONE 'UTC') AT TIME ZONE 'UTC' OR finalized_at>=date_trunc('day',clock_timestamp() AT TIME ZONE 'UTC') AT TIME ZONE 'UTC')),0)+${reserve}::numeric<=${policy.dailyCap}::numeric)
      ON CONFLICT DO NOTHING RETURNING id`,
       ]);
       return rows.length === 1;

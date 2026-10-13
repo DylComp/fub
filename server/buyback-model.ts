@@ -13,6 +13,7 @@ export type BuybackPolicy = {
   maxOverhead: string;
   dailyCap: string;
   slippageBps: number;
+  revenueReserve?: string;
 };
 export type BuybackPlan = {
   version: 1;
@@ -61,6 +62,7 @@ export function validateBuybackPolicy(p: BuybackPolicy) {
   if (
     (p.purpose !== undefined && p.purpose !== "engineering") ||
     (p.acceptanceRoute !== undefined && (p.purpose !== "engineering" || p.acceptanceRoute !== "pump-amm")) ||
+    (p.revenueReserve !== undefined && (p.purpose !== undefined || rawLamports(p.revenueReserve) < 10000000n)) ||
     p.treasury === p.mint ||
     rawLamports(p.maxInput) < 1000000n ||
     rawLamports(p.maxInput) > 10000000000n ||
@@ -88,7 +90,7 @@ export function validateBuybackPlan(p: BuybackPlan) {
     (p.policy.acceptanceRoute !== undefined && p.route !== p.policy.acceptanceRoute) ||
     rawLamports(p.tokens) > 18446744073709551615n ||
     rawLamports(p.inputCap) < 1n ||
-    rawLamports(p.inputCap) > rawLamports(p.policy.maxInput) ||
+    (p.policy.revenueReserve === undefined && rawLamports(p.inputCap) > rawLamports(p.policy.maxInput)) ||
     rawLamports(p.tokens) < 1n ||
     rawLamports(p.fee) < 5000n ||
     rawLamports(p.fee) > rawLamports(p.policy.maxOverhead) ||
@@ -142,4 +144,14 @@ export function verifyBuybackSigned(plan: BuybackPlan, signed: string) {
   if (!verify(null, tx.message.serialize(), key, tx.signatures[0]))
     throw Error("Invalid buyback signature");
   return bs58.encode(tx.signatures[0]);
+}
+
+// Revenue mode never treats unrelated deposits as spendable revenue.
+export function buybackInput(p: BuybackPolicy, available: string, balance: bigint): bigint {
+  validateBuybackPolicy(p);
+  const overhead=rawLamports(p.maxOverhead), credit=rawLamports(available);
+  if(p.revenueReserve===undefined) return credit>=rawLamports(p.maxInput)+overhead ? rawLamports(p.maxInput) : 0n;
+  const liquid=balance-rawLamports(p.revenueReserve);
+  const budget=(credit<liquid?credit:liquid)-overhead;
+  return budget>=1000000n?budget:0n;
 }

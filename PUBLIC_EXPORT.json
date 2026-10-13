@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T20:38:40.298Z",
+  "generatedAt": "2026-10-13T20:47:10.920Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -1199,23 +1199,23 @@
     },
     {
       "path": "server/buyback-amm.ts",
-      "sha256": "7fa28d623c4c8e6dda7be69811b678bbe7c0d76300c52631ca5a6725a4570e90",
-      "bytes": 14919
+      "sha256": "1f0da3820744221b39c44f715ab016f4aa1be5cb19cfd31b9042496144fbba62",
+      "bytes": 15091
     },
     {
       "path": "server/buyback-chain.ts",
-      "sha256": "dbe29cea43d1f0f1636a9d61f2b022c96aceb9488bb969cd324bb9f78d3cdd3d",
-      "bytes": 15789
+      "sha256": "b4828eb404796d13435c321039082892af3118a0603fca98527133e5ec853e19",
+      "bytes": 16003
     },
     {
       "path": "server/buyback-host.ts",
-      "sha256": "183c382e0916cc52bb7c525316188bc5b05144ce7d258b80bf5064e0a10885bd",
-      "bytes": 7336
+      "sha256": "69abca4edcd6706e10fef6ad5db4d4dfc73850409654e5257c173986f9ecda51",
+      "bytes": 7442
     },
     {
       "path": "server/buyback-model.ts",
-      "sha256": "b6926a8d32aa60b617ae2f0d63eb535461ba2c3db9ca1f6fcd26d7b18d9de326",
-      "bytes": 5023
+      "sha256": "7d2fd8982c31570f2f97382e964a85b540e898460c8d34f120cd3456aa349073",
+      "bytes": 5738
     },
     {
       "path": "server/buyback-nonlanding.ts",
@@ -1244,8 +1244,8 @@
     },
     {
       "path": "server/buyback-store.ts",
-      "sha256": "a14fb4b72c7dc3aaefd1234ce98feaf6e2298acbebf92e3887c5fb511811c5eb",
-      "bytes": 14527
+      "sha256": "a739191231f18fca1b5a7eebcc7ca68d4159d6eb7155a50dc4e4e31bb1da02f4",
+      "bytes": 14569
     },
     {
       "path": "server/buyback-worker.ts",
@@ -3786,6 +3786,11 @@
       "path": "migrations/061_fomo_trading_profile.sql",
       "sha256": "854ddc1f6eb9d573f0ba56aba4a6de6375650ca0af907201b056f7149c8aeeae",
       "bytes": 236
+    },
+    {
+      "path": "migrations/099_buyback_revenue_policy.sql",
+      "sha256": "87951eac12d18344dba989ac8155e73811138d6a8b17f1bbbf78876079631fe2",
+      "bytes": 331
     },
     {
       "path": "signer-migrations/001_signing_budget.sql",

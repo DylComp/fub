@@ -24,6 +24,7 @@ import {
   createCloseAccountInstruction,
   createBurnCheckedInstruction,
 } from "@solana/spl-token";
+import { buybackInput } from "./buyback-model.js";
 import type { BuybackPlan, BuybackPolicy } from "./buyback-model.js";
 import { rawLamports } from "./launch-payout-model.js";
 const require = createRequire(import.meta.url),
@@ -134,6 +135,7 @@ export async function prepareAmmBuyback(
   connection: Connection,
   policy: BuybackPolicy,
   minContextSlot: number,
+  available?: string,
 ): Promise<BuybackPlan> {
   const mint = new PublicKey(policy.mint),
     user = new PublicKey(policy.treasury),
@@ -267,7 +269,7 @@ export async function prepareAmmBuyback(
     poolQuote.amount === 0n
   )
     throw Error("Unsupported or empty pool reserves");
-  const input = rawLamports(policy.maxInput),
+  const input = buybackInput(policy,available ?? (rawLamports(policy.maxInput)+rawLamports(policy.maxOverhead)).toString(),integer(u.lamports)),
     reserve = input + rawLamports(policy.maxOverhead),
     rent = integer(
       await connection.getMinimumBalanceForRentExemption(

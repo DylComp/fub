@@ -38,6 +38,7 @@ export function buybackHostConfig(env: NodeJS.ProcessEnv, runtime: "host" | "cro
     maxOverhead: env.BUYBACK_MAX_OVERHEAD_LAMPORTS || "9000000",
     dailyCap: env.BUYBACK_DAILY_CAP_LAMPORTS || "100000000",
     slippageBps: Number(env.BUYBACK_SLIPPAGE_BPS || "100"),
+    ...(env.BUYBACK_REVENUE_RESERVE_LAMPORTS ? {revenueReserve:env.BUYBACK_REVENUE_RESERVE_LAMPORTS}:{}),
   };
   validateBuybackPolicy(policy);
   const endpoint = new URL(env.BUYBACK_RPC_URL || env.SOLANA_RPC_URL || "");
