@@ -207,7 +207,7 @@ export function CopyAccount({
         <h2>Wallet backups</h2>
         {wallet && <span className="muted small">{shortAddress(wallet)}</span>}
       </div>
-      <p className="muted">
+      <p className="muted copy-backup-description">
         Keep a private copy of your rules across browsers. Backups do not
         authorize or run trades.
       </p>

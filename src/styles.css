@@ -4270,3 +4270,12 @@ a.word-link:focus-visible::after { transform: scaleX(1); }
   .fwp-identity a, .directory-asset-amount a { transition: none; }
   a.word-link:hover svg, .launchpad a.word-link:hover { transform: none; }
 }
+
+.copy-account > .copy-backup-description {
+  margin: 12px 0 20px;
+  line-height: 1.6;
+  max-width: 64ch;
+}
+.copy-account > .copy-backup-description + button {
+  margin-bottom: 8px;
+}

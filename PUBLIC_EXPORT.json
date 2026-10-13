@@ -219,8 +219,8 @@
     },
     {
       "path": "src/CopyAccount.tsx",
-      "sha256": "b7ec45970d07525bfaa719342c147aee10e93e85866235cecaf7cc273e1ca55d",
-      "bytes": 12507
+      "sha256": "3dc4a6772126032071a3bd6f4b47965f13d28b5e10a9fd3db6cc98f7aedd14d7",
+      "bytes": 12531
     },
     {
       "path": "src/CopyControls.tsx",
@@ -994,8 +994,8 @@
     },
     {
       "path": "src/styles.css",
-      "sha256": "744f6b6178955f77186381c89ca5d638e220f203dea5aa91f91e5f36b6acf12c",
-      "bytes": 85063
+      "sha256": "5aeca8550653832a5a6ea2f51b46c25d626a08f71aa3356464b5c69409b5b068",
+      "bytes": 85247
     },
     {
       "path": "src/task-completion.ts",
