@@ -342,6 +342,17 @@ export function useWallet({externalLaunchOnly=false}:{externalLaunchOnly?:boolea
     if(signingSession(false,true)!==current||results.length!==1||!result||result.signature.length!==64||(result.signatureType&&result.signatureType!=='ed25519')||result.signedMessage.length!==message.length||!message.every((b,i)=>result.signedMessage[i]===b))throw Error('Wallet changed or altered the copy limits.');
     return bs58.encode(result.signature);
   }
+  async function signCashLimit(scope: import('./cash-limit-model').CashLimitTerms) {
+    const current=signingSession(false,true),account=current?.accounts.find(a=>a.address===scope.sourceWallet);
+    const feature=current?.wallet.features['solana:signMessage'] as SolanaSignMessageFeature['solana:signMessage']|undefined;
+    if(!current||current.address!==scope.sourceWallet||!account||!account.features.includes('solana:signMessage')||!feature||!['1.0.0','1.1.0'].includes(feature.version)||bs58.encode(new Uint8Array(account.publicKey))!==scope.sourceWallet)throw Error('Connect the funding wallet shown in these limit order.');
+    if(scope.origin!==location.origin||scope.issuedAt>Date.now()||scope.acceptBy<=Date.now())throw Error('Review fresh limit order before signing.');
+    const {cashLimitPermissionMessage}=await import('./cash-limit-model');
+    const message=new TextEncoder().encode(cashLimitPermissionMessage(scope));
+    const results=await feature.signMessage({account,message}),result=results[0];
+    if(signingSession(false,true)!==current||results.length!==1||!result||result.signature.length!==64||(result.signatureType&&result.signatureType!=='ed25519')||result.signedMessage.length!==message.length||!message.every((b,i)=>result.signedMessage[i]===b))throw Error('Wallet changed or altered the limit order.');
+    return bs58.encode(result.signature);
+  }
   async function signCashWallet(challenge: import('./cash-wallet-model').CashWalletChallenge) {
     const current=signingSession(false,true),account=current?.accounts.find(a=>a.address===challenge.sourceWallet);
     const feature=current?.wallet.features['solana:signMessage'] as SolanaSignMessageFeature['solana:signMessage']|undefined;
@@ -550,6 +561,7 @@ export function useWallet({externalLaunchOnly=false}:{externalLaunchOnly?:boolea
     signWalletSession,
     signCashWallet,
     signCashCopy,
+    signCashLimit,
     signCashDeposit,
     signProviderWallet,
     signLaunchExecution,

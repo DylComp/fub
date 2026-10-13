@@ -63,10 +63,16 @@ export function cashCopySigning(config:{journal:CashCopyJournal&{authorized:(job
    const p=job.purchase;if(!p||p.id!==id||p.wallet!==scope.sourceWallet||p.state!=='prepared'||p.signed||job.amountRaw!==scope.buyUsdcRaw)throw Error('Invalid copied purchase review.');
    stage='quote';const q=deps.inspectQuote(p.review.rawQuote,p.review.intent,p.review.quote.checkedAt);
    if(!same(q,p.review.quote)||q.network!==network||q.token!==job.event.token||q.sourceWallet!==scope.sourceWallet||q.recipient!==scope.recipient||q.amountRaw!==job.amountRaw||p.review.intent.slippageBps!==scope.slippageBps||p.review.intent.gasTopupUsdcRaw!==scope.gasTopupUsdcRaw||cashCopyRaw(p.review.maxFeeLamports)+cashCopyRaw(p.review.maxRentLamports)>cashCopyRaw(scope.maxSourceFeeLamports))throw Error('Copied purchase differs from permission.');
-   stage='simulation';await deps.simulateDeposit(p.review,config.solana,undefined,now());
-   stage='ownership';const owner=await config.resolveSolana(job,signal);await access(job,signal);await owner.check(signal);
+   // The simulation and initial live ownership lookup are independent read-only
+   // checks. resolveSolana already checks current delegation and re-reads the
+   // grant afterward; an immediate second provider lookup adds no authority.
+   stage='simulation';const [,owner]=await Promise.all([
+    deps.simulateDeposit(p.review,config.solana,undefined,now()),
+    config.resolveSolana(job,signal),
+   ]);
+   stage='ownership';await access(job,signal);
    stage='provider-signature';const signed=await signPart(job,0,p.review,s=>inspectSignedCashDeposit(p.review,s),()=>config.solanaProvider({walletId:owner.walletId,wallet:scope.sourceWallet,unsigned:p.review.unsigned,idempotencyKey:cashSigningPartId(job,0),expiresAt:Math.min(now()+8000,scope.expiresAt,p.review.quote.expiresAt)},signal));
-   stage='post-sign-check';await access(job,signal);await owner.check(signal);return signed;
+   stage='post-sign-check';const checks=await Promise.allSettled([access(job,signal),owner.check(signal)]);for(const result of checks)if(result.status==='rejected')throw result.reason;return signed;
   }
   const sale=job.sale;if(!sale||sale.id!==id||sale.wallet!==scope.sourceWallet||sale.state!=='prepared'||sale.signed||!scope.copySells||sale.gas.maxCostWei!==scope.maxSaleGas[network])throw Error('Invalid copied sale review.');
   const i=sale.simulation.route.intent;
@@ -96,7 +102,7 @@ export function cashCopySigning(config:{journal:CashCopyJournal&{authorized:(job
    await access(job,signal);await owner.check(signal);const transaction=sale.gas.transactions[index];
    stage='provider-signature';signed.push(await signPart(job,index,{transaction,route:sale.simulation.route,maxGas:sale.gas.maxCostWei},s=>inspectSignedCashEvm(transaction,s),()=>config.evmProvider({walletId:owner.walletId,wallet:scope.recipient,transaction,idempotencyKey:cashSigningPartId(job,index),expiresAt:Math.min(now()+8000,scope.expiresAt,sale.gas.expiresAt)},signal)));
   }
-  stage='post-sign-check';await access(job,signal);await owner.check(signal);return signed;
+  stage='post-sign-check';const checks=await Promise.allSettled([access(job,signal),owner.check(signal)]);for(const result of checks)if(result.status==='rejected')throw result.reason;return signed;
   }catch(error){const failure=error instanceof Error?error:Error('Copy signing failed.');Object.assign(failure,{cashSigningStage:stage});throw failure;}
  }};
 }

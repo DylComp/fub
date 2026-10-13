@@ -120,7 +120,7 @@ export function cashCopyJournal(cas:CashCopyCas,planId:string,wallet:string,now=
    if(!['signing','submitted','needs-attention'].includes(j.state))throw Error('Copy settlement has no submission.');
    // Receipt evidence comes from the checked purchase/return services, not
    // Relay's success label. Uncertain attempts retain budget and inventory.
-   if(result.state==='expired'&&'review' in result&&!result.signed&&!result.signature){j.purchase=result;j.state='stopped';return;}
+   if(result.state==='expired'&&'review' in result&&!result.signed&&!result.signature){const proof=(result.review as typeof result.review&{unlandedSubmission?:{signed?:unknown;evidence?:unknown;checkedAt?:unknown}}).unlandedSubmission;if(j.signed&&(!proof||proof.signed!==j.signed||proof.evidence!=='expired-blockhash-and-finalized-source-history'||!Number.isSafeInteger(proof.checkedAt)))throw Error('Signed copy requires finalized nonlanding proof.');j.purchase=result;j.state='stopped';return;}
    if(!['complete','refunded','reverted'].includes(result.state)){if(result.state==='needs-attention')j.state='needs-attention';return;}
    if(!result.signed)throw Error('Copy settlement has no signature.');
    const receipt=result.receipt,s=j.scope,network=j.event.network;

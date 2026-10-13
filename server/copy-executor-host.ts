@@ -25,12 +25,14 @@ export async function runExecutorHost(
   nativeRecovery?: NativeSignatureRecovery,
   directRelay?:(signal:AbortSignal)=>Promise<unknown>,
   cashCopyRelay?:(signal:AbortSignal)=>Promise<unknown>,
+  cashLimitRelay?:(signal:AbortSignal)=>Promise<unknown>,
 ) {
   const config = executorConfig(env),
     deps = executorDependencies(config, signer, nativeSigner, nativeRecovery),
     controller = new AbortController();
   if(directRelay&&!exitRelayEnabled(env,!!signer))throw Error('Direct exits require an explicitly enabled relay.');
   if(cashCopyRelay&&(env.CASH_COPY_EXECUTION_ENABLED!=='true'||env.COPY_SIGNER_TRANSPORT!=='isolated'))throw Error('Cash copying requires an explicitly enabled relay.');
+  if(cashLimitRelay&&(env.CASH_LIMIT_EXECUTION_ENABLED!=='true'||env.COPY_SIGNER_TRANSPORT!=='isolated'))throw Error('Limits require an explicitly enabled relay.');
   const state: ExecutorHealth = {
     mode: config.mode,
     phase: "starting",
@@ -87,6 +89,7 @@ export async function runExecutorHost(
     if(gifts)tasks.push(runCashRecovery(async()=>{const result=await gifts.tick(controller.signal);if(result.retry)throw Error('Gift recovery incomplete.');},controller.signal,healthy=>console.log(JSON.stringify({event:'gift_checkout_recovery',healthy}))));
     if(launches)tasks.push(runLaunchRecovery(launchRecoveryTick(config),launches,controller.signal,s=>console.log(JSON.stringify({event:'launch_recovery_state',phase:s.phase,checked:s.checked,failed:s.failed}))));
     if(directRelay)tasks.push(runDirectExitRelay(directRelay,controller.signal,()=>console.error(JSON.stringify({event:'direct_exit_delivery_unconfirmed'}))));
+    if(cashLimitRelay)tasks.push(runCashDelivery(cashLimitRelay,controller.signal,()=>console.error(JSON.stringify({event:'cash_limit_delivery_unconfirmed'}))));
     if(cashCopyRelay)tasks.push(runCashDelivery(cashCopyRelay,controller.signal,()=>console.error(JSON.stringify({event:'cash_copy_delivery_unconfirmed'}))));
     // Either unexpected loop exit stops its sibling before the host can exit.
     const supervised=tasks.map(task=>task.finally(()=>controller.abort()));

@@ -15,7 +15,7 @@ const units = (raw: string, decimals: number) => {
   return Number.isFinite(value) ? new Intl.NumberFormat('en-US', { maximumFractionDigits: 6 }).format(value) : 'Unavailable';
 };
 export function NetworkTokenPreview({ token, chain, close }: { token: DiscoveredToken; chain: EvmNetwork; close: () => void }) {
-  const {connection, canImport, managedCash, openManagedCash, openConnect, openCashTrade} = useWalletSetup();
+  const {connection, canImport, managedCash, openManagedCash, openConnect, openCashTrade, openCashLimit} = useWalletSetup();
   const [pilot,setPilot]=useState<CashPilot|null>(null);
   const [amount, setAmount] = useState('10');
   const amountEdited = useRef(false);
@@ -97,6 +97,7 @@ export function NetworkTokenPreview({ token, chain, close }: { token: Discovered
     {amountError && <p role="alert">{amountError}</p>}
     <button className="button secondary full" disabled={busy || !!amountError} onClick={() => setAttempt(n => n + 1)}>{busy ? 'Checking USDC quote…' : result ? 'Refresh USDC quote' : 'Check USDC quote'}</button>
     {exceedsPilot && <p role="alert">This test allows up to {formatUnits(BigInt(pilotCap!),6)} USDC. Lower the amount before reviewing.</p>}
+    <button className="button full" disabled={!ownershipCurrent} onClick={()=>openCashLimit(token.address,chain)}>Set a limit order</button>
     {(matchedPilot||pilot?.publicAccess)&&<button className="button primary full" disabled={!ownershipCurrent||!!amountError||(!pilot?.publicAccess&&!pilotCap)||exceedsPilot||!pilot?.executionEnabled} onClick={()=>openCashTrade(token.address,amount,chain)}>{pilot?.publicAccess?'Buy with USDC':'Review cross-chain test'}</button>}
     <div role="status" aria-live="polite">
       {error && <p>{error}</p>}

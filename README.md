@@ -23,7 +23,7 @@ The code is available for inspection, not as proof that no trust is required. No
 
 ## What you can use
 
-As of October 13, 2026, supported Solana limit buys and sells are enabled publicly. Launches, creator-fee distribution, merchant gift cards, Split/Treat and wallet research are available within their documented scope. Automatic cross-chain copying remains under acceptance and is not presented as an unrestricted public service. See [feature status](FEATURE-STATUS.md) for the distinction between tested workflows and public activation.
+As of October 13, 2026, supported Solana limit buys and sells and manual USDC buy/return routes on six EVM networks are enabled publicly. Cross-chain limit execution remains disabled pending funded acceptance. Launches, creator-fee distribution, merchant gift cards, Split/Treat and wallet research are available within their documented scope. Automatic cross-chain copying remains under acceptance and is not presented as an unrestricted public service. See [feature status](FEATURE-STATUS.md) for the distinction between tested workflows and public activation.
 
 ## Features
 

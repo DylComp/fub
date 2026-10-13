@@ -1,6 +1,6 @@
 import type {CashNetwork} from './cash-route';
 import {walletSessionRequest} from './wallet-session-client';
-export type CashPilot={publicAccess?:boolean;network:CashNetwork;gasTopupUsdcRaw?:string;maxGasRaw?:string;executionEnabled:boolean;pilotWallet:boolean;automaticCopyingEnabled:false;purchaseId?:string;saleId?:string;token?:string;buyCapRaw?:string};
+export type CashPilot={publicAccess?:boolean;publicRecovery?:boolean;network:CashNetwork;gasTopupUsdcRaw?:string;maxGasRaw?:string;executionEnabled:boolean;pilotWallet:boolean;automaticCopyingEnabled:false;purchaseId?:string;saleId?:string;token?:string;buyCapRaw?:string};
 export async function cashTradeRequest<T>(body:object,wallet:string):Promise<T>{
  const session=await walletSessionRequest<{address:string|null;csrf?:string}>('status');
  if(session.address!==wallet||!session.csrf)throw Error('Verify your connected Solana wallet first.');

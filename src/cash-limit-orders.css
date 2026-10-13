@@ -1,0 +1,10 @@
+.cash-limit-orders { min-width: 0; overflow-wrap: anywhere; }
+.cash-limit-sides { display: flex; gap: 10px; margin: 18px 0; }
+.cash-limit-sides button { flex: 1; border: 1px solid #343443; border-radius: 8px; padding: 10px; background: #171720; color: inherit; cursor: pointer; }
+.cash-limit-sides button[aria-pressed="true"] { border-color: #a78bfa; background: #a78bfa18; }
+.cash-limit-orders .field input, .cash-limit-orders .field select { box-sizing: border-box; min-width: 0; }
+.cash-limit-orders #cash-limit-price-help { margin: -5px 0 18px; }
+.cash-limit-orders > .word-link { display: block; margin: 12px 0 18px; }
+.cash-limit-orders > section { margin-top: 16px; padding-top: 14px; border-top: 1px solid #343443; }
+
+.cash-limit-orders > [role="status"] { margin: 16px 0; font-size: 13px; line-height: 1.6; }

@@ -1,13 +1,14 @@
 import {createCipheriv,createDecipheriv,randomBytes,createHash} from 'node:crypto';
 export const PRIVATE_BACKUP_TABLES=['signer_wallet_epochs','signer_enrollments','signer_copy_requests','signer_copy_inventory','signer_inventory_reviews','signer_native_requests','signer_direct_exits'] as const;
 export const PRIVATE_CASH_BACKUP_TABLES=[...PRIVATE_BACKUP_TABLES,'signer_cash_journals','signer_cash_parts'] as const;
+export const PRIVATE_LIMIT_BACKUP_TABLES=[...PRIVATE_CASH_BACKUP_TABLES,'signer_cash_limits','signer_cash_nonce_claims','fub_cash_purchases','fub_cash_sales'] as const;
 type PrivateLedgerRows={createdAt:string;migrations:{name:string;sha256:string}[];tables:{name:string;rows:string;count:number;sha256:string}[]};
-export type PrivateLedgerBackup=PrivateLedgerRows&({version:1}|{version:2|3;kind:'fub-private-ledger';schema:string;schemaHash:string});
+export type PrivateLedgerBackup=PrivateLedgerRows&({version:1}|{version:2|3|4;kind:'fub-private-ledger';schema:string;schemaHash:string});
 const aad=Buffer.from('fub-private-ledger-backup:v1');
 export function ledgerDigest(value:string){return createHash('sha256').update(value).digest('hex');}
 export function validateLedgerBackup(value:PrivateLedgerBackup){
- if(!value||![1,2,3].includes(value.version)||!Number.isFinite(Date.parse(value.createdAt))||!Array.isArray(value.tables)||
-  value.tables.map(t=>t.name).join(',')!==(value.version===3?PRIVATE_CASH_BACKUP_TABLES:PRIVATE_BACKUP_TABLES).join(',')||!Array.isArray(value.migrations)||!value.migrations.length)throw Error('Invalid private backup manifest.');
+ if(!value||![1,2,3,4].includes(value.version)||!Number.isFinite(Date.parse(value.createdAt))||!Array.isArray(value.tables)||
+  value.tables.map(t=>t.name).join(',')!==(value.version===4?PRIVATE_LIMIT_BACKUP_TABLES:value.version===3?PRIVATE_CASH_BACKUP_TABLES:PRIVATE_BACKUP_TABLES).join(',')||!Array.isArray(value.migrations)||!value.migrations.length)throw Error('Invalid private backup manifest.');
  const seen=new Set<string>();
  for(const m of value.migrations){
   if(!/^\d{3}_[a-z_]+\.sql$/.test(m.name)||!/^[a-f0-9]{64}$/.test(m.sha256)||seen.has(m.name)||Number(m.name.slice(0,3))!==seen.size+1)throw Error('Invalid migration manifest.');seen.add(m.name);

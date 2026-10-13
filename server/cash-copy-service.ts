@@ -28,6 +28,7 @@ export interface CashCopyJournal {
 export function cashCopyService(config:{journal:CashCopyJournal;purchases:ReturnType<typeof cashPurchaseService>;returns:ReturnType<typeof cashReturnService>;
  enabled:()=>boolean;authorized:(job:CashCopyJob)=>Promise<boolean>;
  recoverSigned?:(id:string)=>Promise<string|string[]|null>;
+ retainSigned?:(job:CashCopyJob,signed:string|string[])=>Promise<void>;
  recoverUnsignedSale?:(id:string)=>Promise<boolean>;
  signer:{purchase:(job:CashCopyJob,purchase:CashPurchase)=>Promise<string>;sale:(job:CashCopyJob,sale:CashSale)=>Promise<string[]>};now?:()=>number}){
  const {journal}=config,now=config.now||Date.now;
@@ -43,6 +44,13 @@ export function cashCopyService(config:{journal:CashCopyJournal;purchases:Return
   // Recovery is allowed after a plan stops or a permission expires. Never
   // interpret a pending bridge or expired permission as a failed purchase.
   if(['signing','submitted','needs-attention'].includes(job.state)){
+   // Recover the private signer journal before status can expire a review
+   // that is unsigned only in the downstream execution ledger.
+   const retained=await journal.signatures(id)||await config.recoverSigned?.(id);
+   if(retained){
+    if(!await journal.signatures(id)){await journal.recordSigned(job,retained);job=(await journal.get(id))!;}
+    await config.retainSigned?.(job,retained);
+   }
    const result=event.side==='buy'?await config.purchases.status(id,scope.sourceWallet):await config.returns.status(id,scope.sourceWallet);
    // The underlying ledger is bound before broadcast. Reconcile it even if a
    // crash occurred before our job could be marked submitted, or permissions

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T15:57:40.017Z",
+  "generatedAt": "2026-10-13T17:04:40.608Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -138,6 +138,11 @@
       "bytes": 2363
     },
     {
+      "path": "tests/cash-status-stream.test.ts",
+      "sha256": "f6f0043efa34e90b71b2ff94267a358ad1ecea1ffb15a3d67f1261bda8db98ae",
+      "bytes": 3177
+    },
+    {
       "path": "tests/wallet-import.test.ts",
       "sha256": "36ba872d030085078a59d152628657c6e53c907edeaecc28c5c6199429bfa002",
       "bytes": 3144
@@ -203,9 +208,14 @@
       "bytes": 5674
     },
     {
+      "path": "src/CashLimitOrders.tsx",
+      "sha256": "10f28c6b52ab98597209f94ca7033851c69bfc717a9ac0a29195242214978143",
+      "bytes": 11521
+    },
+    {
       "path": "src/CashTradePanel.tsx",
-      "sha256": "20fe6a5440bf61a0df801383a16f7a499dfa08fd999d42f395532289073cc9cf",
-      "bytes": 14342
+      "sha256": "11ed6ddf3e9734a28b080850bb41aea337338e0ac2426ce9e61d9d687313cd9d",
+      "bytes": 14413
     },
     {
       "path": "src/CashWalletSetup.tsx",
@@ -274,8 +284,8 @@
     },
     {
       "path": "src/Docs.tsx",
-      "sha256": "ba46c157f0bc7a13bc23a367aee9d266a0708c5df0db5c7d57e88c15f6999105",
-      "bytes": 20515
+      "sha256": "93a3cdc20df0c6edb355abf895cee1a64ddfda6ca8d0236ceead9c9a3711eaf8",
+      "bytes": 21176
     },
     {
       "path": "src/EvmCashImport.tsx",
@@ -379,8 +389,8 @@
     },
     {
       "path": "src/NetworkTokenPreview.tsx",
-      "sha256": "829e934b1ef4a6bbc45655d24c13b16f018f35ab37a1cfedca9016ee6132af95",
-      "bytes": 9090
+      "sha256": "d8cbeef14b4366005d704ef59655306bd6f53ee6e9710541617874707b03ac76",
+      "bytes": 9246
     },
     {
       "path": "src/Overview.tsx",
@@ -414,8 +424,8 @@
     },
     {
       "path": "src/PrivyImport.tsx",
-      "sha256": "ea83c00709a40ef902f88f8ed297550945637018808199dd8e73feb78ef19ad7",
-      "bytes": 27177
+      "sha256": "327b8351b501633249fc67a7a935856eb40916908fa6d62a25ce0f3664a5be2e",
+      "bytes": 28056
     },
     {
       "path": "src/PumpPairFinder.tsx",
@@ -463,6 +473,11 @@
       "bytes": 8557
     },
     {
+      "path": "src/ViewedTokenChart.tsx",
+      "sha256": "75600f8cb528d53d43e74991154139dc217c081a1450cc34f5b2e90af93a63c1",
+      "bytes": 3650
+    },
+    {
       "path": "src/WalletPanel.tsx",
       "sha256": "75db0cb586f758e1e16655be2694f6d916c7f991f6fbe2463f1ce6ea135c6db9",
       "bytes": 9485
@@ -474,8 +489,8 @@
     },
     {
       "path": "src/WalletSetup.tsx",
-      "sha256": "8f1ffe34e2d5908a0d7281e693ee24ded669742c8ccd085354094132e89e7c96",
-      "bytes": 6653
+      "sha256": "593f1a164a78e9150c5ebcf22898750434da20862a4c3fa1bf42041f46292f6f",
+      "bytes": 6871
     },
     {
       "path": "src/WalletTransactionRow.tsx",
@@ -553,6 +568,16 @@
       "bytes": 10386
     },
     {
+      "path": "src/cash-limit-model.ts",
+      "sha256": "ec98614abc3d85e2c390032787074f3b12319aa7da2ee555b65c17c43c541fb3",
+      "bytes": 5691
+    },
+    {
+      "path": "src/cash-limit-orders.css",
+      "sha256": "c8a5d92955c77fdeb4be0feba0fcdba34c55323195feeb91bab60f1514c00a2f",
+      "bytes": 818
+    },
+    {
       "path": "src/cash-network-policy.ts",
       "sha256": "6cfa050d8361735d36304c3b0066fd924bfedf892316bd9338819a5362d66b25",
       "bytes": 1583
@@ -579,8 +604,8 @@
     },
     {
       "path": "src/cash-trade-client.ts",
-      "sha256": "e21d5956f12a50ba02d346cd3caf66d0d882d872d640b479a07345c561904eb0",
-      "bytes": 1054
+      "sha256": "480a8af3561709a2b6c57a6d4a098600d41fb855ecd0ccf53028100345aa92fe",
+      "bytes": 1078
     },
     {
       "path": "src/cash-wallet-chains.ts",
@@ -1043,6 +1068,11 @@
       "bytes": 2360
     },
     {
+      "path": "src/useLiveCandles.ts",
+      "sha256": "90d04b1644347477540d8b3369521b6758dfca8c5a271084f7dc792c50ff9727",
+      "bytes": 2832
+    },
+    {
       "path": "src/useMarket.ts",
       "sha256": "c8e7ce9bc631d8ff43054926c58f2cb980bc9e26d998d5c2b23f7e5bc4613ffe",
       "bytes": 9411
@@ -1059,8 +1089,13 @@
     },
     {
       "path": "src/useWallet.ts",
-      "sha256": "f0e9d3c61733c541cf9aebcd43f5e3c6444d2a680585ac7e35e097deba57466b",
-      "bytes": 37428
+      "sha256": "8a09a3a0505481d1839475dd87edf6f6513e74165c3d186336c68212799494ba",
+      "bytes": 38830
+    },
+    {
+      "path": "src/viewed-token-chart.css",
+      "sha256": "52569a2b641e178b72c2595573d012f0711135ee12a61ed070949fe1fb54d97e",
+      "bytes": 985
     },
     {
       "path": "src/wallet-import.ts",
@@ -1259,13 +1294,13 @@
     },
     {
       "path": "server/cash-copy-host-config.ts",
-      "sha256": "8fe2c124afbd23bcc0c122cc7922866146cb7fd018bd28ed13c8884c7f1a3831",
-      "bytes": 8686
+      "sha256": "3c5b44d60e7f3fa461c130d619f7959cefbf0852d5a424b02aea2a502156c59c",
+      "bytes": 8884
     },
     {
       "path": "server/cash-copy-hosted.ts",
-      "sha256": "88e277f694771ae7ace00893558d2de7d35298b3c0c825d3cfe31dc022618f22",
-      "bytes": 23492
+      "sha256": "a6139eaf4c99fc1a91fee060264a60072fc507a80ea159244e45772d62bb524b",
+      "bytes": 24331
     },
     {
       "path": "server/cash-copy-inventory.ts",
@@ -1274,8 +1309,8 @@
     },
     {
       "path": "server/cash-copy-journal.ts",
-      "sha256": "f17e4c9cc3120cb8ab0b58792cbb8ca3e7910702b91fc4e6c54e61c7c89ba218",
-      "bytes": 29548
+      "sha256": "e72c113c4c67409a0cd696103d7da584ebf608171a097be98ce2627a19f92a37",
+      "bytes": 29914
     },
     {
       "path": "server/cash-copy-observer.ts",
@@ -1308,14 +1343,19 @@
       "bytes": 1794
     },
     {
+      "path": "server/cash-copy-return-credit.ts",
+      "sha256": "013de8a94940713057dd94f04d194dea11cf9b781debb52d77b87b09f8c81265",
+      "bytes": 1215
+    },
+    {
       "path": "server/cash-copy-sale-credit.ts",
       "sha256": "c4ea9c7370e5c2fd186ab695a3785a965f74ce110d6f7f683ea5c63775484d4c",
       "bytes": 2985
     },
     {
       "path": "server/cash-copy-service.ts",
-      "sha256": "ee976abf612617feb87238c2ba823f3f0097b91ba4e60e1fd49cc96e10f27918",
-      "bytes": 7818
+      "sha256": "be2e933325cd5200d5e21537687882e699c9d62dd4350ad74e6276f4e8c1cff7",
+      "bytes": 8290
     },
     {
       "path": "server/cash-copy-signing-parts.ts",
@@ -1324,8 +1364,8 @@
     },
     {
       "path": "server/cash-copy-signing.ts",
-      "sha256": "36322030ae490e8ddf8892137ff30d7cd61441fce5064d3ec74d42aae4584e90",
-      "bytes": 10199
+      "sha256": "c8306d269146886afc9e07cd2ba0cf5e3c907a50816cdd0474f70906dfca80a1",
+      "bytes": 10650
     },
     {
       "path": "server/cash-copy-solana-rpc.ts",
@@ -1384,8 +1424,18 @@
     },
     {
       "path": "server/cash-leader-arc-receipt.ts",
-      "sha256": "c32e960d694ddc382acad9c73b7cfd792a064a04c6a56cf106e8647a38a866aa",
-      "bytes": 10707
+      "sha256": "fae14edd3de179028bfc1fc7268f33893de442202f152092cfaea1350a6727f0",
+      "bytes": 13785
+    },
+    {
+      "path": "server/cash-leader-arc-sale.ts",
+      "sha256": "57df2a41551cfd523e5d79f2973ea6c2503ac53551bee4867032f0ff63ed1b67",
+      "bytes": 6419
+    },
+    {
+      "path": "server/cash-leader-bnb-receipt.ts",
+      "sha256": "e2d24be235a6e31aaf0963b4df942afefacd9a57c1838d077c1e93130b142391",
+      "bytes": 5576
     },
     {
       "path": "server/cash-leader-buy.ts",
@@ -1424,8 +1474,8 @@
     },
     {
       "path": "server/cash-leader-sale.ts",
-      "sha256": "1e2b450cde0411103efcf7ae2d9cb89a9b695b00430692ae6481b52817b2dc32",
-      "bytes": 11960
+      "sha256": "82616a851e186f25e8177f6a20cab2af6f90fbbd74ed3a39ddb001d2ab71ce43",
+      "bytes": 12401
     },
     {
       "path": "server/cash-leader-stream.ts",
@@ -1444,8 +1494,8 @@
     },
     {
       "path": "server/cash-leader-zero-monad-sale.ts",
-      "sha256": "b911b02b0fdb3c32fa4cb6ac4d201c57139e504b8271bd40eb229d397f646c6f",
-      "bytes": 8574
+      "sha256": "4d4dd523f2100964846509357933378c811fa645c1ae8bb3c1a3b2e2fac87bcd",
+      "bytes": 13880
     },
     {
       "path": "server/cash-leader-zero-sale.ts",
@@ -1456,6 +1506,96 @@
       "path": "server/cash-leader-zero-v2.ts",
       "sha256": "9b6f1629b7e99e3026572921e7e629d8546736b5bdc0bc04630c3901aa73770f",
       "bytes": 5033
+    },
+    {
+      "path": "server/cash-limit-api.ts",
+      "sha256": "55955fd578a48a081242822f1896515a5306b6db248db3007f592cfb169ea865",
+      "bytes": 3519
+    },
+    {
+      "path": "server/cash-limit-balances.ts",
+      "sha256": "a22f840fb8fa4d2e1b5f0717f3d70ae25e5ea8d3359b0d6a3adaf380dd981f11",
+      "bytes": 2459
+    },
+    {
+      "path": "server/cash-limit-delivery-review.ts",
+      "sha256": "3d3d010c87d80d94d4160c464b8c6a7b39d2bce45ebc52c6a1cae6cf1b349c68",
+      "bytes": 1723
+    },
+    {
+      "path": "server/cash-limit-delivery.ts",
+      "sha256": "c587a15c73c75ef01c1c62f8a6d3f7cf3e27096e431e1de621b9923fe09d73fa",
+      "bytes": 4889
+    },
+    {
+      "path": "server/cash-limit-engine.ts",
+      "sha256": "161073ff1d0c529c871a4545e3ee069d764dea23898f2b5394d36f459f58d08d",
+      "bytes": 4221
+    },
+    {
+      "path": "server/cash-limit-enrollment.ts",
+      "sha256": "ce696751b8351c71e56e6d7765349db894ab7cc935349275c2378e7fb8f253bf",
+      "bytes": 5461
+    },
+    {
+      "path": "server/cash-limit-execution-store.ts",
+      "sha256": "63b388b0f6f628e09b67774dc66312213c689437f9d45ffd7d7c84f6100f4800",
+      "bytes": 5519
+    },
+    {
+      "path": "server/cash-limit-host-config.ts",
+      "sha256": "c06853f6e7394fd78ba03b608a6d86c34ae94dd9136a6f85bde4ebcd145e1957",
+      "bytes": 2234
+    },
+    {
+      "path": "server/cash-limit-hosted.ts",
+      "sha256": "dd59d6e40d8dce125ac5bffb4da3a613afe5d6f074e7b229c13fc674e648d3b7",
+      "bytes": 8684
+    },
+    {
+      "path": "server/cash-limit-partial-sale.ts",
+      "sha256": "ef972fbeea38961a65db62e01c61f34f6c540bcad8051a3ce51348116bd620a1",
+      "bytes": 3054
+    },
+    {
+      "path": "server/cash-limit-price.ts",
+      "sha256": "100469011f1f7659841802a9a3596578e87cef0189d056ffce45a5562b8c2211",
+      "bytes": 1766
+    },
+    {
+      "path": "server/cash-limit-relay.ts",
+      "sha256": "4a96930d0410ca2c6728167e5283f21732d3bbe31a097dd90a5029d937a334a5",
+      "bytes": 1798
+    },
+    {
+      "path": "server/cash-limit-review.ts",
+      "sha256": "815bd0c73629058b1d8a02479781672e07abadb2e9322691af2062bfe5a5f35c",
+      "bytes": 3069
+    },
+    {
+      "path": "server/cash-limit-scheduler.ts",
+      "sha256": "95e72f9a0a75a39d4ff6a7d93550efdc902252ef3fcd1509520af27bcaabe5a1",
+      "bytes": 1330
+    },
+    {
+      "path": "server/cash-limit-service.ts",
+      "sha256": "60a67e012f9d5ddde6c7266a6305ad3a03154ddf900e2176593f84d605128d5e",
+      "bytes": 5231
+    },
+    {
+      "path": "server/cash-limit-signing-parts.ts",
+      "sha256": "40e00f0a46ba6da877859712e560031b50ad93bb0728fa184bc16284255ed233",
+      "bytes": 1365
+    },
+    {
+      "path": "server/cash-limit-signing.ts",
+      "sha256": "53b4c9e7796736a5bf9250ef19e2dc4322ccf7da8a2f31e380a2d0b42c5d8d68",
+      "bytes": 8034
+    },
+    {
+      "path": "server/cash-limit-store.ts",
+      "sha256": "17518248d44decb27405c19d10fd00e0c25de4e58ef992bb96ca7e6f1cdc70c2",
+      "bytes": 5835
     },
     {
       "path": "server/cash-live-dispatch.ts",
@@ -1469,8 +1609,8 @@
     },
     {
       "path": "server/cash-live-verifier.ts",
-      "sha256": "6e0b316942482c5c5793a620dd4a56e5801eeb12b8727b144d88ee98acc50e17",
-      "bytes": 2004
+      "sha256": "38cfccaffac2451ef5cae941b7c5987151cb81f972a15d38aa1daba8b3252ea2",
+      "bytes": 2061
     },
     {
       "path": "server/cash-managed-owner.ts",
@@ -1481,6 +1621,11 @@
       "path": "server/cash-monad-gas.ts",
       "sha256": "ebfe56f903607220411f8e38aeae81a77dc0b421a5a66fb29943446595a9309e",
       "bytes": 2427
+    },
+    {
+      "path": "server/cash-nonce-reservation.ts",
+      "sha256": "b162824bf5a5a6499d466b8dea283b9aaa1cc072fa18baff44520ec93789fff6",
+      "bytes": 1711
     },
     {
       "path": "server/cash-owned-leader.ts",
@@ -1509,7 +1654,7 @@
     },
     {
       "path": "server/cash-public.ts",
-      "sha256": "93f6b49f06b577837627ce27b9d47d8c5df6e057b0f61835f9a0a19e1fdeb955",
+      "sha256": "ec9ef9e1ba43a7a814704530508286063448b59f7f610b81c0485ded15cf81ee",
       "bytes": 6191
     },
     {
@@ -1608,14 +1753,24 @@
       "bytes": 3038
     },
     {
+      "path": "server/cash-status-proof.ts",
+      "sha256": "75821abfa5349035af2061cf5f881c5a75ea35111952b67c934915bae13cf4cd",
+      "bytes": 6755
+    },
+    {
+      "path": "server/cash-status-stream.ts",
+      "sha256": "871ec6ea112b64f2568815e1b9b8a3ca79a3d25cbb7385bf62fcf2c4f17f066b",
+      "bytes": 2857
+    },
+    {
       "path": "server/cash-stream-monitor.ts",
       "sha256": "344e006a66d45d1102dd27ebdaa89c09dc803f78b84a227be6661cd72a8d173d",
       "bytes": 12809
     },
     {
       "path": "server/cash-trade-api.ts",
-      "sha256": "aed1ebb6ddc848f6fc842dd55ed1944bb569000378735911ecdc2870823a6522",
-      "bytes": 11381
+      "sha256": "e3e32607f250266c6b41922cac7964b2a89e7a8d2d851126016f95fc5ad6e7d4",
+      "bytes": 11403
     },
     {
       "path": "server/cash-wallet-api.ts",
@@ -1636,6 +1791,11 @@
       "path": "server/cash-wallet-store.ts",
       "sha256": "fe6bc8130b30bb539c0c88e6d421ec68c1423eae3c0fc65b99cd658f7e894d12",
       "bytes": 1902
+    },
+    {
+      "path": "server/codex-stream.ts",
+      "sha256": "d7e2bc408c8720a3076f0507ab7e643a823cef517a0ae19f68d23f7552171e02",
+      "bytes": 8351
     },
     {
       "path": "server/codex.ts",
@@ -1749,8 +1909,8 @@
     },
     {
       "path": "server/copy-executor-host.ts",
-      "sha256": "e47900a9a9c6612270e5a2b7fb3ba37371580cf0f2cfbe45441f6c2e14d6f4d5",
-      "bytes": 5533
+      "sha256": "1c6b3b7e2c46895bd8de31cdfef9b687056b9642502def252cef922486151c6a",
+      "bytes": 5918
     },
     {
       "path": "server/copy-executor-rpc.ts",
@@ -2189,8 +2349,8 @@
     },
     {
       "path": "server/isolated-signer-transport.ts",
-      "sha256": "512678b022546f793dfc2ba96e18c9c38264a62b0571ee7a0ccf382dae1fdfae",
-      "bytes": 14571
+      "sha256": "17acdee11e863d00d27a037650ae8755eb2fa8dd4204d09b28c3fbf675c456d7",
+      "bytes": 16179
     },
     {
       "path": "server/isolated-signing-budget.ts",
@@ -2544,13 +2704,13 @@
     },
     {
       "path": "server/private-ledger-backup.ts",
-      "sha256": "28926759fd6b52a463687d8a6a0e9cc8bf4306b1fa9bdb1e324c0fee82778f1b",
-      "bytes": 3415
+      "sha256": "bb107ce43866926f0162d28530d3fa964fe04fda29f092334de9ab53e827baf0",
+      "bytes": 3634
     },
     {
       "path": "server/private-ledger-restore.ts",
-      "sha256": "44f90154a35668dc523c30e74be5ba0fc27d9b0d064c4e98e5d7440021299089",
-      "bytes": 6482
+      "sha256": "bb0b7ea95ceaf3682fb858345d5758aacc9b9122ef6dda7f40c97712c0799be1",
+      "bytes": 6984
     },
     {
       "path": "server/privy-cash-owner.ts",
@@ -2679,8 +2839,8 @@
     },
     {
       "path": "server/signer-database-audit.ts",
-      "sha256": "f5a71688a45dadf6c23f6567970dacd9ee0de57f11246e84a80e537bfb7f29ec",
-      "bytes": 9661
+      "sha256": "ad7cc5a9c7704c44b36403aaeb7bff63e686ac227bf98dd15043ec41aae827d7",
+      "bytes": 10412
     },
     {
       "path": "server/signer-enrollment-api.ts",
@@ -2963,6 +3123,11 @@
       "bytes": 85
     },
     {
+      "path": "api/market-stream.ts",
+      "sha256": "38585eac3677b87a940c93c851b24db860469e38dd8b9bfe165cfdefd8e2eb59",
+      "bytes": 284
+    },
+    {
       "path": "api/market.ts",
       "sha256": "43f7acfa518ec874cb86c1f181cb79b0819d8378d9e9ae6d0b6ad6aa65d0c893",
       "bytes": 229
@@ -3039,8 +3204,8 @@
     },
     {
       "path": "workers/executor.ts",
-      "sha256": "4b2f5c6f15353dd455e057355cbea320f1881a86a70c34aaf57e853567bd900d",
-      "bytes": 2029
+      "sha256": "3063bedb8688883b9b2943f365ed5552b67838af23cebf0a1c8043538d535cf9",
+      "bytes": 2139
     },
     {
       "path": "workers/fomo-browser.ts",
@@ -3091,6 +3256,11 @@
       "path": "workers/resolver-entrypoint.sh",
       "sha256": "f398646dc0b0adbe3759449b17e9de3348cc471c3e934d0d7c3b6ba98ff4a9fd",
       "bytes": 263
+    },
+    {
+      "path": "workers/signer.ts",
+      "sha256": "3cd9cd23721bae7031d1ca720b3cb4ed39dc416c69434bc7514192237687cb06",
+      "bytes": 16280
     },
     {
       "path": "workers/trading-check.ts",
@@ -3663,44 +3833,29 @@
       "bytes": 1703
     },
     {
+      "path": "signer-migrations/014_cash_limits.sql",
+      "sha256": "3a8c017865086dfacb4b32f3eb736185a7c557d0e9c129cf9d303b28d4e175a3",
+      "bytes": 1040
+    },
+    {
+      "path": "signer-migrations/015_cash_nonce_claims.sql",
+      "sha256": "e8e6197340b32ffb05242a21bd9d9088deadd9c987936756217f788c744925f1",
+      "bytes": 435
+    },
+    {
+      "path": "signer-migrations/016_cash_limit_settlement.sql",
+      "sha256": "7fd265fbd23fc66f917520574bc6d8cc983b052ff824dbaa046f76c44e724487",
+      "bytes": 3858
+    },
+    {
       "path": "README.md",
-      "sha256": "57ca6f2d1c53e6ccd0dff0df034a4f65cfce58987f2cad86954714199a3961c7",
-      "bytes": 9636
+      "sha256": "de6ac9f75a6dafca9393b5cd65f4a919fa3c9a33385c0d19c6f6512bce5d7db1",
+      "bytes": 11367
     },
     {
       "path": "SECURITY.md",
       "sha256": "042abbc6df5570dd46e5a365f9f2026fa49eb80cbc399eedda55055380c7739f",
       "bytes": 3118
-    },
-    {
-      "path": ".env.example",
-      "sha256": "32fc867dd2ea4fd6a8816864d5370bb3efdf4149b869b09be69666c204c1836c",
-      "bytes": 3266
-    },
-    {
-      "path": ".gitignore",
-      "sha256": "8d8cdae35cb7e68dc7976931fb807ba8d16fe70d61e0ab79d1516832a1834621",
-      "bytes": 133
-    },
-    {
-      "path": "tests/cash-status-stream.test.ts",
-      "sha256": "f6f0043efa34e90b71b2ff94267a358ad1ecea1ffb15a3d67f1261bda8db98ae",
-      "bytes": 3177
-    },
-    {
-      "path": "server/cash-status-proof.ts",
-      "sha256": "75821abfa5349035af2061cf5f881c5a75ea35111952b67c934915bae13cf4cd",
-      "bytes": 6755
-    },
-    {
-      "path": "server/cash-status-stream.ts",
-      "sha256": "871ec6ea112b64f2568815e1b9b8a3ca79a3d25cbb7385bf62fcf2c4f17f066b",
-      "bytes": 2857
-    },
-    {
-      "path": "workers/signer.ts",
-      "sha256": "0b27491abf2e761e2aedc53fcd3b06701d3a4fe435b22f76671df30d8aca18a2",
-      "bytes": 15831
     },
     {
       "path": "WALLET-SECURITY.md",
@@ -3714,8 +3869,8 @@
     },
     {
       "path": "FEATURE-STATUS.md",
-      "sha256": "ab85751dc5a95851f457f563355be3984d3b7093d6ceaeee32a296c15ed555e2",
-      "bytes": 3527
+      "sha256": "bcc0b3e910fb6506efd22f91e552e27c7a57c16636c62956c9dace16e49c6d2d",
+      "bytes": 4977
     },
     {
       "path": "FEES.md",
@@ -3723,39 +3878,14 @@
       "bytes": 2344
     },
     {
-      "path": "server/cash-copy-return-credit.ts",
-      "sha256": "013de8a94940713057dd94f04d194dea11cf9b781debb52d77b87b09f8c81265",
-      "bytes": 1215
+      "path": ".env.example",
+      "sha256": "32fc867dd2ea4fd6a8816864d5370bb3efdf4149b869b09be69666c204c1836c",
+      "bytes": 3266
     },
     {
-      "path": "src/ViewedTokenChart.tsx",
-      "sha256": "75600f8cb528d53d43e74991154139dc217c081a1450cc34f5b2e90af93a63c1",
-      "bytes": 3650
-    },
-    {
-      "path": "src/viewed-token-chart.css",
-      "sha256": "52569a2b641e178b72c2595573d012f0711135ee12a61ed070949fe1fb54d97e",
-      "bytes": 985
-    },
-    {
-      "path": "src/useLiveCandles.ts",
-      "sha256": "90d04b1644347477540d8b3369521b6758dfca8c5a271084f7dc792c50ff9727",
-      "bytes": 2832
-    },
-    {
-      "path": "server/codex-stream.ts",
-      "sha256": "d7e2bc408c8720a3076f0507ab7e643a823cef517a0ae19f68d23f7552171e02",
-      "bytes": 8351
-    },
-    {
-      "path": "api/market-stream.ts",
-      "sha256": "38585eac3677b87a940c93c851b24db860469e38dd8b9bfe165cfdefd8e2eb59",
-      "bytes": 284
-    },
-    {
-      "path": "server/cash-leader-bnb-receipt.ts",
-      "sha256": "e2d24be235a6e31aaf0963b4df942afefacd9a57c1838d077c1e93130b142391",
-      "bytes": 5576
+      "path": ".gitignore",
+      "sha256": "8d8cdae35cb7e68dc7976931fb807ba8d16fe70d61e0ab79d1516832a1834621",
+      "bytes": 133
     }
   ],
   "secretPatternScan": {

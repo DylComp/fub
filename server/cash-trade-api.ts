@@ -66,7 +66,7 @@ export function cashTradeHandler(options:{runtime?:typeof cashTradeRuntime;sessi
     if(publicAccess)return send(200,{network,executionEnabled:true,publicAccess:true,pilotWallet:false,automaticCopyingEnabled:false,buyCapRaw:'10000000000',...CASH_PUBLIC_BUDGETS[network]});
     // Older controlled-test UI stays compatible while public rollout is off.
     const pilot=network===cashPilotNetwork()&&process.env.CASH_PILOT_WALLET===user.wallet;
-    return send(200,{network,publicAccess:false,executionEnabled:runtime.enabled(network),pilotWallet:pilot,automaticCopyingEnabled:false,...(pilot?{...cashPilotBudgets(),purchaseId:process.env.CASH_PILOT_PURCHASE_ID,saleId:process.env.CASH_PILOT_SALE_ID,token:process.env.CASH_PILOT_TOKEN,buyCapRaw:process.env.CASH_PILOT_BUY_USDC_RAW}:{})});
+    return send(200,{network,publicAccess:false,publicRecovery:!pilot,executionEnabled:runtime.enabled(network),pilotWallet:pilot,automaticCopyingEnabled:false,...(pilot?{...cashPilotBudgets(),purchaseId:process.env.CASH_PILOT_PURCHASE_ID,saleId:process.env.CASH_PILOT_SALE_ID,token:process.env.CASH_PILOT_TOKEN,buyCapRaw:process.env.CASH_PILOT_BUY_USDC_RAW}:{})});
    }
    if(action.startsWith('public-')&&isCashNetwork(b.network)){const r=await handlePublicCash(b,user.wallet,network,runtime,options.history||cashPublicHistory(process.env.DATABASE_URL||''));return send(r.status,r.data);}
    if(Object.hasOwn(b,'network'))return send(400,{message:'Invalid cash action or fields.'});

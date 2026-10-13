@@ -1,3 +1,4 @@
+import {privateCashNonceClaim} from './cash-nonce-reservation.js';
 import {ownedCashLeaderLookup} from './cash-owned-leader.js';
 import {cashPublicPolicy} from './cash-public-policy.js';
 import {cashLeaderRegistry,cashLeaderProfileLookup} from './cash-leader-registry.js';
@@ -39,11 +40,11 @@ export function cashCopyHostConfig(env:Record<string,string|undefined>){
  const registry=cashLeaderRegistry(publicPolicy?[]:leaders,publicPolicy?((source,signal,handle)=>direct&&handle?direct(source,signal,handle):env.FOMO_LOOKUP_API_KEY?lookup!(source,signal):Promise.reject(Error('Select a Fomo username.'))):undefined);
  return{publicPolicy,registry,reviewLimits:publicPolicy?undefined:limit||undefined,saleGasCeilingWei,solanaPolicy:policy('SOLANA'),evmPolicy:policy('EVM'),leaders,allows:publicPolicy?.allows||((wallet:string)=>wallets.includes(wallet)),allowsAsset:publicPolicy?.allowsAsset||((network:string,token:string)=>assets.some(a=>a.network===network&&a.token===token)),allowsScope:publicPolicy?.allowsScope||((scope:CashCopyScope)=>!!limit&&scope.recipient===limit.recipient&&scope.buyUsdcRaw===limit.buyUsdcRaw&&scope.dailyUsdcRaw===limit.dailyUsdcRaw&&scope.gasTopupUsdcRaw===limit.gasTopupUsdcRaw&&scope.expiresAt-scope.issuedAt<=limit.maxDurationMs)};
 }
-export function configuredHostedCashCopy(env:Record<string,string|undefined>,ready:()=>boolean,solana:Rpc,shutdown?:AbortSignal,monitorReady?:(leader:string,networks:CashNetwork[])=>boolean){
+export function configuredHostedCashCopy(env:Record<string,string|undefined>,ready:()=>boolean,solana:Rpc,shutdown?:AbortSignal,monitorReady?:(leader:string,networks:CashNetwork[])=>boolean,status?:(requestId:string)=>unknown){
  const c=cashCopyHostConfig(env);if(!c)return null;const url=env.SIGNER_DATABASE_URL!;
  if(!url)throw Error('Private cash journal is not configured.');
- const liveVerify=env.CASH_COPY_LIVE_ENABLED==='true'?cashLiveVerifier({rpc:(network,signal)=>cashEvmRpc(network,fetch,{endpoint:env[`CASH_${network.toUpperCase()}_STREAM_RPC_URL`],signal,archive:false,timeoutMs:2500}),solana:signal=>async(m,p)=>{signal.throwIfAborted();const value=await solana(m,p);signal.throwIfAborted();return value;},sourceWallet:(leader,network)=>c.registry.source(leader,network)}):undefined;
- return hostedCashCopy({...c,liveVerify,shutdown,monitorReady,origin:env.SIGNER_WEB_ORIGIN!,appId:env.PRIVY_APP_ID!,appSecret:env.PRIVY_APP_SECRET!,cas:privateCashCopyCas(url,c.publicPolicy?.capacity),parts:cashSigningParts(url),solana,evm:cashEvmRpc,ready,enabled:()=>env.CASH_COPY_EXECUTION_ENABLED==='true',restoreLeaders:async()=>{
+ const liveVerify=env.CASH_COPY_LIVE_ENABLED==='true'?cashLiveVerifier({rpc:(network,signal)=>cashEvmRpc(network,fetch,{endpoint:env[`CASH_${network.toUpperCase()}_STREAM_RPC_URL`],signal,archive:false,timeoutMs:2500}),solana:signal=>async(m,p)=>{signal.throwIfAborted();const value=await solana(m,p);signal.throwIfAborted();return value;},sourceWallet:(leader,network)=>c.registry.source(leader,network),status}):undefined;
+ return hostedCashCopy({...c,...(env.CASH_LIMIT_SERVICE_ENABLED==='true'?{nonceClaim:privateCashNonceClaim(url)}:{}),liveVerify,shutdown,monitorReady,origin:env.SIGNER_WEB_ORIGIN!,appId:env.PRIVY_APP_ID!,appSecret:env.PRIVY_APP_SECRET!,cas:privateCashCopyCas(url,c.publicPolicy?.capacity),parts:cashSigningParts(url),solana,evm:cashEvmRpc,ready,enabled:()=>env.CASH_COPY_EXECUTION_ENABLED==='true',restoreLeaders:async()=>{
   const version=c.registry.version();
   const sql=neon(url,{fetchOptions:{signal:AbortSignal.timeout(5000)}});
   const rows=await sql`SELECT journal FROM signer_cash_journals WHERE journal->>'revoked'='false' AND (journal->'grant'->'scope'->>'expiresAt')::bigint>${Date.now()} ORDER BY plan_id LIMIT 101`;

@@ -9,7 +9,8 @@ export const APPLICATION_SIGNER_TABLES = [
 export const PRIVATE_SIGNER_TABLES = ["signer_copy_requests", "signer_wallet_epochs", "signer_enrollments", "signer_copy_inventory", "signer_inventory_reviews", "signer_native_requests"] as const;
 export const DIRECT_EXIT_SIGNER_TABLES=['signer_direct_exits'] as const;
 export const CASH_COPY_SIGNER_TABLES=['signer_cash_journals','signer_cash_parts'] as const;
-export type DatabaseAuditConfig = { applicationReadUrl: string; privateBudgetUrl: string; trustedAdminRoles: string[]; directExits?:boolean;cashCopies?:boolean };
+export const CASH_LIMIT_SIGNER_TABLES=['signer_cash_limits','signer_cash_parts','fub_cash_purchases','fub_cash_sales','signer_cash_nonce_claims'] as const;
+export type DatabaseAuditConfig = { applicationReadUrl: string; privateBudgetUrl: string; trustedAdminRoles: string[]; directExits?:boolean;cashCopies?:boolean;cashLimits?:boolean };
 export class SignerDatabaseRefused extends Error {
   constructor() { super("Signing database isolation is unavailable or does not meet the required privileges."); }
 }
@@ -66,19 +67,19 @@ export type DatabaseAuditSnapshot = {
   objects: DbObject[]; functions: { schema: string; name: string; definer: boolean; execute: boolean; owned: boolean; grant: boolean }[];
   connectingRoles: string[];
 };
-export function verifyDatabaseSnapshot(s: DatabaseAuditSnapshot, lane: "application" | "private", expectedRole: string, admins: string[], directExits=false,cashCopies=false) {
+export function verifyDatabaseSnapshot(s: DatabaseAuditSnapshot, lane: "application" | "private", expectedRole: string, admins: string[], directExits=false,cashCopies=false,cashLimits=false) {
   if (!s || s.role !== expectedRole || s.sessionRole !== expectedRole || s.unsafeRole !== false || s.ownsDatabase !== false ||
       s.createDatabaseObjects !== false || s.schemaWrite !== false || s.schemaPublicWrite !== false ||
       !Array.isArray(s.searchPath) || s.searchPath.join(",") !== "public" ||
       !Array.isArray(s.objects) || !Array.isArray(s.functions) || !Array.isArray(s.connectingRoles)) throw new SignerDatabaseRefused();
-  const required: readonly string[] = lane === "application" ? APPLICATION_SIGNER_TABLES : [...PRIVATE_SIGNER_TABLES,...(directExits?DIRECT_EXIT_SIGNER_TABLES:[]),...(cashCopies?CASH_COPY_SIGNER_TABLES:[])];
+  const required: readonly string[] = lane === "application" ? APPLICATION_SIGNER_TABLES : [...PRIVATE_SIGNER_TABLES,...(directExits?DIRECT_EXIT_SIGNER_TABLES:[]),...(cashCopies?CASH_COPY_SIGNER_TABLES:[]),...(cashLimits?CASH_LIMIT_SIGNER_TABLES:[])];
   for (const name of required) {
     const matches = s.objects.filter(o => o.schema === "public" && o.name === name);
     if (matches.length !== 1 || matches[0].select !== true || !["r", "v"].includes(matches[0].kind) || matches[0].rls !== false ||
         (lane === "private" && (matches[0].kind !== "r" || matches[0].insert !== true || matches[0].update !== true))) throw new SignerDatabaseRefused();
   }
   for (const o of s.objects) {
-    const allowed = o.schema === "public" && required.includes(o.name);
+    const allowed = o.schema === "public" && (required.includes(o.name)||(lane==='private'&&cashCopies&&CASH_LIMIT_SIGNER_TABLES.includes(o.name as typeof CASH_LIMIT_SIGNER_TABLES[number])));
     if (o.owned !== false || o.grant !== false || o.delete !== false ||
         (!allowed && (o.select !== false || o.columnRead !== false || o.insert !== false || o.update !== false || o.columnWrite !== false)) ||
         (lane === "application" && (o.insert !== false || o.update !== false || o.columnWrite !== false))) throw new SignerDatabaseRefused();
@@ -108,7 +109,11 @@ export async function auditSignerDatabases(c: DatabaseAuditConfig) {
     };
     const [a,p] = await Promise.all([read(c.applicationReadUrl),read(c.privateBudgetUrl)]);
     verifyDatabaseSnapshot(a,"application",role(app),c.trustedAdminRoles);
-    verifyDatabaseSnapshot(p,"private",role(priv),c.trustedAdminRoles,c.directExits,c.cashCopies);
+    verifyDatabaseSnapshot(p,"private",role(priv),c.trustedAdminRoles,c.directExits,c.cashCopies,c.cashLimits);
+    if(c.cashLimits){
+      const rows=await neon(c.privateBudgetUrl,{fetchOptions:{signal:AbortSignal.timeout(5000)}})`SELECT column_name FROM information_schema.columns WHERE table_schema='public' AND table_name='signer_cash_limits' AND column_name IN ('next_check_at','next_delivery_at','document','revision')`;
+      if(rows.length!==4)throw new SignerDatabaseRefused();
+    }
     if(c.directExits){
       const rows=await neon(c.privateBudgetUrl,{fetchOptions:{signal:AbortSignal.timeout(5000)}})`SELECT column_name FROM information_schema.columns
         WHERE table_schema='public' AND table_name='signer_direct_exits' AND column_name IN ('trigger_observation','delivery_id','delivery_until','next_check_at','next_observe_at')`;

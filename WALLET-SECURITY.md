@@ -4,12 +4,6 @@
 
 Fub is independent of Fomo. Knowing a Fomo username or wallet address does not authenticate its owner or grant spending permission.
 
-## Privy’s role
-
-Privy is the wallet infrastructure provider used by Fub’s import and signing flows. Its SDK receives the private key during import; subsequent signing requests use the configured provider wallet. Fub’s private signer uses provider credentials and delegated authority rather than receiving the raw key through the application’s import endpoint. Those credentials still represent sensitive signing capability.
-
-This distinction matters: “Privy-powered” describes the implementation, not a guarantee that Fub, the browser or the provider cannot be compromised. Import only after reviewing the address, permissions and trust boundaries below.
-
 ## What the import flow does
 
 1. You select the public Solana address you intend to use.

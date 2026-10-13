@@ -28,7 +28,6 @@ export function cashPublicHistory(url:string){return async(wallet:string,network
 type Runtime=ReturnType<typeof cashTradeRuntime>;
 export async function handlePublicCash(body:Record<string,unknown>,wallet:string,network:CashNetwork,runtime:Runtime,history:ReturnType<typeof cashPublicHistory>){
  const send=(status:number,data:unknown)=>({status,data}),keys=Object.keys(body).sort().join(','),b=body as any;
- if(!publicCashNetworks().includes(network)||!runtime.enabled(network))return send(409,{message:'Trading is unavailable on this network. Existing trades remain recoverable.'});
  const budgets=CASH_PUBLIC_BUDGETS[network];
  if(b.action==='public-state'&&keys==='action,network,token'&&typeof b.token==='string'&&isEvmAddress(b.token)){
   for(const id of await history(wallet,network,b.token.toLowerCase())){
@@ -40,6 +39,7 @@ export async function handlePublicCash(body:Record<string,unknown>,wallet:string
   }
   const purchaseId=randomUUID();return send(200,{purchaseId,saleId:cashPublicSaleId(purchaseId),purchase:null,sale:null});
  }
+ if(!publicCashNetworks().includes(network)||!runtime.enabled(network))return send(409,{message:'Trading is unavailable on this network. Existing trades remain recoverable.'});
  const binding=await runtime.bindings.binding(wallet,network);
  if(!binding||binding.sourceWallet!==wallet||binding.network!==network||binding.accountType!=='eoa'||binding.expiresAt<=Date.now()||binding.verifiedAt>Date.now())return send(409,{message:'Verify your cross-chain wallet before trading.'});
  if(b.action==='public-purchase-prepare'&&keys==='action,amount,id,network,token'&&uuid(b.id)&&typeof b.token==='string'&&isEvmAddress(b.token)&&typeof b.amount==='string'){

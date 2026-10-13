@@ -27,10 +27,10 @@ export function CashTradePanel({connection,userId,network,token,amount,hidden,is
  const request=async<T,>(body:object):Promise<T>=>{guard();const data=await cashTradeRequest<T>(body,source);guard();return data;};
  async function refresh(){
   const config=await request<CashPilot>({action:'capabilities',network});
-  if(config.publicAccess){
+  if(config.publicAccess||config.publicRecovery){
    // Once selected, always recover this exact trade rather than switching to a
    // different purchase when a timer observes completion.
-   if(pilot?.publicAccess&&pilot.purchaseId&&pilot.saleId){
+   if((pilot?.publicAccess||pilot?.publicRecovery)&&pilot.purchaseId&&pilot.saleId){
     const [p,s]=await Promise.all([request<CashPurchase|null>({action:'purchase-status',id:pilot.purchaseId}),request<CashSale|null>({action:'sale-status',id:pilot.saleId})]);
     setPilot({...config,purchaseId:pilot.purchaseId,saleId:pilot.saleId});setPurchase(p);setSale(s);return;
    }
@@ -71,7 +71,7 @@ export function CashTradePanel({connection,userId,network,token,amount,hidden,is
   });guard();
  }
  const tradeAmount=purchase?formatUnits(BigInt(purchase.review.intent.amountRaw),6):amount;
- function tradeAction(action:string,fields:Record<string,unknown>){return pilot?.publicAccess?{action:'public-'+action,network,...fields,...(action.startsWith('sale-')?{purchaseId:pilot.purchaseId}:{})}:{action,...fields};}
+ function tradeAction(action:string,fields:Record<string,unknown>){return pilot?.publicAccess||pilot?.publicRecovery?{action:'public-'+action,network,...fields,...(action.startsWith('sale-')?{purchaseId:pilot.purchaseId}:{})}:{action,...fields};}
  async function buy(confirm=false){
   const account=identity();if(pilot?.network!==network||!pilot?.executionEnabled||(!pilot.publicAccess&&(!pilot.pilotWallet||pilot.token?.toLowerCase()!==token.toLowerCase()))||!pilot.purchaseId||BigInt(cashAmountRaw(tradeAmount))>BigInt(pilot.buyCapRaw||'0'))throw Error('This token, network or amount is unavailable for this wallet.');
   await verifyOwnership(account);

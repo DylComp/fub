@@ -1,3 +1,5 @@
+import {readArcReceiptSale} from './cash-leader-arc-sale.js';
+import {ARC_RECEIPT} from './cash-leader-arc-receipt.js';
 import {cashLeaderZeroArcSale} from './cash-leader-zero-arc-sale.js';
 import {cashLeaderZeroMonadSale} from './cash-leader-zero-monad-sale.js';
 import {cashLeaderZeroSale} from './cash-leader-zero-sale.js';
@@ -33,7 +35,7 @@ async function codeHash(rpc:Rpc,address:string,block:string){const code=await rp
 /** Proves a finalized, leader-signed token sale into a Relay settlement deposit.
  * Does not prove destination delivery, classify transfers as buys, or authorize
  * copying. Unknown aggregators are left unclassified. */
-export async function readCashLeaderSale(input:{network:CashNetwork;leader:string;token:string;transaction:string},rpc:Rpc,now=Date.now,options:{requireFinalizedEvidence?:boolean}={}):Promise<{event:CashCopyEvent;transactionIndex:string;tradeVerified:true;adapter:'relay-kyber'|'relay-fynd'|'relay-0x';orderId:string;settlementAmountRaw:string}|null>{
+export async function readCashLeaderSale(input:{network:CashNetwork;leader:string;token:string;transaction:string},rpc:Rpc,now=Date.now,options:{requireFinalizedEvidence?:boolean}={}):Promise<{event:CashCopyEvent;transactionIndex:string;tradeVerified:true;adapter:'relay-kyber'|'relay-fynd'|'relay-0x'|'relay-arc-receipt';orderId:string;settlementAmountRaw:string}|null>{
  return readSale(input,rpc,now,false,10000,options.requireFinalizedEvidence);
 }
 export async function readCashLeaderProvisionalSale(input:{network:CashNetwork;leader:string;token:string;transaction:string},rpc:Rpc,now=Date.now){
@@ -78,10 +80,10 @@ async function readSale(input:{network:CashNetwork;leader:string;token:string;tr
  if(!same(one(tokens),b.token)||one(amounts)!==spent||!same(refundTo,cfg.solver)||!same(nftRecipient,cfg.solver)||!/^0x[0-9a-f]{64}00$/i.test(metadata)||!same(calls[0].target,b.token))throw Error('Leader sale funding changed.');
  const [spender,allowance]=decode(cashReturnAbi.approval,calls[0].callData);
  const fyndDeployment=cashLeaderFynd(b.network),fynd=!!fyndDeployment&&same(calls[1].target,fyndDeployment.router);
- const zero=same(calls[1].target,ZEROX_ALLOWANCE_HOLDER);
- if(!same(calls[1].target,zero?ZEROX_ALLOWANCE_HOLDER:fynd?fyndDeployment!.router:cfg.kyber)||!same(spender,calls[1].target)||allowance!==spent)return null;
+ const zero=same(calls[1].target,ZEROX_ALLOWANCE_HOLDER),arcReceipt=b.network==='arc'&&same(calls[1].target,ARC_RECEIPT.swap);
+ if(!same(calls[1].target,zero?ZEROX_ALLOWANCE_HOLDER:arcReceipt?ARC_RECEIPT.swap:fynd?fyndDeployment!.router:cfg.kyber)||!same(spender,calls[1].target)||allowance!==spent)return null;
  let minimum:bigint,zeroOutput:bigint|undefined;
- if(zero){
+ if(arcReceipt){const receipt=await readArcReceiptSale({...b,receipt:{...b.receipt,logs:receiptLogs}},rpc,spent,calls[1].callData);minimum=0n;zeroOutput=receipt.output;}else if(zero){
   const [operator,token,amount,target,data]=decode(cashReturnAbi.zeroX,calls[1].callData);
   if(!same(operator,target)||!same(token,b.token)||amount!==spent)throw Error('Leader 0x allowance changed.');
   const [slippage,actions]=decode(cashReturnAbi.settler,data);
@@ -122,5 +124,5 @@ async function readSale(input:{network:CashNetwork;leader:string;token:string;tr
  if(deposited===undefined)throw Error('Leader settlement deposit is missing.');
  if(zeroOutput!==undefined&&deposited!==zeroOutput)throw Error('Leader 0x settlement amount differs.');
  const observedAt=now();if(provisional&&observedAt-b.blockTime>maxAge)throw Error('Leader sale expired.');if(!Number.isSafeInteger(observedAt)||observedAt<b.blockTime)throw Error('Invalid leader observation time.');
- return{tradeVerified:true,transactionIndex:b.transactionIndex,adapter:zero?'relay-0x':fynd?'relay-fynd':'relay-kyber',orderId:orderId.toLowerCase(),settlementAmountRaw:String(deposited),event:{...(provisional?{confirmation:'provisional' as const}:{}),network:b.network,leader:b.leader,transaction:b.transaction,blockHash:b.blockHash,blockNumber:b.blockNumber,transactionIndex:b.transactionIndex,blockTime:b.blockTime,observedAt,token:b.token,side:'sell',leaderTokenBeforeRaw:b.beforeRaw,leaderTokenDeltaRaw:String(spent)}};
+ return{tradeVerified:true,transactionIndex:b.transactionIndex,adapter:arcReceipt?'relay-arc-receipt':zero?'relay-0x':fynd?'relay-fynd':'relay-kyber',orderId:orderId.toLowerCase(),settlementAmountRaw:String(deposited),event:{...(provisional?{confirmation:'provisional' as const}:{}),network:b.network,leader:b.leader,transaction:b.transaction,blockHash:b.blockHash,blockNumber:b.blockNumber,transactionIndex:b.transactionIndex,blockTime:b.blockTime,observedAt,token:b.token,side:'sell',leaderTokenBeforeRaw:b.beforeRaw,leaderTokenDeltaRaw:String(spent)}};
 }

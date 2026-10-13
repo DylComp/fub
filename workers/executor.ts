@@ -1,3 +1,4 @@
+import {configuredCashLimitRelay} from '../server/cash-limit-relay.js';
 import {exitRelayEnabled,relayDirectExit} from '../server/direct-exit-relay.js';
 import {configuredCashCopyRelay} from '../server/cash-copy-relay.js';
 import {executorRpc} from '../server/copy-executor-rpc.js';
@@ -14,7 +15,7 @@ async function start() {
   const exits=exitRelayEnabled(process.env,!!remote);
   const next=exits?remoteExitDelivery({origin:process.env.COPY_SIGNER_ORIGIN||'',token:process.env.COPY_SIGNER_TOKEN||''}):undefined;
   const relay=next?(signal:AbortSignal)=>relayDirectExit({enabled:()=>process.env.DIRECT_EXIT_EXECUTION_ENABLED==='true',next,rpc:s=>executorRpc(process.env.SOLANA_RPC_URL||'',s)},signal):undefined;
-  await runExecutorHost(process.env, remote, native, recovery,relay,configuredCashCopyRelay(process.env));
+  await runExecutorHost(process.env, remote, native, recovery,relay,configuredCashCopyRelay(process.env),configuredCashLimitRelay(process.env));
 }
 start().catch(() => {
   console.error(

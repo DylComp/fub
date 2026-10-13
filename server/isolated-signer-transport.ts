@@ -1,3 +1,4 @@
+import {validateCashLimitDelivery,type CashLimitDelivery} from './cash-limit-delivery.js';
 import {validateSignedNativeExpiry} from './native-expiry-proof.js';
 import {validateCashCopyDelivery,type CashCopyDelivery} from './cash-copy-delivery.js';
 import {validateExitDelivery,type ExitDelivery} from './direct-exit-delivery.js';
@@ -20,7 +21,7 @@ async function boundedJson(response: Request | Response, signal: AbortSignal, ma
     return JSON.parse(Buffer.concat(chunks).toString("utf8"));
   } finally { signal.removeEventListener("abort", aborted); await reader.cancel().catch(() => {}); reader.releaseLock(); }
 }
-export function isolatedSignerApi(config: { executorToken: string; signingEnabled: boolean; exitPilotEnabled?:boolean; enrollment: (request: Request) => Promise<Response>; cashEnrollment?: (request: Request) => Promise<Response>; cashDelivery?:(signal:AbortSignal,wait?:boolean)=>Promise<CashCopyDelivery|null>; sign: CopySigningAdapter; signNative?: Token22Signer; recoverNative?: NativeSignatureRecovery; nativeSigningEnabled?: boolean; exitDelivery?:(signal:AbortSignal)=>Promise<ExitDelivery|null>; operations?:()=>object; backupReady?:()=>boolean; ready?: () => boolean; executionScope?: SignerExecutionScope }) {
+export function isolatedSignerApi(config: { executorToken: string; signingEnabled: boolean; exitPilotEnabled?:boolean; enrollment: (request: Request) => Promise<Response>; cashEnrollment?: (request: Request) => Promise<Response>; cashLimitApi?: (request:Request)=>Promise<Response>; cashLimitDelivery?:(signal:AbortSignal)=>Promise<CashLimitDelivery|null>; cashDelivery?:(signal:AbortSignal,wait?:boolean)=>Promise<CashCopyDelivery|null>; sign: CopySigningAdapter; signNative?: Token22Signer; recoverNative?: NativeSignatureRecovery; nativeSigningEnabled?: boolean; exitDelivery?:(signal:AbortSignal)=>Promise<ExitDelivery|null>; operations?:()=>object; backupReady?:()=>boolean; ready?: () => boolean; executionScope?: SignerExecutionScope }) {
   validToken(config.executorToken);
   const scope = config.executionScope ?? signerExecutionScope({});
   let inFlight = 0;
@@ -44,14 +45,17 @@ export function isolatedSignerApi(config: { executorToken: string; signingEnable
     try {
       if (/^\/v1\/enrollment\/(access|prepare|activate|stop|status|list|position-review|position-apply|direct-exit-review|direct-exit-activate|direct-exit-recover|direct-exit-list|direct-exit-cancel)$/.test(url.pathname)) return await config.enrollment(request);
       if (/^\/v1\/cash-enrollment\/(config|activate|status|stop|list|readiness|history|owner-sale-review|owner-sale-submit)$/.test(url.pathname)) return config.cashEnrollment ? await config.cashEnrollment(request) : reply(404,{error:'Not found.'});
+      if(/^\/v1\/cash-limits\/(config|activate|status|stop|list)$/.test(url.pathname))return config.cashLimitApi?await config.cashLimitApi(request):reply(404,{error:'Not found.'});
+      const limitDelivery=url.pathname==='/v1/limit-delivery';
       const cashDelivery=url.pathname==='/v1/cash-delivery';
       const exitDelivery=url.pathname==='/v1/exit-delivery';
       const operations=url.pathname==='/v1/operations';
       const native = url.pathname === "/v1/sign-native", recovery = url.pathname === "/v1/recover-native", capabilities = url.pathname === "/v1/capabilities";
-      if (!cashDelivery && !operations && !exitDelivery && !native && !recovery && !capabilities && url.pathname !== "/v1/sign") return reply(404, { error: "Not found." });
-      if (request.method !== ((cashDelivery || operations || capabilities || exitDelivery) ? "GET" : "POST") || request.headers.has("origin")) return reply(403, { error: "Signing request refused." });
+      if (!limitDelivery && !cashDelivery && !operations && !exitDelivery && !native && !recovery && !capabilities && url.pathname !== "/v1/sign") return reply(404, { error: "Not found." });
+      if (request.method !== ((limitDelivery || cashDelivery || operations || capabilities || exitDelivery) ? "GET" : "POST") || request.headers.has("origin")) return reply(403, { error: "Signing request refused." });
       const supplied = request.headers.get("authorization") ?? "", expected = `Bearer ${config.executorToken}`;
       if (supplied.length !== expected.length || !timingSafeEqual(Buffer.from(supplied), Buffer.from(expected))) return reply(401, { error: "Signing request refused." });
+      if(limitDelivery){const delivery=await config.cashLimitDelivery?.(request.signal)||null;if(delivery)await validateCashLimitDelivery(delivery);return reply(200,{delivery});}
       if(cashDelivery){
         if(!config.cashDelivery||!config.ready?.())return reply(503,{error:'Cash copy delivery is unavailable.'});
         const signal=AbortSignal.any([request.signal,AbortSignal.timeout(8000)]),delivery=await config.cashDelivery(signal,request.headers.get('prefer')==='wait=5');
@@ -147,5 +151,15 @@ export function remoteCashCopyDelivery(config:{origin:string;token:string;fetche
   const r=await(config.fetcher||fetch)(config.origin+'/v1/cash-delivery',{headers:{Authorization:'Bearer '+config.token,Prefer:'wait=5'},signal:active,redirect:'error',cache:'no-store'});
   if(!r.ok){void r.body?.cancel();throw Error('Cash copy delivery unavailable.');}const body=await boundedJson(r,active,524288);
   if(!body||Object.keys(body).join()!=='delivery')throw Error('Invalid cash copy handoff.');if(body.delivery!==null)await validateCashCopyDelivery(body.delivery);active.throwIfAborted();return body.delivery;
+ };
+}
+
+export function remoteCashLimitDelivery(config:{origin:string;token:string;fetcher?:typeof fetch}){
+ validToken(config.token);const u=new URL(config.origin);if(u.protocol!=='https:'||u.origin!==config.origin)throw Error('Fixed HTTPS signer origin required.');
+ return async(signal:AbortSignal):Promise<CashLimitDelivery|null>=>{
+  const active=AbortSignal.any([signal,AbortSignal.timeout(10000)]);
+  const r=await(config.fetcher||fetch)(config.origin+'/v1/limit-delivery',{headers:{Authorization:'Bearer '+config.token,Prefer:'wait=5'},signal:active,redirect:'error',cache:'no-store'});
+  if(!r.ok){void r.body?.cancel();throw Error('Cash copy delivery unavailable.');}const body=await boundedJson(r,active,524288);
+  if(!body||Object.keys(body).join()!=='delivery')throw Error('Invalid cash copy handoff.');if(body.delivery!==null)await validateCashLimitDelivery(body.delivery);active.throwIfAborted();return body.delivery;
  };
 }
