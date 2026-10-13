@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T17:04:40.608Z",
+  "generatedAt": "2026-10-13T17:19:45.127Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -544,8 +544,8 @@
     },
     {
       "path": "src/cash-copy-client.ts",
-      "sha256": "432b2267e5995a35bca4acc4eee42d5e9db1ac4abf5ae8784a3a01b5cd203f44",
-      "bytes": 12403
+      "sha256": "5014eefaa4714bcf2e4baba0ef680bf6d27e42f3fe5689a579a5976fbd39f07d",
+      "bytes": 12487
     },
     {
       "path": "src/cash-copy-history.ts",
@@ -1294,8 +1294,8 @@
     },
     {
       "path": "server/cash-copy-host-config.ts",
-      "sha256": "3c5b44d60e7f3fa461c130d619f7959cefbf0852d5a424b02aea2a502156c59c",
-      "bytes": 8884
+      "sha256": "6072b7772d956265e66fe873c4f311e25ef9d4f6b41438411f98307f2ecbb998",
+      "bytes": 8885
     },
     {
       "path": "server/cash-copy-hosted.ts",

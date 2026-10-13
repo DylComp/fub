@@ -26,7 +26,7 @@ export function readCashCopyConfiguration(v:unknown,leaderSource:string,leaderHa
  const c=v as CashCopyConfiguration,id=(s:unknown)=>typeof s==='string'&&/^[a-z0-9]{20,40}$/.test(s);
  const linked=!!leaderHandle&&fomoHandle(leaderHandle)===leaderHandle&&c?.leader?.handle===leaderHandle&&c.leader.selectedSource===leaderSource;
  if(!c||typeof c.enabled!=='boolean'||!c.leader||!isMint(leaderSource)||!isMint(c.leader.sourceWallet)||c.leader.sourceWallet!==leaderSource&&!linked||!isEvmAddress(c.leader.wallet)||c.leader.wallet!==c.leader.wallet.toLowerCase()||!c.solana||!c.evm||![c.solana.signerId,c.solana.policyId,c.evm.signerId,c.evm.policyId].every(id)||c.solana.signerId===c.evm.signerId||!Array.isArray(c.networks)||c.networks.length<1||c.networks.length>6||c.networks.some(n=>!isCashNetwork(n))||new Set(c.networks).size!==c.networks.length)throw Error('Cross-chain copy settings could not be verified.');
- if(c.reviewLimits){const r=c.reviewLimits;if(!isEvmAddress(r.recipient)||r.recipient!==r.recipient.toLowerCase()||!Number.isSafeInteger(r.maxDurationMs)||r.maxDurationMs<600000||r.maxDurationMs>86400000||cashCopyRaw(r.buyUsdcRaw)<=cashCopyRaw(r.gasTopupUsdcRaw)||cashCopyRaw(r.dailyUsdcRaw)<cashCopyRaw(r.buyUsdcRaw))throw Error('Copy review limits could not be verified.');}
+ if(c.reviewLimits){const r=c.reviewLimits;if(!isEvmAddress(r.recipient)||r.recipient!==r.recipient.toLowerCase()||!Number.isSafeInteger(r.maxDurationMs)||r.maxDurationMs<600000||r.maxDurationMs>14400000||cashCopyRaw(r.buyUsdcRaw)<=cashCopyRaw(r.gasTopupUsdcRaw)||cashCopyRaw(r.dailyUsdcRaw)<cashCopyRaw(r.buyUsdcRaw))throw Error('Copy review limits could not be verified.');}
  return c;
 }
 export function readCashCopyStatus(v:unknown,planId:string):CashCopyStatus{
@@ -97,6 +97,7 @@ export function readCashCopyPlans(value:unknown,wallet:string):{plans:CashCopyPl
 export function cashCopyDurationHours(config?: CashCopyConfiguration): number[] {
  const max = config?.reviewLimits?.maxDurationMs ?? 86400000;
  const choices = [1, 6, 24].filter(hours => hours * 3600000 <= max);
+ if(config?.reviewLimits&&!choices.includes(max/3600000))choices.push(max/3600000);
  return choices.length ? choices : [max / 3600000];
 }
 
