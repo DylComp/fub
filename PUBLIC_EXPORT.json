@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T19:00:24.511Z",
+  "generatedAt": "2026-10-13T19:13:15.895Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -259,8 +259,8 @@
     },
     {
       "path": "src/CopyNativeApproval.tsx",
-      "sha256": "8ddb310b443bdd202a8a3feaab774c4f51bdaee5c3471616fb64cf5307ee03ff",
-      "bytes": 7268
+      "sha256": "33d9d0f391713aeda4a2bcc74aae2052035765d906f643148871a7eb404846ee",
+      "bytes": 7455
     },
     {
       "path": "src/CopyNativeHistory.tsx",
@@ -869,8 +869,8 @@
     },
     {
       "path": "src/native-copy-approval.ts",
-      "sha256": "1444bc778fa1ee527bd345b21b8e79d7e758a9d759e6d43abc45ff11cd14f7ef",
-      "bytes": 2736
+      "sha256": "f74865aac6223f17eedba50fef8aadec36355b2e9ed5b116ede94e554ba60a17",
+      "bytes": 4054
     },
     {
       "path": "src/native-copy-permission.ts",
@@ -2564,8 +2564,8 @@
     },
     {
       "path": "server/native-copy-approval.ts",
-      "sha256": "34b576a029b305e3ef35cfe8adc375e79245ca62cbd1df47be272c979d9ded5a",
-      "bytes": 9577
+      "sha256": "9b6a4aa6a3f1c42a6bee12a6b37e2b484c622a2b362e14903be6af225e8ac229",
+      "bytes": 9783
     },
     {
       "path": "server/native-copy-review.ts",

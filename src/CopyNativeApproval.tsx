@@ -23,12 +23,12 @@ export function CopyNativeApproval({wallet,csrf,plan,sign,onChange,defaultOpen=f
  return <div className="native-copy-approval">
   <button className="word-link" aria-expanded={open} disabled={busy} onClick={()=>setOpen(v=>!v)}>{open?'Hide SOL approval':'Set SOL copy limits'}</button>
   {open&&<section aria-label={`SOL limits for ${plan.name||'this trader'}`}>
-   <h3>Copy with SOL</h3><p className="copy-help">Uses this Fomo wallet. The daily cap includes buys, network fees and new account rent. These SOL amounts replace the dollar amounts for this permission.</p>
+   <h3>Copy with SOL</h3><p className="copy-help">Uses this Fomo wallet. The daily cap includes buys, network fees and new account rent. Maximum 0.01 SOL per copied buy. Set the daily cap high enough to cover buys, fees and account rent.</p>
    {!review?<><div className="form-grid">
     {([['buy','SOL per buy'],['daily','Daily SOL cap'],['fee','Network fee cap per trade'],['rent','Account rent cap per trade']] as const).map(([key,label])=><label key={key}>{label}<input inputMode="decimal" value={draft[key]} disabled={busy} onChange={e=>setDraft(v=>({...v,[key]:e.target.value}))}/></label>)}
     <label>Only copy this token (optional)<input value={draft.mint||''} placeholder="Solana token mint" spellCheck={false} autoCapitalize="none" disabled={busy} onChange={e=>setDraft(v=>({...v,mint:e.target.value}))}/></label>
     <label>Permission duration<select value={draft.duration} disabled={busy} onChange={e=>setDraft(v=>({...v,duration:Number(e.target.value)}))}><option value={3600000}>1 hour</option><option value={86400000}>24 hours</option></select></label>
-   </div><button className="button secondary compact" disabled={busy||plan.archived} onClick={()=>void run(prepare)}>{busy?'Checking…':'Review SOL limits'}</button></>:<div className="permission-review">
+   </div><p className="copy-help">Network fee cap: up to 0.00005 SOL per trade. Account rent cap: up to 0.005 SOL per trade. Unused allowances are not spent.</p><button className="button secondary compact" disabled={busy||plan.archived} onClick={()=>void run(prepare)}>{busy?'Checking…':'Review SOL limits'}</button></>:<div className="permission-review">
     <h3>Review SOL limits</h3><dl className="live-details">
      <div><dt>Buy</dt><dd>{tokenUnits(review.buyLamports,9)} SOL</dd></div><div><dt>Daily cap</dt><dd>{tokenUnits(review.dailySpendLamports,9)} SOL, including fees and rent</dd></div>
      <div><dt>Network fee cap per trade</dt><dd>{tokenUnits(review.maxFeeLamports,9)} SOL</dd></div><div><dt>Account rent cap per trade</dt><dd>{tokenUnits(review.maxRentLamports,9)} SOL</dd></div>

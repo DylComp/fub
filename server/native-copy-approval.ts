@@ -1,3 +1,4 @@
+import {validateNativeCopyLimits} from '../src/native-copy-approval.js';
 import {FUB_CANONICAL_ORIGIN} from '../src/fub-origin.js';
 import {randomUUID} from 'node:crypto';
 import {neon} from '@neondatabase/serverless';
@@ -35,6 +36,7 @@ export function nativeCopyApproval(url:string){
   async prepare(wallet:string,id:string,limits:NativeCopyLimits){
    identity(wallet,id);
    if(!limits||Object.keys(limits).sort().join(',')!==('buyLamports,dailySpendLamports,durationMs,maxFeeLamports,maxRentLamports'+(Object.hasOwn(limits,'mint')?',mint':''))||![3600000,86400000].includes(limits.durationMs))throw new CopyValidation('Choose a one-hour or one-day permission.');
+   try{validateNativeCopyLimits(limits);}catch(e){throw new CopyValidation(e instanceof Error?e.message:'Enter valid SOL limits.');}
    const sql=db(),[p]=await planState(sql,wallet,id);
    checkPlan(p);
    const now=Date.now(),scope:Token22Permission={...(Object.hasOwn(limits,'mint')?{version:10 as const,mint:limits.mint!}:{version:9 as const}),policy:'native-sol-venues-v4',origin:FUB_CANONICAL_ORIGIN,network:'solana:mainnet',id:randomUUID(),planId:id,planVersion:p.version,wallet,leader:p.leader,buyLamports:limits.buyLamports,dailySpendLamports:limits.dailySpendLamports,maxFeeLamports:limits.maxFeeLamports,maxRentLamports:limits.maxRentLamports,copySells:p.data.copySells,slippageBps:p.data.slippageBps,issuedAt:now,acceptBy:now+300000,expiresAt:now+limits.durationMs};
