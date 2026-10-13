@@ -1,3 +1,4 @@
+import { prepareLaunchImage } from "./launch-image-upload";
 import {finishTask} from "./task-completion";
 import {LaunchFlow} from "./LaunchFlow";
 import { SOL_PAIR_MINT } from "./launch-pairs";
@@ -82,12 +83,12 @@ export function Launchpad({ connection, onConnect }: { connection: WalletConnect
     if (!file) return;
     let url = "";
     try {
-      if (!["image/png", "image/jpeg", "image/gif"].includes(file.type) || file.size > 2 * 1024 * 1024 || !file.size) throw Error("Choose a PNG, JPG or GIF up to 2 MB.");
+      file = await prepareLaunchImage(file);
       const b = new Uint8Array(await file.slice(0, 12).arrayBuffer());
       const format = b[0] === 137 && b[1] === 80 && b[2] === 78 && b[3] === 71 ? "image/png" : b[0] === 255 && b[1] === 216 && b[2] === 255 ? "image/jpeg" : String.fromCharCode(...b.slice(0, 6)).match(/^GIF8[79]a$/) ? "image/gif" : "";
       if (format !== file.type) throw Error("The file contents do not match its image type.");
       url = URL.createObjectURL(file); const img = new Image(); img.src = url; await img.decode();
-      if (img.naturalWidth !== img.naturalHeight || img.naturalWidth < 64 || img.naturalWidth > 4096) throw Error("Use a square image, 64–4096 pixels wide.");
+
       if (generation !== imageGeneration.current) { URL.revokeObjectURL(url); return; }
       setImage({ url, name: file.name, type: file.type, bytes: file.size, file });
     } catch (e) { if (url) URL.revokeObjectURL(url); if (generation === imageGeneration.current) { setImage(null); setError(e instanceof Error ? e.message : "Could not load image."); } }
@@ -185,7 +186,7 @@ export function Launchpad({ connection, onConnect }: { connection: WalletConnect
       <label className="field"><span>Fomo username</span><div className="launch-recipient-input"><input aria-label="Recipient Fomo username" placeholder="@username" value={draft.handle} onChange={e => update("handle", e.target.value)} maxLength={200} autoComplete="off" spellCheck={false} required /><button className="word-link" type="button" disabled={busy} onClick={() => void findRecipient()}>{busy ? "Checking…" : "Find wallet"}<ArrowRight size={16}/></button></div></label>
       {lookup && <FomoRecipientCard key={lookup.handle + lookup.fetchedAt} profile={lookup} confirmed={confirmed} onConfirm={value => { request.current?.abort(); setBusy(false); setConfirmed(value); setReview(null); }} onRetry={() => void findRecipient()} busy={busy}/>}
       <div className="launch-section-title"><span>02</span><h2>The coin</h2></div>
-      <div className="launch-image-row"><label className="launch-image"><input type="file" accept="image/png,image/jpeg,image/gif" aria-label="Token image" onChange={e => { void chooseImage(e.target.files?.[0]); e.target.value = ""; }}/>{image ? <img src={image.url} alt="Token image preview"/> : <ImagePlus size={24}/>}</label><div><strong>Token image <span aria-hidden="true">*</span></strong><p>PNG, JPG or GIF · square · up to 2 MB</p>{image && <button type="button" className="word-link" onClick={() => { imageGeneration.current++; request.current?.abort(); setBusy(false); setImage(null); setReview(null); setPublication(null); }}><X size={13}/> Remove</button>}</div></div>
+      <div className="launch-image-row"><label className="launch-image"><input type="file" accept="image/png,image/jpeg,image/webp,image/gif" aria-label="Token image" onChange={e => { void chooseImage(e.target.files?.[0]); e.target.value = ""; }}/>{image ? <img src={image.url} alt="Token image preview"/> : <ImagePlus size={24}/>}</label><div><strong>Token image <span aria-hidden="true">*</span></strong><p>Any shape · automatically fitted without cropping. PNG, JPG or WebP up to 20 MB; GIF up to 2 MB.</p>{image && <button type="button" className="word-link" onClick={() => { imageGeneration.current++; request.current?.abort(); setBusy(false); setImage(null); setReview(null); setPublication(null); }}><X size={13}/> Remove</button>}</div></div>
       <div className="launch-two-fields"><label className="field"><span>Name *</span><input aria-label="Token name" value={draft.name} maxLength={32} onChange={e => update("name", e.target.value)} placeholder="Your coin" required/></label><label className="field"><span>Ticker *</span><input aria-label="Token ticker" value={draft.ticker} maxLength={10} onChange={e => update("ticker", e.target.value.toUpperCase())} placeholder="COIN" required/></label></div>
       <label className="field"><span>Description <small>optional</small><small className="launch-count">{draft.description.length}/1000</small></span><textarea aria-label="Token description" rows={3} maxLength={1000} value={draft.description} onChange={e => update("description", e.target.value)}/></label>
       <div className="launch-socials">{([['twitter','X / Twitter'],['telegram','Telegram']] as const).map(([key,label]) => <label className="field" key={key}><span>{label} <small>optional</small></span><input aria-label={label} type="url" placeholder="https://" maxLength={200} value={draft[key]} onChange={e => update(key, e.target.value)}/></label>)}</div>

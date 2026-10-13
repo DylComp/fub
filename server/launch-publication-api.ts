@@ -106,7 +106,7 @@ export function launchPublicationHandler(options: { store?: () => LaunchPublicat
       if (match.address !== recipient || match.handle !== draft!.handle) { await store.fail(a); return send(409, { message: "The indexed recipient changed. Find and confirm the wallet again." }); }
       let image;
       try { image = await normalizeLaunchImage(bytes, type); }
-      catch { await store.fail(a); return send(400, { message: "The image could not be fully decoded. Use a square PNG, JPG or GIF up to 2 MB, 64–4096 pixels and at most 60 frames." }); }
+      catch { await store.fail(a); return send(400, { message: "The image could not be fully decoded. Use a valid PNG, JPG or GIF up to 2 MB and at most 60 frames. Images are fitted automatically." }); }
       // Publication identity is independent of metadata to allow a permanent Fub
       // page URL in the metadata before any mint has been created.
       const id = hash(JSON.stringify({ version:2, owner:a.wallet, payloadHash:a.payloadHash, imageHash:image.hash }));

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T21:53:21.495Z",
+  "generatedAt": "2026-10-13T22:09:53.593Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -369,8 +369,8 @@
     },
     {
       "path": "src/Launchpad.tsx",
-      "sha256": "f74278ab8fafc3e15ff3f4c204461a89f1a0da169bc0b432213cdf766d4a83f6",
-      "bytes": 23958
+      "sha256": "8e3d2f89d0166746392b1d8aa50dca38c795d81fa3c16e01fb162e3fe54ca393",
+      "bytes": 23801
     },
     {
       "path": "src/LiveOrders.tsx",
@@ -776,6 +776,11 @@
       "path": "src/launch-execution-request.ts",
       "sha256": "61e13b90ce5b5a8fd4c65a16bb2a8cdc92819ea9fbff3ee9a091d895657d4460",
       "bytes": 1829
+    },
+    {
+      "path": "src/launch-image-upload.ts",
+      "sha256": "81f6d441c95ee21a0553f18174c3c500e8e497feadbc4d722ebc0fb3494415d6",
+      "bytes": 2051
     },
     {
       "path": "src/launch-mint-store.ts",
@@ -2434,8 +2439,8 @@
     },
     {
       "path": "server/launch-image.ts",
-      "sha256": "67de52697f47422932e7bb502775aa5df512b4f78efffcd40fe06c4fdd3f41d4",
-      "bytes": 1669
+      "sha256": "621d71341ef3a26338b570578c87e3743c08ebfae5547010a697436fbe6c065b",
+      "bytes": 1799
     },
     {
       "path": "server/launch-pair-config.ts",
@@ -2489,8 +2494,8 @@
     },
     {
       "path": "server/launch-publication-api.ts",
-      "sha256": "cfb5d4d331608151839f826245b3583aedf443a516f15f4b0a7a825aeb669553",
-      "bytes": 9788
+      "sha256": "64c5139d3cc35ca98d70263b510ada4a529996ad3a173163487c7b7a51a387d1",
+      "bytes": 9802
     },
     {
       "path": "server/launch-publication-store.ts",
