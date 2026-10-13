@@ -39,7 +39,6 @@ export function PayWallet() {
     } catch (e) { if (!abort.signal.aborted) setError(e instanceof Error && e.name !== "TimeoutError" ? e.message : "Wallet check timed out. Try again."); }
     finally { if (!abort.signal.aborted) setBusy(false); }
   }
-  const matching = data?.cardDelegate && data.delegate === data.cardDelegate;
   return <section className="pay-wallet-page">
     <a className="word-link" href="#pay"><ArrowLeft size={15} /> Back to Pay</a>
     <header><h1>Your wallet funds Pay.</h1><p>Pay for gift cards, reimburse a split or treat a friend with USDC. Keep SOL for network fees.</p></header>
@@ -57,19 +56,16 @@ export function PayWallet() {
         <dl className="pay-details">
           <div><dt>Network fees</dt><dd>{displayUnits(data.solLamports, 9)} SOL</dd></div>
           <div><dt>USDC account</dt><dd>{data.account === "missing" ? "Not created" : data.account === "frozen" ? "Frozen" : "Active"}</dd></div>
-          <div><dt>Card program</dt><dd>{data.merchantId === null ? "Awaiting provider activation" : data.cardRegistered ? "Delegate registered on Solana" : "No registered card delegate"}</dd></div>
-          <div><dt>Card allowance remaining</dt><dd>{matching ? `${displayUnits(data.allowanceRaw, 6)} USDC` : "No verified card allowance"}</dd></div>
         </dl>
-        {data.delegate && !matching && <p className="pay-note">This USDC account has a different or unverified token delegate. Fub will not overwrite it.</p>}
-        <p className="pay-note">This is the onchain token balance, not an available card balance. Card authorization holds and settlement need the issuer’s records.</p>
+        {data.delegate && <p className="pay-note">This USDC account has a token delegate. Pay does not change its existing permissions.</p>}
+        <p className="pay-note">This balance is shared with your other wallet activity. Pay checks the funds again before preparing each payment.</p>
         <a className="word-link" href={`https://solscan.io/account/${data.source}`} target="_blank" rel="noreferrer">View USDC account <ArrowUpRight size={14} /></a>
       </div>}
     </section>
-    <a className="word-link" href="#pay/history">Your card history <ArrowUpRight size={14} /></a>
-    <section className="pay-wallet-panel"><h2>How card access works</h2>
-      <ol><li>Verify your identity with the card provider and link this wallet.</li><li>Approve a fixed USDC allowance for the card program.</li><li>Card purchases draw USDC from the same wallet. Revoke the allowance to stop future draws.</li></ol>
-      <p className="pay-note">An allowance is a total remaining amount, not a monthly limit. It can apply to later deposits and stays active until used, replaced or revoked. It does not reserve funds from trading, and revocation does not reverse prior purchases.</p>
-      <p className="pay-note">Card issuing is not active yet. Bridge’s documented Solana funding path is the integration target; approval and a merchant ID are still required.</p>
+    <a className="word-link" href="#pay/purchases">Gift-card purchase history <ArrowUpRight size={14} /></a>
+    <section className="pay-wallet-panel"><h2>Pay from your Fomo wallet</h2>
+      <ol><li>Import your existing Fomo Solana wallet and keep USDC for payments.</li><li>Choose a merchant gift card, Split reimbursement or Treat transfer.</li><li>Review the exact amount and recipient, then approve that payment.</li></ol>
+      <p className="pay-note">Payments use the USDC at this Solana address. Keep SOL for network fees. A balance check does not approve a payment.</p>
     </section>
   </section>;
 }

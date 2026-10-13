@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import PayWorkspace from "./pay/PayWorkspace";
 import { PaymentRequests } from "./PaymentRequests";
 import "./pay/styles.css";
-import { PayHistory } from "./PayHistory";
 import { Bitrefill } from "./pay/Bitrefill";
 import {useWalletSetup} from "./WalletSetup";
 import {displayUnits} from "./funding-model";
@@ -16,7 +14,14 @@ export function Pay() {
   const [balance,setBalance]=useState<CardWalletSnapshot|null>(null),[balanceError,setBalanceError]=useState(false);
   const [hash, setHash] = useState(() => location.hash);
   useEffect(() => {
-    const restore = () => setHash(location.hash);
+    const restore = () => {
+      const current = location.hash;
+      const next = current === '#pay/history' ? '#pay/purchases'
+        : current === '#pay/card' || current.startsWith('#pay/preview') || current.startsWith('#preview=') ? '#pay' : current;
+      if (next !== current) history.replaceState(history.state, '', next);
+      setHash(next);
+    };
+    restore();
     window.addEventListener("hashchange", restore);
     window.addEventListener("popstate", restore);
     return () => {
@@ -36,7 +41,6 @@ export function Pay() {
   },[owner,hash]);
   if (hash === "#pay/purchases") return <section className="pay-app"><a className="word-link pay-back" href="#pay">← Back to Fomo Pay</a><GiftCheckout product={null} country="US" /></section>;
   if (hash === "#pay/gift-cards") return <Bitrefill />;
-  if (hash === "#pay/history") return <PayHistory />;
   if (hash === "#pay/wallet") return <PayWallet />;
   if (hash === "#pay-request" || hash === "#pay/split" || hash === "#pay/treat" || hash.startsWith("#pay="))
     return (
@@ -47,7 +51,6 @@ export function Pay() {
         <PaymentRequests key={hash === '#pay/treat' ? 'treat' : 'split'} initialMode={hash === '#pay/treat' ? 'treat' : 'split'} />
       </>
     );
-  if (hash.startsWith('#pay/preview') || hash.startsWith('#preview=')) return <PayWorkspace />;
   return <section className="pay-app pay-live-home">
     <header className="bitrefill-heading"><p className="eyebrow">FOMO PAY</p><h1>Spend. Split. Treat.</h1><p>Use USDC from your Fomo wallet. Approve each payment yourself.</p></header>
     <section className="pay-wallet-panel" aria-label="Pay balance">

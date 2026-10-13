@@ -33,8 +33,8 @@ async function codeHash(rpc:Rpc,address:string,block:string){const code=await rp
 /** Proves a finalized, leader-signed token sale into a Relay settlement deposit.
  * Does not prove destination delivery, classify transfers as buys, or authorize
  * copying. Unknown aggregators are left unclassified. */
-export async function readCashLeaderSale(input:{network:CashNetwork;leader:string;token:string;transaction:string},rpc:Rpc,now=Date.now):Promise<{event:CashCopyEvent;transactionIndex:string;tradeVerified:true;adapter:'relay-kyber'|'relay-fynd'|'relay-0x';orderId:string;settlementAmountRaw:string}|null>{
- return readSale(input,rpc,now,false);
+export async function readCashLeaderSale(input:{network:CashNetwork;leader:string;token:string;transaction:string},rpc:Rpc,now=Date.now,options:{requireFinalizedEvidence?:boolean}={}):Promise<{event:CashCopyEvent;transactionIndex:string;tradeVerified:true;adapter:'relay-kyber'|'relay-fynd'|'relay-0x';orderId:string;settlementAmountRaw:string}|null>{
+ return readSale(input,rpc,now,false,10000,options.requireFinalizedEvidence);
 }
 export async function readCashLeaderProvisionalSale(input:{network:CashNetwork;leader:string;token:string;transaction:string},rpc:Rpc,now=Date.now){
  return readSale(input,rpc,now,true);
@@ -42,8 +42,12 @@ export async function readCashLeaderProvisionalSale(input:{network:CashNetwork;l
 export async function readCashLeaderCapturedSale(input:{network:CashNetwork;leader:string;token:string;transaction:string},rpc:Rpc,now=Date.now){
  return readSale(input,rpc,now,true,120000);
 }
-async function readSale(input:{network:CashNetwork;leader:string;token:string;transaction:string},rpc:Rpc,now:()=>number,provisional:boolean,maxAge=10000):Promise<Awaited<ReturnType<typeof readCashLeaderSale>>>{
- const b=await (provisional?(maxAge===120000?readCashLeaderCapturedBalance(input,rpc,now):readCashLeaderProvisionalBalance(input,rpc,now)):readCashLeaderBalance(input,rpc));if(!b)return null;
+async function readSale(input:{network:CashNetwork;leader:string;token:string;transaction:string},rpc:Rpc,now:()=>number,provisional:boolean,maxAge=10000,requireFinalizedEvidence=false):Promise<Awaited<ReturnType<typeof readCashLeaderSale>>>{
+ const b=await (provisional?(maxAge===120000?readCashLeaderCapturedBalance(input,rpc,now):readCashLeaderProvisionalBalance(input,rpc,now)):readCashLeaderBalance(input,rpc));
+ // A recovery scan already has finalized transfer logs. A null balance here
+ // means the RPC has not supplied matching chain evidence yet, not that this
+ // transaction was a non-sale. Never let that race advance its checkpoint.
+ if(!b){if(requireFinalizedEvidence)throw Error('Finalized leader sale evidence is not available yet.');return null;}
  const cfg=cashReturnNetwork(input.network),spent=-BigInt(b.deltaRaw);
  if(spent<=0n||b.token===cfg.usdc)return null;
  let saleInput=b.input,receiptLogs=b.receipt.logs;

@@ -249,7 +249,7 @@ export function useMarket(symbol: Symbol, period: Period, enabled = true, networ
       window.removeEventListener("offline", wake);
     };
   }, [key, symbol, period, retry, enabled, network]);
-  const stream = useLiveCandles(symbol, network, enabled && period === "1S", retry);
+  const stream = useLiveCandles(symbol, network, enabled && period === "1S" && import.meta.env.VITE_CODEX_LIVE_CHARTS === "true", retry);
   const visible = state.key === key ? state : remembered(key);
   const liveBars = stream.key === `${network}:${symbol}` ? stream.bars : [];
   return {
