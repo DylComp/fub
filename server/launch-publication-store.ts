@@ -1,7 +1,6 @@
 import { neon } from "@neondatabase/serverless";
 import { createHash } from "node:crypto";
 import type { PublishedLaunch, LaunchAuthorization } from "../src/launch-publication.js";
-export class PublicationLimit extends Error {}
 export class PublicationPending extends Error {}
 export function launchPublicationStore(url: string) {
   const client = () => neon(url, { fetchOptions: { signal: AbortSignal.timeout(8000) } });
@@ -9,20 +8,15 @@ export function launchPublicationStore(url: string) {
     async reserve(a: LaunchAuthorization, signature: string, manifest: string): Promise<PublishedLaunch | null> {
       if (createHash("sha256").update(manifest).digest("hex") !== a.payloadHash) throw Error("Publication manifest mismatch.");
       const sql = client();
-      const [, inserted] = await sql.transaction([
-        sql`SELECT pg_advisory_xact_lock(hashtextextended('launch-publications',0))`,
-        sql`INSERT INTO fomo_launch_publication_requests(owner,nonce,payload_hash,authorization_record,signature,manifest)
-          SELECT ${a.wallet},${a.nonce},${a.payloadHash},${JSON.stringify(a)}::jsonb,${signature},${manifest} WHERE
-          (SELECT count(*) FROM fomo_launch_publication_requests WHERE created_at>clock_timestamp()-interval '24 hours')<100
-          AND (SELECT count(*) FROM fomo_launch_publication_requests WHERE owner=${a.wallet} AND created_at>clock_timestamp()-interval '24 hours')<5
-          ON CONFLICT DO NOTHING RETURNING nonce`,
-      ]);
+      const inserted = await sql`INSERT INTO fomo_launch_publication_requests(owner,nonce,payload_hash,authorization_record,signature,manifest)
+        VALUES (${a.wallet},${a.nonce},${a.payloadHash},${JSON.stringify(a)}::jsonb,${signature},${manifest})
+        ON CONFLICT DO NOTHING RETURNING nonce`;
       if (inserted.length) return null;
       const rows = await sql`SELECT r.state,r.payload_hash,p.data FROM fomo_launch_publication_requests r LEFT JOIN fomo_launch_publications p ON p.id=r.publication_id
         WHERE r.owner=${a.wallet} AND r.nonce=${a.nonce}`;
       if (rows[0]?.payload_hash === a.payloadHash && rows[0]?.state === "complete") return rows[0].data as PublishedLaunch;
       if (rows.length) throw new PublicationPending("This request is already processing or failed. Reload saved drafts before trying again.");
-      throw new PublicationLimit("Publication limit reached. Try again later.");
+      throw Error("Publication reservation could not be verified.");
     },
     async complete(a: LaunchAuthorization, p: PublishedLaunch, image: Buffer, type: string, metadata: string) {
       if (p.owner !== a.wallet || createHash("sha256").update(image).digest("hex") !== p.imageHash || createHash("sha256").update(metadata).digest("hex") !== p.metadataHash) throw Error("Publication integrity mismatch.");

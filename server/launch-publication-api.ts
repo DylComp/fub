@@ -10,7 +10,7 @@ import { launchAuthorizationMessage, publicationPayload, launchAssetUrl, launchM
 import type { LaunchAuthorization, PublishedLaunch } from "../src/launch-publication.js";
 import { normalizeLaunchImage } from "./launch-image.js";
 import { freshLaunchRecipient } from "./launch-api.js";
-import { launchPublicationStore, PublicationLimit, PublicationPending } from "./launch-publication-store.js";
+import { launchPublicationStore, PublicationPending } from "./launch-publication-store.js";
 import type { LaunchPublicationStore } from "./launch-publication-store.js";
 const hash = (value: string | Buffer) => createHash("sha256").update(value).digest("hex");
 const exact = (o: unknown, keys: string) => !!o && typeof o === "object" && !Array.isArray(o) && Object.keys(o).sort().join() === keys;
@@ -119,7 +119,6 @@ export function launchPublicationHandler(options: { store?: () => LaunchPublicat
       return send(200, { publication: await store.complete(a, publication, image.bytes, image.type, metadata) });
     } catch (error) {
       if (reserved && store) await store.fail(reserved).catch(() => {});
-      if (error instanceof PublicationLimit) { res.setHeader("Retry-After", "3600"); return send(429, { message: error.message }); }
       if (error instanceof PublicationPending) return send(409, { message: error.message });
       return send(503, { message: "Draft storage is unavailable. Load saved drafts before publishing again." });
     } finally { pending--; }

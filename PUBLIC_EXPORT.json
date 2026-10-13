@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T21:35:36.428Z",
+  "generatedAt": "2026-10-13T21:53:21.495Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -2489,13 +2489,13 @@
     },
     {
       "path": "server/launch-publication-api.ts",
-      "sha256": "8733f7a553fd12db63a6b3b2ff6755abb17a08409d08cde42dc4f259776d6eca",
-      "bytes": 9939
+      "sha256": "cfb5d4d331608151839f826245b3583aedf443a516f15f4b0a7a825aeb669553",
+      "bytes": 9788
     },
     {
       "path": "server/launch-publication-store.ts",
-      "sha256": "f120ae0be6c46fd9a03a051677e51602bd5515469b262b37cc15bd86653492ff",
-      "bytes": 5180
+      "sha256": "ea4a46ff2a22555214624272b4a950c44b7eedb076196e77caf67773fb34c80f",
+      "bytes": 4713
     },
     {
       "path": "server/launch-quote-chain.ts",
