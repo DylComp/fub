@@ -11,12 +11,14 @@ export function Modal({
   children,
   close,
   wide = false,
+  dismissible = true,
 }: {
   title: string;
   description?: string;
   children: ReactNode;
   close: () => void;
   wide?: boolean;
+  dismissible?: boolean;
 }) {
   const ref = useRef<HTMLDialogElement>(null);
   const providerModal = useContext(WalletModalActive);
@@ -46,7 +48,7 @@ export function Modal({
       aria-describedby={description ? "modal-description" : undefined}
       onCancel={(e) => {
         e.preventDefault();
-        close();
+        if (dismissible && !providerModal) close();
       }}
       onClick={(e) => {
         if (e.target === e.currentTarget) {
@@ -57,7 +59,7 @@ export function Modal({
             e.clientY < box.top ||
             e.clientY > box.bottom
           )
-            close();
+            if (dismissible && !providerModal) close();
         }
       }}
     >
@@ -65,7 +67,8 @@ export function Modal({
         <h2 id="modal-title">{title}</h2>
         <button
           className="icon-button"
-          onClick={close}
+          disabled={!dismissible}
+          onClick={() => { if (dismissible && !providerModal) close(); }}
           aria-label="Close dialog"
         >
           <X size={20} />

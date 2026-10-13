@@ -7,6 +7,7 @@ import {recoverUnsignedCashSale,capturedSaleAnchor} from './cash-copy-unsigned-s
 import {cashCopyReadiness} from './cash-copy-readiness.js';
 import {validateCashCopyScope} from '../src/cash-copy-model.js';
 import {cashCopySaleCredit} from './cash-copy-sale-credit.js';
+import {reconcileCashCopyReturns} from './cash-copy-return-credit.js';
 import canonicalize from 'canonicalize';
 import type {cashLeaderRegistry} from './cash-leader-registry.js';
 import {recoverCashLeaderSales} from './cash-sale-recovery.js';
@@ -137,8 +138,10 @@ export function hostedCashCopy(config:{origin:string;reviewLimits?:import('../sr
   const signing=cashCopySigning({journal,saleGasCeilingWei:config.saleGasCeilingWei,parts:config.parts,enabled:active,verifyLeader,resolveSolana:(j,s)=>owner.resolve(j,'solana',s),resolveEvm:(j,s)=>owner.resolve(j,'evm',s),solana:config.solana,evm:config.evm,solanaProvider,evmProvider});
   const executor=cashCopyService({journal,purchases,returns,enabled:active,authorized:journal.authorized,recoverSigned:signing.recover,recoverUnsignedSale:id=>recoverUnsignedCashSale({cas:config.cas,parts:config.parts,planId,wallet,id,enabled:active,verify:async(event,s)=>{const job=await journal.get(id);if(job&&event.confirmation==='captured'&&Date.now()-event.blockTime<=120000)return verifyCapturedSale(job,s);const result=await readCashLeaderSale(event,config.evm(event.network));s.throwIfAborted();return result?.tradeVerified?{...result.event,confirmation:'finalized' as const}:null;}},signal),signer:{purchase:async j=>{const v=await signing.sign(j.id,signal);if(typeof v!=='string')throw Error();return v;},sale:async j=>{const v=await signing.sign(j.id,signal);if(!Array.isArray(v))throw Error();return v;}}});
   const pending=async()=>{
-   if(!active()||!config.liveVerify)return false;
-   const d=(await config.cas.read(planId,wallet))?.value;if(!d||d.revoked)return false;
+   signal.throwIfAborted();
+   const d=(await config.cas.read(planId,wallet))?.value;if(!d)return false;
+   await reconcileCashCopyReturns(d,{read:stores.sales.get,verify:sale=>cashCopySaleCredit(sale,config.solana,config.evm(sale.simulation.route.intent.network),config.fetcher),record:journal.debitReturned},signal);
+   if(!active()||!config.liveVerify||d.revoked)return false;
    // A captured sale can already be reserved when quote preparation fails.
    // Retry that same job before unrelated receipt reads, without reserving
    // another sale or replacing any claimed signing part.
@@ -147,11 +150,6 @@ export function hostedCashCopy(config:{origin:string;reviewLimits?:import('../sr
     const p=await stores.purchases.get(j.id,wallet);if(!p)continue;
     const receipt=await cashCopyInventory(p,config.solana,config.evm(j.event.network),config.fetcher);signal.throwIfAborted();
     if(receipt)await journal.creditSpendable(j,p,receipt);
-   }
-   for(const j of Object.values(d.jobs).filter(j=>j.state==='submitted'&&j.event.side==='sell'&&!j.provisionalDebit&&!j.leaderInvalidatedAt)){
-    const sale=await stores.sales.get(j.id,wallet);if(!sale)continue;
-    const proof=await cashCopySaleCredit(sale,config.solana,config.evm(j.event.network),config.fetcher);signal.throwIfAborted();
-    if(proof)await journal.debitReturned(j,sale,proof);
    }
    await drainCashPendingSales({cas:config.cas,planId,wallet,enabled:active,verify:async(event,s)=>{
     const rpc=config.evm(event.network),input={network:event.network,leader:event.leader,token:event.token,transaction:event.transaction};

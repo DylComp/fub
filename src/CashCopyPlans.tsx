@@ -6,6 +6,7 @@ import {CASH_NETWORKS} from './cash-route';
 import {cashCopyClient,cashCopyBudgetLabel,cashCopyStatusLabel,readCashCopyPlans,readCashCopyStatus,type CashCopyPlan} from './cash-copy-client';
 type Props={serviceOrigin:string;wallet:string;getToken:()=>Promise<string|null>;current:()=>boolean;close:()=>void;open:(plan:CashCopyPlan)=>void};
 export function CashCopyPlans(p:Props){
+ const [recoveryBusy,setRecoveryBusy]=useState(false);
  const [history,setHistory]=useState<string|null>(null);
  const [refreshError,setRefreshError]=useState('');const refreshOffset=useRef(0);
  const [plans,setPlans]=useState<CashCopyPlan[]>([]),[cursor,setCursor]=useState<string|null>(null),[busy,setBusy]=useState(false),[loaded,setLoaded]=useState(false),[error,setError]=useState('');
@@ -41,9 +42,9 @@ export function CashCopyPlans(p:Props){
   setRefreshError(failed?'Live status could not refresh. Saved plans remain below.':updated.some(r=>r.status.permissionId!==plans.find(p=>p.scope.planId===r.id)?.scope.id)?'A plan’s limits changed. Refresh plans to load the current permission.':'');
   if(failed)throw Error('Status refresh unavailable');
  });
- return <Modal title="Your USDC copy plans." close={p.close}>
+ return <Modal title="Your USDC copy plans." close={p.close} dismissible={!recoveryBusy}>
   <p className="copy-help">Plans saved to your wallet account, including paused and expired permissions. Pausing prevents new trades; submitted transactions continue to be checked.</p>
-  <button className="word-link" disabled={busy} onClick={()=>void load()}>Refresh plans</button>
+  <button className="word-link" disabled={busy||recoveryBusy} onClick={()=>void load()}>Refresh plans</button>
   {busy&&<p role="status">Loading plan status…</p>}
   {loaded&&!plans.length&&<p className="copy-help">No USDC copy plans for this wallet yet.</p>}
   {plans.map(plan=><section key={plan.scope.planId} className="copy-boundary" aria-label={'Copy plan '+plan.scope.planId}>
@@ -52,12 +53,12 @@ export function CashCopyPlans(p:Props){
    <p className="copy-help">{cashCopyStatusLabel(plan.status)}</p>
    {plan.status.budget&&<p className="copy-help">{cashCopyBudgetLabel(plan.status.budget)}</p>}
    <p className="copy-help">Permission ends {new Date(plan.scope.expiresAt).toLocaleString()}.</p>
-   <button className="word-link" disabled={busy||plan.status.permissionId!==plan.scope.id} onClick={()=>p.open(plan)}>View limits</button>
-   {(plan.status.permissionState||plan.status.state)==='active'&&<button className="word-link" disabled={busy} onClick={()=>void pause(plan)}>Pause copying</button>}
-   <button className="word-link" aria-expanded={history===plan.scope.planId} onClick={()=>setHistory(old=>old===plan.scope.planId?null:plan.scope.planId)}>{history===plan.scope.planId?'Hide trades':'View trades'}</button>
-   {history===plan.scope.planId&&<CashCopyHistory key={plan.scope.planId} serviceOrigin={p.serviceOrigin} wallet={p.wallet} planId={plan.scope.planId} getToken={p.getToken} current={current}/>}
+   <button className="word-link" disabled={busy||recoveryBusy||plan.status.permissionId!==plan.scope.id} onClick={()=>p.open(plan)}>View limits</button>
+   {(plan.status.permissionState||plan.status.state)==='active'&&<button className="word-link" disabled={busy||recoveryBusy} onClick={()=>void pause(plan)}>Pause copying</button>}
+   <button className="word-link" disabled={recoveryBusy} aria-expanded={history===plan.scope.planId} onClick={()=>setHistory(old=>old===plan.scope.planId?null:plan.scope.planId)}>{history===plan.scope.planId?'Hide trades':'View trades'}</button>
+   {history===plan.scope.planId&&<CashCopyHistory key={plan.scope.planId} serviceOrigin={p.serviceOrigin} wallet={p.wallet} planId={plan.scope.planId} getToken={p.getToken} current={current} onRecoveryBusyChange={setRecoveryBusy}/>}
   </section>)}
-  {cursor&&<button className="word-link" disabled={busy} onClick={()=>void load(cursor)}>Load more plans</button>}
+  {cursor&&<button className="word-link" disabled={busy||recoveryBusy} onClick={()=>void load(cursor)}>Load more plans</button>}
   {error&&<p className="error-message" role="alert">{error}</p>}
   {refreshError&&<p className="copy-help" role="status">{refreshError}</p>}
  </Modal>;

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T09:43:04.481Z",
+  "generatedAt": "2026-10-13T10:09:13.234Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -189,18 +189,18 @@
     },
     {
       "path": "src/CashCopyHistory.tsx",
-      "sha256": "b41e5869f00eb7043145a5565e8c8bb67d8563ed4cc93d4ffd9a19e656a87137",
-      "bytes": 6251
+      "sha256": "843a4d489f04849f1facc48e9a26639b90a6466946bedf20191841c4a68bbe07",
+      "bytes": 6657
     },
     {
       "path": "src/CashCopyPlans.tsx",
-      "sha256": "c1f4c52d7872ec999debd724338fc47c245b6ba7c8fbd9eea152c95b5b37e6a5",
-      "bytes": 6530
+      "sha256": "15bc737fd44cf655ff35e43aba6ce9ade9f782525bd31d20a25109e44b8a39ca",
+      "bytes": 6732
     },
     {
       "path": "src/CashCopyRecovery.tsx",
-      "sha256": "f992fc95f048f5a73213a1953ab537353f1caa1cffa3386a42884309c938f3cb",
-      "bytes": 5274
+      "sha256": "ad551e6ba7cc8f38b6f322234df29beb8ee764c7baddc8230867a9e77f8ae3aa",
+      "bytes": 5674
     },
     {
       "path": "src/CashTradePanel.tsx",
@@ -529,8 +529,8 @@
     },
     {
       "path": "src/cash-copy-client.ts",
-      "sha256": "7a414db38977c80435a0eb06a0d3cba9b585c835d452c1604358ba3adb8f677e",
-      "bytes": 12120
+      "sha256": "432b2267e5995a35bca4acc4eee42d5e9db1ac4abf5ae8784a3a01b5cd203f44",
+      "bytes": 12403
     },
     {
       "path": "src/cash-copy-history.ts",
@@ -1039,8 +1039,8 @@
     },
     {
       "path": "src/ui.tsx",
-      "sha256": "2709514d17e5b37aa2842e854b9665c96b207df40916c3b386c196cb38eb02ff",
-      "bytes": 2161
+      "sha256": "0bce8bd72663f9915b57cdf249ae99b8961877531a4306e4a5450b702c2c5a69",
+      "bytes": 2360
     },
     {
       "path": "src/useMarket.ts",
@@ -1264,8 +1264,8 @@
     },
     {
       "path": "server/cash-copy-hosted.ts",
-      "sha256": "80c55b9e6095e84e659a604116f46d0e5ff26d6cfb7265d81db2d003570c10e7",
-      "bytes": 23541
+      "sha256": "f7c9328979ee0cb47ed71b3ff2d4b22f306439fbb1825e4c4ce45d2e198358eb",
+      "bytes": 23451
     },
     {
       "path": "server/cash-copy-inventory.ts",
@@ -3721,6 +3721,11 @@
       "path": "FEES.md",
       "sha256": "bf76e225db548ab1578b29e7ebcc3080e5aec5967a5f22746025f14a6dc00d69",
       "bytes": 2344
+    },
+    {
+      "path": "server/cash-copy-return-credit.ts",
+      "sha256": "013de8a94940713057dd94f04d194dea11cf9b781debb52d77b87b09f8c81265",
+      "bytes": 1215
     }
   ],
   "secretPatternScan": {
