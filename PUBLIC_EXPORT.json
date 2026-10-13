@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T17:19:45.127Z",
+  "generatedAt": "2026-10-13T17:36:51.776Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -1474,8 +1474,8 @@
     },
     {
       "path": "server/cash-leader-sale.ts",
-      "sha256": "82616a851e186f25e8177f6a20cab2af6f90fbbd74ed3a39ddb001d2ab71ce43",
-      "bytes": 12401
+      "sha256": "2b5dc3bab40da8317a6d80cc6da911513f9473b8e24b4a20ccb89aafe18a69ce",
+      "bytes": 12579
     },
     {
       "path": "server/cash-leader-stream.ts",
@@ -1491,6 +1491,11 @@
       "path": "server/cash-leader-zero-arc-sale.ts",
       "sha256": "c8e2c76827bd0d5cef14894dd84fe21b90a0cf25ee0a393bcd8b1e1b900481a1",
       "bytes": 5161
+    },
+    {
+      "path": "server/cash-leader-zero-base-sale.ts",
+      "sha256": "05e9800557dc0fa76bbc37cf8fa8f9ace2c1ad01e109b6e6aff4e0f5012c671a",
+      "bytes": 6810
     },
     {
       "path": "server/cash-leader-zero-monad-sale.ts",
@@ -2858,6 +2863,11 @@
       "bytes": 7703
     },
     {
+      "path": "server/signer-event-loop.ts",
+      "sha256": "b088f019a07bbc7105e7563b21ffa74f5a15439b7551a2034bdb5f75d2a162b9",
+      "bytes": 1058
+    },
+    {
       "path": "server/signer-execution-scope.ts",
       "sha256": "79b520f630026810208daff80ce01957b3b9f2a98754c92b242ddf9c067a0b29",
       "bytes": 1791
@@ -3259,8 +3269,8 @@
     },
     {
       "path": "workers/signer.ts",
-      "sha256": "3cd9cd23721bae7031d1ca720b3cb4ed39dc416c69434bc7514192237687cb06",
-      "bytes": 16280
+      "sha256": "289af64db9141ebba859f75e687d1bd5e1a16aa05cce0abe16605dbe9d59b851",
+      "bytes": 16608
     },
     {
       "path": "workers/trading-check.ts",

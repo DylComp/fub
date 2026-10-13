@@ -1,3 +1,4 @@
+import {cashLeaderZeroBaseSale} from './cash-leader-zero-base-sale.js';
 import {readArcReceiptSale} from './cash-leader-arc-sale.js';
 import {ARC_RECEIPT} from './cash-leader-arc-receipt.js';
 import {cashLeaderZeroArcSale} from './cash-leader-zero-arc-sale.js';
@@ -89,7 +90,7 @@ async function readSale(input:{network:CashNetwork;leader:string;token:string;tr
   const [slippage,actions]=decode(cashReturnAbi.settler,data);
   const selected={...b,receipt:{...b.receipt,logs:receiptLogs}};
   const empty=/^0x0{40}$/i.test(slippage.recipient)&&/^0x0{40}$/i.test(slippage.buyToken)&&slippage.minAmountOut===0n;
-  const route=b.network==='bnb'?await cashLeaderZeroSale(selected,rpc,target.toLowerCase(),actions,spent,empty?undefined:slippage):b.network==='arc'?await cashLeaderZeroArcSale(selected,rpc,target.toLowerCase(),actions,spent,slippage):await cashLeaderZeroMonadSale(selected,rpc,target.toLowerCase(),actions,spent,slippage);
+  const route=b.network==='base'?await cashLeaderZeroBaseSale(selected,rpc,target.toLowerCase(),actions,spent,slippage):b.network==='bnb'?await cashLeaderZeroSale(selected,rpc,target.toLowerCase(),actions,spent,empty?undefined:slippage):b.network==='arc'?await cashLeaderZeroArcSale(selected,rpc,target.toLowerCase(),actions,spent,slippage):await cashLeaderZeroMonadSale(selected,rpc,target.toLowerCase(),actions,spent,slippage);
   minimum=route.minimum;zeroOutput=route.output;
  }else if(fynd){
   const fomoTracking='0x70726f70656c6c65722f52656c61792d464f4d4f';

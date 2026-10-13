@@ -1,3 +1,4 @@
+import {signerEventLoop} from '../server/signer-event-loop.js';
 import {configuredCashLimits} from '../server/cash-limit-host-config.js';
 import {directLimitBuyPolicy} from '../server/direct-limit-buy-policy.js';
 import {cashDynamicStreams} from '../server/cash-dynamic-streams.js';
@@ -90,11 +91,13 @@ async function run() {
   cashMonitorReady=(leader,networks)=>{refreshCashStreams();return cashStreams.ready(leader,networks);};
   refreshCashStreams();const cashStreamInterval=setInterval(refreshCashStreams,1000);cashStreamInterval.unref();
   const backups=startHostedLedgerBackup(env,'private');
+  const eventLoop=signerEventLoop({warn:report=>console.error(JSON.stringify(report))});
+  const eventLoopInterval=setInterval(()=>eventLoop.sample(),5000);eventLoopInterval.unref();
   const handler = isolatedSignerApi({ executionScope, exitPilotEnabled:!!exitPilot, executorToken: required("SIGNER_EXECUTOR_TOKEN"), signingEnabled: env.SIGNER_EXECUTION_ENABLED === "true", ready: readiness.ready, nativeSigningEnabled: env.SIGNER_NATIVE_EXECUTION_ENABLED === "true",
     ...(cash?{cashEnrollment:cash.enrollment,cashDelivery:(signal,wait)=>wait?cash.waitDelivery(signal):cash.delivery(signal)}:{}),
     ...(cashLimits?{cashLimitApi:cashLimits.api,cashLimitDelivery:cashLimits.delivery}:{}),
     backupReady:()=>backups?.snapshot().status==='healthy',
-    operations:()=>({cashLimits:cashLimits?.status()||{enabled:false},signingPolicy:{signerId:env.SIGNER_ID,policyId:env.SIGNER_POLICY_ID,digest:env.SIGNER_POLICY_DIGEST,limitBuyPolicyMatches:!!env.DIRECT_LIMIT_BUY_POLICY_DIGEST&&env.DIRECT_LIMIT_BUY_POLICY_DIGEST===env.SIGNER_POLICY_DIGEST,limitBuyScope:limitBuyPolicy.mode,limitBuysEnabled:env.DIRECT_LIMIT_BUY_ENABLED==='true'},cashRuntime:cash?.runtime()||null,cashSources:cashSources?.snapshot()||{mode:'shadow',executionEnabled:false,connected:false,status:'unconfigured'},cashStatusStream:cashStatuses.snapshot(),cashStreams:cashStreams.snapshot(),cashCopies:cashHealth.snapshot(!!cash),...(backups?{backups:backups.snapshot()}:{}),version:1,checkedAt:Date.now(),databaseReady:readiness.ready(),exitQueue:exitQueue.snapshot(directExits&&env.DIRECT_EXIT_EXECUTION_ENABLED==='true'&&env.SIGNER_EXECUTION_ENABLED==='true'),recovery:recoveryHealth.snapshot(true),directExits:exitHealth.snapshot(directExits&&env.DIRECT_EXIT_EXECUTION_ENABLED==='true'&&env.SIGNER_EXECUTION_ENABLED==='true')}),
+    operations:()=>({eventLoop:eventLoop.snapshot(),cashLimits:cashLimits?.status()||{enabled:false},signingPolicy:{signerId:env.SIGNER_ID,policyId:env.SIGNER_POLICY_ID,digest:env.SIGNER_POLICY_DIGEST,limitBuyPolicyMatches:!!env.DIRECT_LIMIT_BUY_POLICY_DIGEST&&env.DIRECT_LIMIT_BUY_POLICY_DIGEST===env.SIGNER_POLICY_DIGEST,limitBuyScope:limitBuyPolicy.mode,limitBuysEnabled:env.DIRECT_LIMIT_BUY_ENABLED==='true'},cashRuntime:cash?.runtime()||null,cashSources:cashSources?.snapshot()||{mode:'shadow',executionEnabled:false,connected:false,status:'unconfigured'},cashStatusStream:cashStatuses.snapshot(),cashStreams:cashStreams.snapshot(),cashCopies:cashHealth.snapshot(!!cash),...(backups?{backups:backups.snapshot()}:{}),version:1,checkedAt:Date.now(),databaseReady:readiness.ready(),exitQueue:exitQueue.snapshot(directExits&&env.DIRECT_EXIT_EXECUTION_ENABLED==='true'&&env.SIGNER_EXECUTION_ENABLED==='true'),recovery:recoveryHealth.snapshot(true),directExits:exitHealth.snapshot(directExits&&env.DIRECT_EXIT_EXECUTION_ENABLED==='true'&&env.SIGNER_EXECUTION_ENABLED==='true')}),
     enrollment: request => /\/v1\/enrollment\/(prepare|activate|position-review|position-apply|direct-exit-review|direct-exit-activate)$/.test(new URL(request.url).pathname) && request.method === "POST"
       ? readiness.run(signal => service.enrollment(new Request(request, { signal })), request.signal)
       : service.enrollment(request),
@@ -168,7 +171,7 @@ async function run() {
     console.error(JSON.stringify({ event: "isolated_signer_not_ready", reason: "Database isolation checks failed. Signing and new grants are withheld." }));
   }); }, 15000);
   interval.unref();
-  const stop = () => { cashLimits?.stop(); clearInterval(cashStreamInterval); clearInterval(cashStatusInterval); cashSources?.close(); cashStatuses.stop(); cashStreams.close(); clearInterval(cashInterval); clearInterval(expiryInterval); backups?.stop(); clearInterval(queueInterval); clearInterval(exitInterval); clearInterval(recoveryInterval); recoveryController.abort(); clearInterval(interval); readiness.stop(); for (const c of controllers) c.abort(); server.closeAllConnections(); server.close(); };
+  const stop = () => { clearInterval(eventLoopInterval);eventLoop.stop();cashLimits?.stop(); clearInterval(cashStreamInterval); clearInterval(cashStatusInterval); cashSources?.close(); cashStatuses.stop(); cashStreams.close(); clearInterval(cashInterval); clearInterval(expiryInterval); backups?.stop(); clearInterval(queueInterval); clearInterval(exitInterval); clearInterval(recoveryInterval); recoveryController.abort(); clearInterval(interval); readiness.stop(); for (const c of controllers) c.abort(); server.closeAllConnections(); server.close(); };
   process.once("SIGINT", stop); process.once("SIGTERM", stop);
 }
 run().catch(() => { console.error(JSON.stringify({ event: "isolated_signer_stopped", reason: "Private host configuration or service initialization failed." })); process.exitCode = 1; });
