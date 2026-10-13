@@ -1,6 +1,7 @@
 import {directLimitBuyPolicy} from '../server/direct-limit-buy-policy.js';
 import {cashDynamicStreams} from '../server/cash-dynamic-streams.js';
 import {cashSourceMonitor} from '../server/cash-source-monitor.js';
+import {cashStatusStream} from '../server/cash-status-stream.js';
 import {cashStatusProof} from '../server/cash-status-proof.js';
 import {cashStreamMonitor} from '../server/cash-stream-monitor.js';
 import {cashEvmRpc} from '../server/cash-evm-rpc.js';
@@ -64,6 +65,7 @@ async function run() {
   const sourceEndpoint=env.CASH_SOLANA_STREAM_RPC_URL;
   const cashSources=env.CASH_SOLANA_WS_URL&&sourceEndpoint&&sourceWallets.length?cashSourceMonitor({endpoint:env.CASH_SOLANA_WS_URL,wallets:sourceWallets,rpc:signal=>copyReadRpc(sourceEndpoint,signal)}):null;
   cashSources?.start();
+  const cashStatuses=cashStatusStream();
   await cash?.restoreLeaders();
   const cashStreams=cashDynamicStreams({networks:(Object.keys(CASH_NETWORKS) as CashNetwork[]).filter(n=>!!env[`CASH_${n.toUpperCase()}_WS_URL`]),create:(network,leaders)=>{
     const mode=env[`CASH_${network.toUpperCase()}_WS_MODE`]||(network==='base'?'pendingLogs':'logs');
@@ -75,7 +77,7 @@ async function run() {
      associate:async(balance,fill,signal)=>{
       const binding=cash?.leaders().find(l=>l.wallet===balance.leader&&l.networks.includes(balance.network));
       if(!binding||!sourceEndpoint)return{state:'awaiting-source',event:null};
-      return cashStatusProof({balance,fill,sourceWallet:binding.sourceWallet},{solana:copyReadRpc(sourceEndpoint,signal),signal});
+      return cashStatusProof({balance,fill,sourceWallet:binding.sourceWallet},{solana:copyReadRpc(sourceEndpoint,signal),signal,status:id=>cashStatuses.read(id)});
      },rpc:(network,signal)=>cashEvmRpc(network,fetch,{endpoint:env[`CASH_${network.toUpperCase()}_STREAM_RPC_URL`],archive:false,signal,timeoutMs:2500}),
     });
   }});
@@ -86,7 +88,7 @@ async function run() {
   const handler = isolatedSignerApi({ executionScope, exitPilotEnabled:!!exitPilot, executorToken: required("SIGNER_EXECUTOR_TOKEN"), signingEnabled: env.SIGNER_EXECUTION_ENABLED === "true", ready: readiness.ready, nativeSigningEnabled: env.SIGNER_NATIVE_EXECUTION_ENABLED === "true",
     ...(cash?{cashEnrollment:cash.enrollment,cashDelivery:(signal,wait)=>wait?cash.waitDelivery(signal):cash.delivery(signal)}:{}),
     backupReady:()=>backups?.snapshot().status==='healthy',
-    operations:()=>({signingPolicy:{signerId:env.SIGNER_ID,policyId:env.SIGNER_POLICY_ID,digest:env.SIGNER_POLICY_DIGEST,limitBuyPolicyMatches:!!env.DIRECT_LIMIT_BUY_POLICY_DIGEST&&env.DIRECT_LIMIT_BUY_POLICY_DIGEST===env.SIGNER_POLICY_DIGEST,limitBuyScope:limitBuyPolicy.mode,limitBuysEnabled:env.DIRECT_LIMIT_BUY_ENABLED==='true'},cashRuntime:cash?.runtime()||null,cashSources:cashSources?.snapshot()||{mode:'shadow',executionEnabled:false,connected:false,status:'unconfigured'},cashStreams:cashStreams.snapshot(),cashCopies:cashHealth.snapshot(!!cash),...(backups?{backups:backups.snapshot()}:{}),version:1,checkedAt:Date.now(),databaseReady:readiness.ready(),exitQueue:exitQueue.snapshot(directExits&&env.DIRECT_EXIT_EXECUTION_ENABLED==='true'&&env.SIGNER_EXECUTION_ENABLED==='true'),recovery:recoveryHealth.snapshot(true),directExits:exitHealth.snapshot(directExits&&env.DIRECT_EXIT_EXECUTION_ENABLED==='true'&&env.SIGNER_EXECUTION_ENABLED==='true')}),
+    operations:()=>({signingPolicy:{signerId:env.SIGNER_ID,policyId:env.SIGNER_POLICY_ID,digest:env.SIGNER_POLICY_DIGEST,limitBuyPolicyMatches:!!env.DIRECT_LIMIT_BUY_POLICY_DIGEST&&env.DIRECT_LIMIT_BUY_POLICY_DIGEST===env.SIGNER_POLICY_DIGEST,limitBuyScope:limitBuyPolicy.mode,limitBuysEnabled:env.DIRECT_LIMIT_BUY_ENABLED==='true'},cashRuntime:cash?.runtime()||null,cashSources:cashSources?.snapshot()||{mode:'shadow',executionEnabled:false,connected:false,status:'unconfigured'},cashStatusStream:cashStatuses.snapshot(),cashStreams:cashStreams.snapshot(),cashCopies:cashHealth.snapshot(!!cash),...(backups?{backups:backups.snapshot()}:{}),version:1,checkedAt:Date.now(),databaseReady:readiness.ready(),exitQueue:exitQueue.snapshot(directExits&&env.DIRECT_EXIT_EXECUTION_ENABLED==='true'&&env.SIGNER_EXECUTION_ENABLED==='true'),recovery:recoveryHealth.snapshot(true),directExits:exitHealth.snapshot(directExits&&env.DIRECT_EXIT_EXECUTION_ENABLED==='true'&&env.SIGNER_EXECUTION_ENABLED==='true')}),
     enrollment: request => /\/v1\/enrollment\/(prepare|activate|position-review|position-apply|direct-exit-review|direct-exit-activate)$/.test(new URL(request.url).pathname) && request.method === "POST"
       ? readiness.run(signal => service.enrollment(new Request(request, { signal })), request.signal)
       : service.enrollment(request),
@@ -160,7 +162,7 @@ async function run() {
     console.error(JSON.stringify({ event: "isolated_signer_not_ready", reason: "Database isolation checks failed. Signing and new grants are withheld." }));
   }); }, 15000);
   interval.unref();
-  const stop = () => { clearInterval(cashStreamInterval); cashSources?.close(); cashStreams.close(); clearInterval(cashInterval); clearInterval(expiryInterval); backups?.stop(); clearInterval(queueInterval); clearInterval(exitInterval); clearInterval(recoveryInterval); recoveryController.abort(); clearInterval(interval); readiness.stop(); for (const c of controllers) c.abort(); server.closeAllConnections(); server.close(); };
+  const stop = () => { clearInterval(cashStreamInterval); cashSources?.close(); cashStatuses.stop(); cashStreams.close(); clearInterval(cashInterval); clearInterval(expiryInterval); backups?.stop(); clearInterval(queueInterval); clearInterval(exitInterval); clearInterval(recoveryInterval); recoveryController.abort(); clearInterval(interval); readiness.stop(); for (const c of controllers) c.abort(); server.closeAllConnections(); server.close(); };
   process.once("SIGINT", stop); process.once("SIGTERM", stop);
 }
 run().catch(() => { console.error(JSON.stringify({ event: "isolated_signer_stopped", reason: "Private host configuration or service initialization failed." })); process.exitCode = 1; });

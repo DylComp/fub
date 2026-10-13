@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T02:43:38.618Z",
+  "generatedAt": "2026-10-13T03:00:38.659Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -1608,11 +1608,6 @@
       "bytes": 2087
     },
     {
-      "path": "server/cash-status-proof.ts",
-      "sha256": "77a21bb7f2965381dd28669b7941c7b7e4c7e892e406cf5bc08a69409798dadb",
-      "bytes": 6646
-    },
-    {
       "path": "server/cash-stream-monitor.ts",
       "sha256": "344e006a66d45d1102dd27ebdaa89c09dc803f78b84a227be6661cd72a8d173d",
       "bytes": 12809
@@ -3098,11 +3093,6 @@
       "bytes": 263
     },
     {
-      "path": "workers/signer.ts",
-      "sha256": "abcd3e4d68ecb4a639ebbaaf5e94f72bec0139686973ec4fa1a8b92c2da75d1c",
-      "bytes": 15466
-    },
-    {
       "path": "workers/trading-check.ts",
       "sha256": "b17918b78d839d34073676aa5fe620216b2eed02f06808966905268805994939",
       "bytes": 614
@@ -3691,6 +3681,26 @@
       "path": ".gitignore",
       "sha256": "8d8cdae35cb7e68dc7976931fb807ba8d16fe70d61e0ab79d1516832a1834621",
       "bytes": 133
+    },
+    {
+      "path": "tests/cash-status-stream.test.ts",
+      "sha256": "64f283315f1170167281c03242e4421d5e35abeea8f407ae67dcba77ee3ad219",
+      "bytes": 2481
+    },
+    {
+      "path": "server/cash-status-proof.ts",
+      "sha256": "75821abfa5349035af2061cf5f881c5a75ea35111952b67c934915bae13cf4cd",
+      "bytes": 6755
+    },
+    {
+      "path": "server/cash-status-stream.ts",
+      "sha256": "26190480e747cb80f16ab0f39fb4124ba393c07dfbf7ca0937f65458189a9222",
+      "bytes": 2669
+    },
+    {
+      "path": "workers/signer.ts",
+      "sha256": "c5f579ac40f1ce8ce7accbe47cd549c2b7d3b7f78e9d8f276d79a64385cae5ec",
+      "bytes": 15668
     }
   ],
   "secretPatternScan": {

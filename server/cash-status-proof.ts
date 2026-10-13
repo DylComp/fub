@@ -19,13 +19,15 @@ export class CashStatusUnavailable extends Error {
  * The public status binds that request to an exact source and destination tx.
  * A gift fails the independently checked source owner's signature/debit.
  */
-export async function cashStatusProof(input:{balance:Balance;fill:Fill;sourceWallet:string},dependencies:{solana:Rpc;signal:AbortSignal;fetch?:typeof fetch;now?:()=>number}){
+export async function cashStatusProof(input:{balance:Balance;fill:Fill;sourceWallet:string},dependencies:{solana:Rpc;signal:AbortSignal;fetch?:typeof fetch;now?:()=>number;status?: (requestId:string)=>unknown}){
  const {balance:b,fill:f,sourceWallet}=input,now=dependencies.now||Date.now;
  const signal=AbortSignal.any([dependencies.signal,AbortSignal.timeout(2000)]);
  let stage:'status'|'source'='status';
  const fresh=()=>{dependencies.signal.throwIfAborted();if(signal.aborted)throw new CashStatusUnavailable(stage);if(now()<b.blockTime||now()-b.blockTime>10000)throw Error('Live fill is stale.');};
  fresh();
  if(b.confirmation!=='provisional'||b.tradeVerified!==false||f.swapVerified!==true||f.tradeVerified!==false||f.sourceAssociation!=='unverified'||f.network!==b.network||f.transaction!==b.transaction||f.blockHash!==b.blockHash||f.token!==b.token||f.recipient!==b.leader||f.outputRaw!==b.deltaRaw||BigInt(b.deltaRaw)<=0n||!/^0x[0-9a-f]{64}$/.test(f.requestId)||/^0x0{64}$/.test(f.requestId))throw Error('Live status evidence differs.');
+ let status=dependencies.status?.(f.requestId);
+ if(status===undefined){
  const url=new URL('https://api.relay.link/intents/status/v3');url.searchParams.set('requestId',f.requestId);
  let response:Response;
  try{response=await(dependencies.fetch||fetch)(url,{signal,redirect:'error',cache:'no-store',headers:{Accept:'application/json'}});}catch{dependencies.signal.throwIfAborted();throw new CashStatusUnavailable('status');}
@@ -33,7 +35,9 @@ export async function cashStatusProof(input:{balance:Balance;fill:Fill;sourceWal
  const reader=response.body?.getReader();if(!reader)throw Error('Missing public status.');
  let size=0,text='';const decoder=new TextDecoder();
  try{for(;;){const {done,value}=await reader.read().catch(()=>{dependencies.signal.throwIfAborted();throw new CashStatusUnavailable('status');});if(done)break;size+=value.byteLength;if(size>16384)throw Error('Public status too large.');text+=decoder.decode(value,{stream:true});}text+=decoder.decode();}finally{await reader.cancel().catch(()=>{});}
- const status=JSON.parse(text);fresh();
+ status=JSON.parse(text);
+ }
+ fresh();
  const signature=matchCashPublicStatus(status,b,now());
  if(!signature)return{state:'awaiting-status' as const,event:null};
  stage='source';
