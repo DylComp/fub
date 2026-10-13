@@ -195,6 +195,17 @@ export function Activity({
     return () => c.abort();
   }, [revision]);
   useEffect(() => {
+    const refresh = () => {
+      if (document.visibilityState === "visible") setRevision((v) => v + 1);
+    };
+    const timer = window.setInterval(refresh, 30000);
+    document.addEventListener("visibilitychange", refresh);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener("visibilitychange", refresh);
+    };
+  }, []);
+  useEffect(() => {
     const update = () => setRequests(loadSavedRequests());
     window.addEventListener("storage", update);
     return () => window.removeEventListener("storage", update);
