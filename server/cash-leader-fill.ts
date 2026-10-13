@@ -1,3 +1,4 @@
+import {BNB_RECEIPT_ROUTER,verifyBnbReceiptFill} from './cash-leader-bnb-receipt.js';
 import {readArcNativeFill} from './cash-leader-arc-receipt.js';
 import {cashLeaderZeroV2Minimum} from './cash-leader-zero-v2.js';
 import {decodeEventLog,decodeFunctionData,encodeFunctionData,keccak256,parseAbi,toEventSelector} from 'viem';
@@ -45,7 +46,7 @@ export async function readCashLeaderFill(b:CashLeaderBalance,rpc:Rpc){
  if(calls.length===4&&(!same(calls[1].target,b.leader)||calls[1].callData!=='0x'||calls[1].value<=0n))throw Error('Fill gas recipient differs.');
  const [spender,allowance]=decode(cashReturnAbi.approval,approval.callData);
  if(!same(spender,swap.target)||allowance!==amount)throw Error('Fill allowance differs.');
- let adapter:'kyberswap'|'0x'|'fynd-hosted',minimum:bigint,settler:string|undefined;
+ let adapter:'kyberswap'|'0x'|'fynd-hosted'|'bnb-pancake-receipt',minimum:bigint|undefined,settler:string|undefined;
  const fynd=cashLeaderFynd(b.network);
  if(same(swap.target,cfg.kyber)){
   adapter='kyberswap';const [s]=decode(cashReturnAbi.kyber,swap.callData),d=s.desc;
@@ -70,8 +71,10 @@ export async function readCashLeaderFill(b:CashLeaderBalance,rpc:Rpc){
   const code=await rpc('eth_getCode',[fynd.router,b.blockNumber]);
   if(typeof code!=='string'||!/^0x(?:[0-9a-f]{2})+$/i.test(code)||keccak256(code as `0x${string}`)!==fynd.codeHash)throw Error('Fill Tycho deployment changed.');
   minimum=min;
+ }else if(b.network==='bnb'&&same(swap.target,BNB_RECEIPT_ROUTER)){
+  adapter='bnb-pancake-receipt';await verifyBnbReceiptFill(b,rpc,amount,swap.callData);
  }else throw Error('Unsupported fill adapter.');
- if(minimum<=0n||minimum>BigInt(b.deltaRaw))throw Error('Fill output is below its minimum.');
+ if(minimum!==undefined&&(minimum<=0n||minimum>BigInt(b.deltaRaw)))throw Error('Fill output is below its minimum.');
  const [tokens,recipients,amounts,cleanMetadata]=decode(cashLeaderFillAbi.cleanup,cleanup.callData);
  if(tokens.length!==1||recipients.length!==1||amounts.length!==1||!same(tokens[0],b.token)||!same(recipients[0],b.leader)||amounts[0]!==0n||!same(cleanMetadata,metadata))throw Error('Fill delivery differs.');
  const code=await rpc('eth_getCode',[cfg.proxy,b.blockNumber]);
@@ -101,5 +104,5 @@ export async function readCashLeaderFill(b:CashLeaderBalance,rpc:Rpc){
   }
  }
  if(funded!==amount||delivered!==BigInt(b.deltaRaw))throw Error('Fill amounts differ from the receipt.');
- return{swapVerified:true as const,tradeVerified:false as const,sourceAssociation:'unverified' as const,adapter,network:b.network,recipient:b.leader,token:b.token,transaction:b.transaction,blockHash:b.blockHash,inputRaw:amount.toString(),outputRaw:b.deltaRaw,minimumRaw:minimum.toString(),orderIdHint:'0x'+b.input.slice(-64),requestId:cashFillRequestId(metadata)};
+ return{swapVerified:true as const,tradeVerified:false as const,sourceAssociation:'unverified' as const,adapter,network:b.network,recipient:b.leader,token:b.token,transaction:b.transaction,blockHash:b.blockHash,inputRaw:amount.toString(),outputRaw:b.deltaRaw,minimumRaw:minimum?.toString(),...(minimum===undefined?{minimumEvidence:'not-decoded' as const}:{}),orderIdHint:'0x'+b.input.slice(-64),requestId:cashFillRequestId(metadata)};
 }

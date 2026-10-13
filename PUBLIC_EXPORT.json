@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T14:50:15.229Z",
+  "generatedAt": "2026-10-13T15:43:00.872Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -1404,8 +1404,8 @@
     },
     {
       "path": "server/cash-leader-fill.ts",
-      "sha256": "e8c46cb82d64b4aa910fdecee2bd1e038eed091ccd7456363dd5c682335f545e",
-      "bytes": 10047
+      "sha256": "90adacb4ad6a3c2465cc539c4eb3b4e4704debe5d8d76de8f8f4c776514ef1b6",
+      "bytes": 10414
     },
     {
       "path": "server/cash-leader-intent.ts",
@@ -3751,6 +3751,11 @@
       "path": "api/market-stream.ts",
       "sha256": "38585eac3677b87a940c93c851b24db860469e38dd8b9bfe165cfdefd8e2eb59",
       "bytes": 284
+    },
+    {
+      "path": "server/cash-leader-bnb-receipt.ts",
+      "sha256": "e2d24be235a6e31aaf0963b4df942afefacd9a57c1838d077c1e93130b142391",
+      "bytes": 5576
     }
   ],
   "secretPatternScan": {
