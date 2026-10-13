@@ -29,6 +29,7 @@ import { rawLamports } from "./launch-payout-model.js";
 const require = createRequire(import.meta.url),
   amm =
     require("@pump-fun/pump-swap-sdk") as typeof import("@pump-fun/pump-swap-sdk"),
+  next = require("@pump-fun/pump-sdk-next") as typeof import("@pump-fun/pump-sdk-next"),
   pump = require("@pump-fun/pump-sdk") as typeof import("@pump-fun/pump-sdk"),
   BN = require("bn.js") as typeof import("bn.js");
 const integer = (n: number) => {
@@ -59,7 +60,8 @@ export async function ammBuybackInstructions(p: BuybackPlan) {
     buyback = new PublicKey(p.buybackFeeRecipient),
     a = ammBuybackAddresses(mint, user, program),
     creatorVault = amm.coinCreatorVaultAuthorityPda(creator);
-  const buy = await amm.OFFLINE_PUMP_AMM_PROGRAM.methods
+  if(p.ammVersion!==undefined && p.ammVersion!==2)throw Error("Unsupported AMM buyback instruction version");
+  const buy = p.ammVersion===2 ? await next.getPumpAmmProgram(new Connection("http://127.0.0.1:8899")).methods.buyV2(new BN(p.tokens),new BN(p.inputCap)).accountsStrict({pool:a.pool,user,globalConfig:amm.GLOBAL_CONFIG_PDA,baseMint:mint,quoteMint:NATIVE_MINT,userBaseTokenAccount:a.base,userQuoteTokenAccount:a.quote,poolBaseTokenAccount:a.poolBase,poolQuoteTokenAccount:a.poolQuote,baseTokenProgram:program,quoteTokenProgram:TOKEN_PROGRAM_ID,systemProgram:SystemProgram.programId,userVolumeAccumulator:amm.userVolumeAccumulatorPda(user),feeConfig:amm.PUMP_AMM_FEE_CONFIG_PDA,buybackFeeRecipient:getAssociatedTokenAddressSync(NATIVE_MINT,buyback,true),eventAuthority:amm.PUMP_AMM_EVENT_AUTHORITY_PDA,program:amm.PUMP_AMM_PROGRAM_ID}).instruction() : await amm.OFFLINE_PUMP_AMM_PROGRAM.methods
     .buy(new BN(p.tokens), new BN(p.inputCap), { 0: false })
     .accountsStrict({
       pool: a.pool,
@@ -173,7 +175,8 @@ export async function prepareAmmBuyback(
     throw Error("Unsupported graduated buyback account owner");
   const global = amm.PUMP_AMM_SDK.decodeGlobalConfig(g),
     feeConfig = amm.PUMP_AMM_SDK.decodeFeeConfig(f),
-    pool = amm.PUMP_AMM_SDK.decodePool(pi),
+    poolProgram = next.getPumpAmmProgram(connection),
+    pool = poolProgram.coder.accounts.decode("pool", Buffer.concat([pi.data,Buffer.alloc(Math.max(0,poolProgram.account.pool.size-pi.data.length))])) as ReturnType<typeof amm.PUMP_AMM_SDK.decodePool> & {isHolderReward:boolean;protocolFees:import("bn.js");creatorFees:import("bn.js")},
     curve = pump.PUMP_SDK.decodeBondingCurve(c),
     mintState = unpackMint(mint, m, m.owner),
     a = m.owner.equals(TOKEN_PROGRAM_ID) ? classic : token22,
@@ -196,9 +199,10 @@ export async function prepareAmmBuyback(
     pool.coinCreator.equals(PublicKey.default) ||
     pool.isMayhemMode ||
     pool.isCashbackCoin ||
-    !pool.virtualQuoteReserves.isZero() ||
+    pool.isHolderReward ||
+    pool.canEditCreatorFee ||
     pi.data.length < amm.POOL_ACCOUNT_NEW_SIZE ||
-    pi.data.subarray(amm.POOL_SIZE).some((byte) => byte !== 0)
+    pi.data.subarray(poolProgram.account.pool.size).some((byte) => byte !== 0)
   )
     throw Error("Only standard canonical graduated SOL pools are supported");
   if (
@@ -283,7 +287,7 @@ export async function prepareAmmBuyback(
     quote: new BN(quoted.toString()),
     slippage: 0,
     baseReserve: new BN(poolBase.amount.toString()),
-    quoteReserve: new BN(poolQuote.amount.toString()),
+    quoteReserve: new BN(poolQuote.amount.toString()).sub(pool.protocolFees).sub(pool.creatorFees),
     virtualQuoteReserves: pool.virtualQuoteReserves,
     globalConfig: global,
     baseMintAccount: MintLayout.decode(m.data),
@@ -309,6 +313,7 @@ export async function prepareAmmBuyback(
   const plan: BuybackPlan = {
     version: 1,
     route: "pump-amm",
+    ammVersion: 2,
     policy,
     unsigned: "",
     inputCap: input.toString(),

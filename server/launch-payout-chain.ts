@@ -55,7 +55,7 @@ const integer = (n: number) => {
   if (!Number.isSafeInteger(n) || n < 0) throw Error("Unsafe RPC integer.");
   return BigInt(n);
 };
-function configFor(route: PayoutRoute, payer: string) {
+function configFor(route: PayoutRoute, payer: string, reverse = false) {
   const ordered=payoutDestinations(route);
   return {
     version: 2,
@@ -65,7 +65,7 @@ function configFor(route: PayoutRoute, payer: string) {
     shareholders: [
       { address: new PublicKey(ordered.recipient), shareBps: 8000 },
       { address: new PublicKey(ordered.buybackWallet), shareBps: 2000 },
-    ],
+    ].map((share, index, shares) => reverse ? shares[1-index] : share),
   };
 }
 // Rebuild the complete instruction list, including compute/priority limits. An
@@ -87,12 +87,12 @@ export async function verifyPayoutPlan(
     tx.signatures.some((s) => s.some((x) => x !== 0))
   )
     throw Error("Invalid unsigned payout.");
-  for (const graduated of (allowAmm ? [false, true] : [false])) for (const sweepCurve of [false,true]) for (const sweepPool of (graduated ? [false,true] : [false])) {
+  for (const graduated of (allowAmm ? [false, true] : [false])) for (const sweepCurve of [false,true]) for (const sweepPool of (graduated ? [false,true] : [false])) for (const reverse of [false,true]) {
     const instructions = await pumpDistributionInstructions({
       ...route,
       ...payoutDestinations(route),
       payer,
-      config: configFor(route, payer),
+      config: configFor(route, payer, reverse),
       graduated,
       sweepCurve,
       sweepPool,

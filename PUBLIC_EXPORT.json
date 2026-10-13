@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T19:17:04.144Z",
+  "generatedAt": "2026-10-13T20:38:40.298Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -1199,8 +1199,8 @@
     },
     {
       "path": "server/buyback-amm.ts",
-      "sha256": "95c908db571c2093b06c0f1fe2b759883c2d915f7e22a5ef45a84d815fcdd66f",
-      "bytes": 13596
+      "sha256": "7fa28d623c4c8e6dda7be69811b678bbe7c0d76300c52631ca5a6725a4570e90",
+      "bytes": 14919
     },
     {
       "path": "server/buyback-chain.ts",
@@ -1214,8 +1214,8 @@
     },
     {
       "path": "server/buyback-model.ts",
-      "sha256": "e9c0fdfc0c82f907765e898f10ec4ea3f6023ff0459ba050fa375273b14564ca",
-      "bytes": 5005
+      "sha256": "b6926a8d32aa60b617ae2f0d63eb535461ba2c3db9ca1f6fcd26d7b18d9de326",
+      "bytes": 5023
     },
     {
       "path": "server/buyback-nonlanding.ts",
@@ -2459,8 +2459,8 @@
     },
     {
       "path": "server/launch-payout-chain.ts",
-      "sha256": "efc8546410f76c51dff87a2bf11eb16c104727dbd240359d4daa304dc3194512",
-      "bytes": 16657
+      "sha256": "e4449c788d9784f6086874cdf135a1a288d425f602590bf2dad20c1b1aa9646f",
+      "bytes": 16784
     },
     {
       "path": "server/launch-payout-host.ts",
@@ -2789,8 +2789,8 @@
     },
     {
       "path": "server/pump-launch.ts",
-      "sha256": "6a4df123268160a6d0068ab92cb181f637cfb10df20a5a2c31ea0c128c33f1dd",
-      "bytes": 14140
+      "sha256": "f2890b52a72a48a9cbb0a48d3171e3c3a413b3c7f2e8a63fe3874e84d8fa295d",
+      "bytes": 14150
     },
     {
       "path": "server/pump-pair-resolver.ts",

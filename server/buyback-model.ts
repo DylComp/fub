@@ -17,6 +17,7 @@ export type BuybackPolicy = {
 export type BuybackPlan = {
   version: 1;
   route?: "pump-curve" | "pump-amm";
+  ammVersion?: 2;
   policy: BuybackPolicy;
   unsigned: string;
   inputCap: string;

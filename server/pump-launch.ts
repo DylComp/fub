@@ -104,7 +104,7 @@ export function compilePumpLaunch(built: Awaited<ReturnType<typeof pumpLaunchIns
 }
 export function verifyLaunchSharing(config: SharingConfig, mint: string, recipient: string, buybackWallet: string) {
   const expected = launchShares(recipient, buybackWallet);
-  if (config.version < 2 || config.adminRevoked !== true || config.mint.toBase58() !== mint || config.shareholders.length !== 2 || config.shareholders.some((s, i) => s.address.toBase58() !== expected[i].address || s.shareBps !== expected[i].shareBps)) throw Error("On-chain creator shares do not match this launch's permanent 80/20 split.");
+  if (config.version < 2 || config.adminRevoked !== true || config.mint.toBase58() !== mint || config.shareholders.length !== 2 || expected.some(e => config.shareholders.filter(s => s.address.toBase58() === e.address && s.shareBps === e.shareBps).length !== 1)) throw Error("On-chain creator shares do not match this launch's permanent 80/20 split.");
 }
 // Permissionless distribution plan only: no recipient keys, custody or send.
 // The caller must independently verify account owners, mint/quote and graduation.
