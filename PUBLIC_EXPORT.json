@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T03:40:27.062Z",
+  "generatedAt": "2026-10-13T03:55:17.116Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -994,8 +994,8 @@
     },
     {
       "path": "src/styles.css",
-      "sha256": "b5a1ebf41f58ab4741fcf950a2ae48b378e5be7d366c4aab8e0be4f7923dc1f0",
-      "bytes": 83764
+      "sha256": "744f6b6178955f77186381c89ca5d638e220f203dea5aa91f91e5f36b6acf12c",
+      "bytes": 85063
     },
     {
       "path": "src/task-completion.ts",
@@ -1284,8 +1284,8 @@
     },
     {
       "path": "server/cash-copy-owner-sale-stage.ts",
-      "sha256": "35665db60da71e4fc829a37111f0f27114c947414d666571779be915c35991af",
-      "bytes": 3603
+      "sha256": "1afc120281224fb1a1c80f2ffa09936c0d18aae4b94da7793109ffff4c798b75",
+      "bytes": 3845
     },
     {
       "path": "server/cash-copy-owner-sale.ts",
@@ -3664,13 +3664,13 @@
     },
     {
       "path": "README.md",
-      "sha256": "bce6a5b3f9c9d02b4dac6cba338c68aa7d54ca6bd8c83dc87e366d1ccf88434c",
-      "bytes": 8054
+      "sha256": "57ca6f2d1c53e6ccd0dff0df034a4f65cfce58987f2cad86954714199a3961c7",
+      "bytes": 9636
     },
     {
       "path": "SECURITY.md",
-      "sha256": "578c361ef14d2d985b372798b15f32c7a77edfcf96db19eb69eb413700a17b34",
-      "bytes": 1162
+      "sha256": "042abbc6df5570dd46e5a365f9f2026fa49eb80cbc399eedda55055380c7739f",
+      "bytes": 3118
     },
     {
       "path": ".env.example",
@@ -3701,6 +3701,26 @@
       "path": "workers/signer.ts",
       "sha256": "0b27491abf2e761e2aedc53fcd3b06701d3a4fe435b22f76671df30d8aca18a2",
       "bytes": 15831
+    },
+    {
+      "path": "WALLET-SECURITY.md",
+      "sha256": "ce435194a209447cc29cef0116bbaf0a5b1ee469e814d63746e215138d811a5d",
+      "bytes": 7863
+    },
+    {
+      "path": "ARCHITECTURE.md",
+      "sha256": "2ae962e57b1f847293ab8574954b5f6f32bff07e12b6df577166b7fb0a9ceb30",
+      "bytes": 4366
+    },
+    {
+      "path": "FEATURE-STATUS.md",
+      "sha256": "ab85751dc5a95851f457f563355be3984d3b7093d6ceaeee32a296c15ed555e2",
+      "bytes": 3527
+    },
+    {
+      "path": "FEES.md",
+      "sha256": "bf76e225db548ab1578b29e7ebcc3080e5aec5967a5f22746025f14a6dc00d69",
+      "bytes": 2344
     }
   ],
   "secretPatternScan": {

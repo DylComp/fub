@@ -11,6 +11,8 @@
   --blue: #5666f5;
   --green: #87d6b9;
   --pink: #e39bab;
+  --link-purple: #b9a0ff;
+  --link-purple-wash: rgba(164, 124, 255, .09);
 }
 * {
   box-sizing: border-box;
@@ -227,10 +229,21 @@ svg {
   height: 36px;
   border-radius: 9px;
   color: #aaaabb;
-  transition: color .2s, background-color .2s;
+  transition: color .18s ease, background-color .18s ease, box-shadow .18s ease;
 }
-.social-x-link:hover { color: #fff; background-color: #191923; }
-.social-x-link:focus-visible { outline: 2px solid #7774ff; outline-offset: 3px; }
+.social-x-link:focus-visible {
+  color: var(--link-purple);
+  background-color: var(--link-purple-wash);
+  outline: 2px solid var(--link-purple);
+  outline-offset: 3px;
+}
+@media (hover: hover) and (pointer: fine) {
+  .social-x-link:hover {
+    color: var(--link-purple);
+    background-color: var(--link-purple-wash);
+    box-shadow: inset 0 0 0 1px rgba(185, 160, 255, .12);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   .social-x-link { transition: none; }
 }
@@ -4234,4 +4247,26 @@ a svg {
   .wallet-trade-amounts { grid-column: 2; max-width: none; text-align: left; }
   .wallet-trade-amounts > span { justify-content: flex-start; }
   .wallet-trade-row > svg { grid-column: 3; grid-row: 1; }
+}
+
+/* Navigation and reference links share the brand accent; trading controls retain
+   their own action colors. No overlays or additional hit areas are introduced. */
+a.word-link, .fwp-identity a, .directory-asset-amount a {
+  transition: color .18s ease;
+}
+a.word-link:focus-visible, .fwp-identity a:focus-visible, .directory-asset-amount a:focus-visible {
+  color: var(--link-purple);
+  outline: 2px solid var(--link-purple);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+a.word-link:focus-visible::after { transform: scaleX(1); }
+@media (hover: hover) and (pointer: fine) {
+  a.word-link:hover, .launchpad a.word-link:hover, .fwp-identity a:hover,
+  .directory-asset-amount a:hover { color: var(--link-purple); }
+}
+@media (prefers-reduced-motion: reduce) {
+  a.word-link, a.word-link::after, a.word-link svg,
+  .fwp-identity a, .directory-asset-amount a { transition: none; }
+  a.word-link:hover svg, .launchpad a.word-link:hover { transform: none; }
 }

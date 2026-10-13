@@ -13,8 +13,11 @@ export async function stageCashOwnerSale(c:{cas:CashCopyCas;planId:string;wallet
  const prior=Object.values(d.jobs).find(j=>j.event.network===buy.event.network&&j.event.transaction===c.transaction);
  if(prior)throw Error('Use the existing sale record.');
  if(Object.values(d.jobs).some(j=>!['complete','stopped'].includes(j.state)))throw Error('Resolve pending trades first.');
+ // Closed jobs from older permissions remain audit history. They do not
+ // create another lot in this permission; exact current inventory and the
+ // global pending-job check above still prevent overlapping recovery.
  const key=buy.event.network+':'+buy.event.token,position=d.positions[key];
- if(position!==buy.purchase.receipt.receivedRaw||Object.values(d.jobs).some(j=>j.id!==buy.id&&j.event.network===buy.event.network&&j.event.token===buy.event.token&&j.state!=='stopped'))throw Error('Recovery needs an isolated purchased position.');
+ if(position!==buy.purchase.receipt.receivedRaw||Object.values(d.jobs).some(j=>j.id!==buy.id&&j.scope.id===scope.id&&j.event.network===buy.event.network&&j.event.token===buy.event.token&&j.state!=='stopped'))throw Error('Recovery needs an isolated purchased position.');
  const proof=await c.verify({network:buy.event.network,leader:scope.leader,token:buy.event.token,transaction:c.transaction});
  const now=(c.now||Date.now)();
  if(!proof||proof.event.confirmation!=='finalized'||proof.event.side!=='sell'||proof.event.network!==buy.event.network||proof.event.token!==buy.event.token||proof.event.transaction!==c.transaction||compareCashCopyEvents(buy.event,proof.event)>=0)throw Error('Finalized leader sale not verified.');

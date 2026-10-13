@@ -7,6 +7,20 @@
 
 Fub brings wallet research, orders, copy trading, token launches and crypto payments into one interface for Fomo users. This repository contains the application and service source code. Fub is an independent product; a Fomo username lookup is not permission to spend from that wallet.
 
+## Read this before importing a wallet
+
+**Private import adds provider signing capability for your existing wallet.** The address stays the same, but the trust model changes. Fub's browser code handles the key during import and passes it to Privy's SDK; backend automation later uses separately delegated signing authority. A browser connection by itself cannot authorize unattended trades.
+
+| Guide | What it explains |
+| --- | --- |
+| [Wallet import and signing](WALLET-SECURITY.md) | Where the key is processed, what permissions mean, Phantom copying, revocation and remaining risks |
+| [Architecture](ARCHITECTURE.md) | Browser, signer, observation, delivery, storage and recovery responsibilities |
+| [Feature scope and verification](FEATURE-STATUS.md) | What is implemented, tested, still under acceptance or excluded |
+| [Fees and buybacks](FEES.md) | Community 80/20 splits, official-token arrangements and collection costs |
+| [Security reports](SECURITY.md) | Private vulnerability reporting, audit limitations and dependency review |
+
+The code is available for inspection, not as proof that no trust is required. No independent security audit is claimed, and automatic cross-chain acceptance is not complete.
+
 ## Features
 
 - **Wallets:** search Fomo profiles and public addresses; inspect supported balances, holdings and transaction data. Provider coverage and freshness determine which statistics are available.
@@ -17,7 +31,7 @@ Fub brings wallet research, orders, copy trading, token launches and crypto paym
 
 ## Wallet model
 
-Pay and trading use a privately imported Fomo Solana wallet. The address and funds stay the same; ownership is verified before Privy imports the wallet. No raw key is sent to Fub’s server. Manual payments require their own confirmation, and automation requires separate bounded permissions.
+Pay and trading use a privately imported Fomo Solana wallet. The address and funds stay the same; ownership is verified before Privy imports the wallet. The implemented import path does not send the raw key to a Fub backend endpoint; it passes it to Privy’s SDK in the browser. This does not mean the key never leaves the device or that the browser/provider cannot be compromised. Manual payments require their own confirmation, and automation requires separate bounded permissions.
 
 Phantom and other external Solana wallets can connect for coin launches and copy trading. Automatic copying still requires private signing setup for that same wallet and approved plan limits. Pay and orders use the imported Fomo wallet. SOL and Solana USDC share its address; cross-chain buys spend its USDC and return sale proceeds there, while purchased tokens use a separately linked destination wallet.
 
@@ -27,7 +41,7 @@ Funded Solana limit-order and manual cross-chain purchase/return workflows have 
 
 The official Fub mint and its buyback configuration are separate from engineering-test tokens. Community launches use the 80/20 split above; the intended official-token split is 80% for buybacks and 20% for development. No official mint address or production signing credentials are supplied by this repository.
 
-Execution is disabled in the example configuration. Provider approvals, country restrictions, wallet permissions, RPC capacity and operating balances remain deployment requirements. The repository is not a promise of unattended operation or subsecond trading.
+Execution is disabled in the example configuration. Applicable provider access, country/product restrictions, wallet permissions, RPC capacity and operating balances remain deployment requirements. General-purpose spending cards are not part of this release. The repository is not a promise of unattended operation or subsecond trading.
 
 ## Architecture
 
@@ -97,4 +111,4 @@ The deployed font binaries are omitted because their redistribution rights were 
 
 ## Reporting an issue
 
-Open an issue with reproduction steps, the affected feature and a redacted error. Public transaction links may help. Do not post private keys, API credentials, signed wallet messages, gift-card codes or private receipt links. For private reports, contact the project through [@FubTool](https://x.com/FubTool).
+Open an issue with reproduction steps, the affected feature and a redacted error. Public transaction links may help. Do not post private keys, API credentials, signed wallet messages, gift-card codes or private receipt links. Use [GitHub private vulnerability reporting](https://github.com/DylComp/fub/security/advisories/new), or contact [@FubTool](https://x.com/FubTool) to arrange a private report.
