@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T21:00:39.736Z",
+  "generatedAt": "2026-10-13T21:18:17.053Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -169,8 +169,8 @@
     },
     {
       "path": "src/App.tsx",
-      "sha256": "2704b023f421ca8800ba0a90a4db032b1e320c1407a11fc133a2a7c5a7a8aac1",
-      "bytes": 57719
+      "sha256": "0a7d0ed3cfdbec1695403b5367fcc1a4a11e620e8038e0afd6a3967a5d4400ee",
+      "bytes": 57509
     },
     {
       "path": "src/AppRecovery.tsx",
@@ -1089,8 +1089,8 @@
     },
     {
       "path": "src/useVisibleRefresh.ts",
-      "sha256": "29666f805b755ca1496b04b26c5c9051231fccc97ca1ca3ab4154d2dccdc4e8d",
-      "bytes": 1456
+      "sha256": "2aee3db144db723b9a3df635175b84c4a1a405a1b3344009cbc7e85f79058ffc",
+      "bytes": 1620
     },
     {
       "path": "src/useWallet.ts",

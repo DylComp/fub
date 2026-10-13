@@ -1,7 +1,7 @@
 import {TASK_COMPLETED,type TaskCompletion} from "./task-completion";
 import {NativeOrderAmount} from "./NativeSellAmount";
 import {MarketCapEntry} from "./MarketCapEntry";
-import { lazy, Suspense, useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import {
   ArrowRight,
   ArrowUpRight,
@@ -51,23 +51,13 @@ import { WalletPanel } from "./WalletPanel";
 import { WalletWorkspace } from "./WalletWorkspace";
 import { pages, usePage } from "./navigation";
 import type { Page } from "./navigation";
-const Overview = lazy(() =>
-  import("./Overview").then((module) => ({ default: module.Overview })),
-);
-const Activity = lazy(() =>
-  import("./Activity").then((module) => ({ default: module.Activity })),
-);
-const Pay = lazy(() =>
-  import("./Pay").then((module) => ({ default: module.Pay })),
-);
-const Launchpad = lazy(() =>
-  import("./Launchpad").then((module) => ({ default: module.Launchpad })),
-);
-const TokenDirectory = lazy(() =>
-  import("./TokenDirectory").then((module) => ({
-    default: module.TokenDirectory,
-  })),
-);
+// Keep top-level routes in the loaded application so a new deployment cannot
+// strand an open tab when the user switches pages.
+import { Overview } from "./Overview";
+import { Activity } from "./Activity";
+import { Pay } from "./Pay";
+import { Launchpad } from "./Launchpad";
+import { TokenDirectory } from "./TokenDirectory";
 type Dialog =
   | "review"
   | "connection"

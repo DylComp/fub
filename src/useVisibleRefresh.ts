@@ -16,7 +16,7 @@ export function useVisibleRefresh(enabled:boolean,identity:string,interval:numbe
    finally{running=false;schedule();}
   };
   const wake=()=>{clearTimeout(timer);if(visible())void run();};
-  schedule();document.addEventListener('visibilitychange',wake);window.addEventListener('online',wake);window.addEventListener('offline',wake);
-  return()=>{controller.abort();clearTimeout(timer);document.removeEventListener('visibilitychange',wake);window.removeEventListener('online',wake);window.removeEventListener('offline',wake);};
+  schedule();document.addEventListener('visibilitychange',wake);window.addEventListener('online',wake);window.addEventListener('offline',wake);window.addEventListener('focus',wake);window.addEventListener('pageshow',wake);
+  return()=>{controller.abort();clearTimeout(timer);document.removeEventListener('visibilitychange',wake);window.removeEventListener('online',wake);window.removeEventListener('offline',wake);window.removeEventListener('focus',wake);window.removeEventListener('pageshow',wake);};
  },[enabled,identity,interval]);
 }
