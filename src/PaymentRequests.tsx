@@ -335,7 +335,6 @@ export function PaymentRequests({initialMode='split'}:{initialMode?:'split'|'tre
               <br />
               after the trade.
             </p>
-            <small>Card design · Issuing not connected</small>
           </div>
         </div>
       </section>

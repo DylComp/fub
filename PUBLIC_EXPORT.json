@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T15:45:42.894Z",
+  "generatedAt": "2026-10-13T15:57:40.017Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -409,8 +409,8 @@
     },
     {
       "path": "src/PaymentRequests.tsx",
-      "sha256": "91f4e7e1a601709f1ab8cbcd47dccdb7d26dbbd790f3cef8a8d20df5bb82f34d",
-      "bytes": 17710
+      "sha256": "c1cb13207be5b52aba835f6201b8d47e987309dd706ca1a14b2a0b6b7b3dfd04",
+      "bytes": 17646
     },
     {
       "path": "src/PrivyImport.tsx",
@@ -889,8 +889,8 @@
     },
     {
       "path": "src/pay/Bitrefill.tsx",
-      "sha256": "9bfefdaaf759cea069c6be31ee8351b545e4e39882523fdfb32a0f94e90b77fd",
-      "bytes": 8348
+      "sha256": "27efbe4b6ce55ec46d4639a9acaa6805582b5056baaea5bd46884cb394a66306",
+      "bytes": 8794
     },
     {
       "path": "src/pay/GiftCheckout.tsx",

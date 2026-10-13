@@ -1,6 +1,6 @@
 import {MerchantLogo} from './MerchantLogo';
 import {GiftCheckout} from './GiftCheckout';
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ArrowLeft, ArrowUpRight, Search } from "lucide-react";
 
 type Product = { id: string; name: string; countries: string[]; currency: string; inStock: boolean; url: string };
@@ -16,6 +16,14 @@ async function read<T>(params: URLSearchParams, signal: AbortSignal): Promise<T>
   return response.json();
 }
 export function Bitrefill() {
+  const detailPanel = useRef<HTMLElement>(null);
+  function showProduct(product: Product) {
+    setSelected(product);
+    requestAnimationFrame(() => {
+      detailPanel.current?.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "start" });
+      detailPanel.current?.focus({ preventScroll: true });
+    });
+  }
   const [country, setCountry] = useState("US"), [query, setQuery] = useState("");
   const [search, setSearch] = useState({ country: "US", query: "", page: 1, revision: 0 });
   const [catalog, setCatalog] = useState<Catalog | null>(null), [error, setError] = useState("");
@@ -48,10 +56,10 @@ export function Bitrefill() {
     </form>
     {error ? <div className="bitrefill-status"><p role="alert">{error}</p><a href={storefront} target="_blank" rel="noopener noreferrer">Browse on Bitrefill <ArrowUpRight size={14} /></a></div> : !catalog ? <p className="bitrefill-status" role="status">Loading gift cards…</p> : <>
       <p className="bitrefill-count" role="status">{catalog.found ? `${catalog.found} gift ${catalog.found === 1 ? "card" : "cards"} · ${regionNames.of(search.country)}` : "No gift cards found. Try another merchant or country."}</p>
-      <div className="bitrefill-products">{catalog.products.map(product => <button type="button" key={product.id} className="bitrefill-product" aria-pressed={selected?.id === product.id} onClick={() => setSelected(product)}><MerchantLogo product={product.id} /><span>{product.name}</span><small>{product.currency} · {product.inStock ? "View amounts" : "Unavailable"}</small><ArrowUpRight size={18} /></button>)}</div>
+      <div className="bitrefill-products">{catalog.products.map(product => <button type="button" key={product.id} className="bitrefill-product" aria-pressed={selected?.id === product.id} onClick={() => showProduct(product)}><MerchantLogo product={product.id} /><span>{product.name}</span><small>{product.currency} · {product.inStock ? "View amounts" : "Unavailable"}</small><ArrowUpRight size={18} /></button>)}</div>
       {(search.page > 1 || search.page * 12 < catalog.found) && <div className="bitrefill-pagination"><button type="button" disabled={search.page === 1} onClick={() => setSearch({ ...search, page: search.page - 1 })}>Previous</button><span>Page {search.page}</span><button type="button" disabled={search.page * 12 >= catalog.found || search.page >= 99} onClick={() => setSearch({ ...search, page: search.page + 1 })}>Next</button></div>}
     </>}
-    {selected && <section className="bitrefill-detail" aria-labelledby="bitrefill-product-title" aria-live="polite">
+    {selected && <section ref={detailPanel} tabIndex={-1} style={{scrollMarginTop: "6rem"}} className="bitrefill-detail" aria-labelledby="bitrefill-product-title" aria-live="polite">
       <div className="bitrefill-detail-heading"><h2 id="bitrefill-product-title" className="merchant-heading"><MerchantLogo product={selected.id} />{selected.name}</h2><button type="button" onClick={() => setSelected(null)}>Close details</button></div>
       {detailError ? <p role="alert">{detailError}</p> : !detail ? <p role="status">Checking amounts and availability…</p> : <>
         <p>{detail.subtitle}</p>{detail.note && <p className="bitrefill-note">{detail.note}</p>}{detail.terms && <p className="bitrefill-note">{detail.terms}</p>}
