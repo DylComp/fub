@@ -1,0 +1,86 @@
+{
+  "framework": "vite",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    {
+      "source": "/m/:metadataKey",
+      "destination": "/api/launch-assets?metadataKey=:metadataKey"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' https://challenges.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' https://assets.coingecko.com https://metadata.mobula.io https://fomo-pay.vercel.app data: blob: https://cdn.dexscreener.com https://prod-fomo-profile-pics.s3.amazonaws.com https://pbs.twimg.com https://cdn.bitrefill.com https://ipfs.io https://gateway.pinata.cloud https://arweave.net https://image-cdn.solana.fm https://metadata.pumplify.eu https://pump.mypinata.cloud https://cf-ipfs.com https://usefub.app; font-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; frame-src https://auth.privy.io https://verify.walletconnect.com https://verify.walletconnect.org https://challenges.cloudflare.com; connect-src 'self' https://fub-private-signer.fly.dev https://auth.privy.io wss://relay.walletconnect.com wss://relay.walletconnect.org wss://www.walletlink.org https://*.rpc.privy.systems wss://*.rpc.privy.systems https://explorer-api.walletconnect.com https://api.mainnet-beta.solana.com https://mainnet.base.org https://56.rpc.thirdweb.com https://rpc.monad.xyz https://robinhood.drpc.org https://rpc.drpc.mainnet.arc.io https://ethereum.reth.rs; worker-src 'self'; manifest-src 'self'"
+        }
+      ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/copy-monitor",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/launch-fees",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/launch-payouts",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/buybacks",
+      "schedule": "* * * * *"
+    }
+  ],
+  "functions": {
+    "api/copy-monitor.ts": {
+      "maxDuration": 60
+    },
+    "api/launch-fees.ts": {
+      "maxDuration": 60
+    },
+    "api/launch-payouts.ts": {
+      "maxDuration": 60
+    },
+    "api/buybacks.ts": {
+      "maxDuration": 60
+    },
+    "api/launch-assets.ts": {
+      "includeFiles": "node_modules/@img/**",
+      "maxDuration": 60
+    },
+    "api/launch-execute.ts": {
+      "maxDuration": 90
+    },
+    "api/launch-history.ts": {
+      "maxDuration": 90
+    },
+    "api/pay-transfer.ts": {
+      "maxDuration": 60
+    },
+    "api/gift-checkout.ts": {
+      "maxDuration": 60
+    }
+  }
+}

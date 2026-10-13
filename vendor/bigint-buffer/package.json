@@ -1,0 +1,1 @@
+{"name":"@fomo/bigint-buffer","version":"1.0.0","main":"index.cjs","license":"MIT","description":"Bounded pure-JavaScript integer conversions, adapted from the owner's Gramr implementation. No native addon."}

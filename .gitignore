@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.worker-dist/
+.vercel/
+.env*
+!.env.example
+*.tsbuildinfo
+test-results/
+playwright-report/
+vendor/relay-order.mjs

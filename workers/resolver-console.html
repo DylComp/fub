@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<title>Fub · Private Fomo sign-in</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#09090f;color:#f5f5f8;font:14px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;height:100dvh;display:flex;flex-direction:column}header{min-height:52px;padding:10px 20px;display:flex;gap:18px;align-items:center;border-bottom:1px solid #272730}header strong{white-space:nowrap}#status{color:#b7b7c8;flex:1}button{font:inherit;color:inherit;background:#22222e;border:1px solid #414150;border-radius:6px;padding:6px 12px;cursor:pointer}button:hover{background:#333344}#screen{flex:1;min-height:0;overflow:hidden}#screen canvas{outline:none}button:disabled{opacity:.45;cursor:default}
+</style>
+<header><strong>Fub · Fomo sign-in</strong><span id="status" role="status">Waiting for private connection.</span><button id="fit" disabled>Actual size</button><button id="reconnect" disabled>Reconnect</button></header>
+<div id="screen" aria-label="Private Fomo browser"></div>
+<script type="module">
+import RFB from './core/rfb.js';
+const screen=document.querySelector('#screen'),status=document.querySelector('#status'),fit=document.querySelector('#fit'),retry=document.querySelector('#reconnect');
+let rfb=null,password=null,expires=0,timer=null,expiry=null,attempts=0,generation=0,scaled=true;
+function end(message){generation++;clearTimeout(timer);clearTimeout(expiry);const old=rfb;rfb=null;password=null;old?.disconnect();screen.replaceChildren();status.textContent=message;fit.disabled=retry.disabled=true;}
+function connect(){
+ if(!password||Date.now()>=expires){end('This sign-in window expired. Reopen it from the operator setup.');return;}
+ const own=++generation;clearTimeout(timer);const old=rfb;rfb=null;old?.disconnect();screen.replaceChildren();
+ status.textContent='Connecting to the private browser…';retry.disabled=true;
+ const next=new RFB(screen,`${location.protocol==='https:'?'wss':'ws'}://${location.host}/websockify`,{credentials:{password},shared:true});rfb=next;
+ next.scaleViewport=scaled;next.resizeSession=false;next.viewOnly=false;next.clipViewport=!scaled;next.focusOnClick=true;
+ next.addEventListener('connect',()=>{if(own!==generation)return;attempts=0;status.textContent='Sign in to Fomo below. Passwords stay in this browser.';fit.disabled=false;retry.disabled=false;next.focus();});
+ next.addEventListener('securityfailure',()=>{if(own===generation)end('Private connection could not be authenticated. Reopen it from the operator setup.');});
+ next.addEventListener('disconnect',()=>{if(own!==generation||!password)return;screen.replaceChildren();fit.disabled=true;status.textContent='Connection interrupted. Reconnecting…';if(++attempts<=5)timer=setTimeout(connect,Math.min(1000*2**attempts,10000));else{status.textContent='Connection unavailable. Check the private tunnel, then reconnect.';retry.disabled=false;}});
+}
+// The operator injects a short-lived console password in memory. Never put it
+// in a URL, persistent storage, HTML source or the visible form.
+window.fubConsole={start(secret,until){
+ if(password&&Date.now()<expires)return;
+ if(location.hostname!=='127.0.0.1'||!/^[-_A-Za-z0-9]{8}$/.test(secret)||!Number.isSafeInteger(until)||until<=Date.now()||until-Date.now()>3600000){end('Invalid private setup.');return;}
+ password=secret;expires=until;expiry=setTimeout(()=>end('This sign-in window expired. Reopen it from the operator setup.'),expires-Date.now());connect();
+},get connected(){return !!rfb&&rfb._rfbConnectionState==='connected';}};
+// Chrome Apple Events can run in an isolated JavaScript world. Use a DOM
+// event to reach this single page-owned connection instead of importing a
+// second RFB/UI instance from the automation world.
+window.addEventListener('fub-console-open',event=>{
+ try{const input=JSON.parse(event.detail);window.fubConsole.start(input.password,input.expires);}catch{end('Invalid private setup.');}
+});
+screen.dataset.consoleReady='true';
+retry.onclick=connect;fit.onclick=()=>{scaled=!scaled;if(rfb){rfb.scaleViewport=scaled;rfb.clipViewport=!scaled;}fit.textContent=scaled?'Actual size':'Fit window';};
+window.addEventListener('pagehide',()=>end('Connection closed.'));
+</script>
+</html>

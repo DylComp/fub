@@ -1,0 +1,9 @@
+import {isMint} from './assets.js';
+import {launchHash,LAUNCH_ASSET_ORIGIN} from './launch-publication.js';
+export type LaunchExecutionAuthorization={version:1;action:'prepare'|'refresh'|'load';wallet:string;payloadHash:string;nonce:string;issuedAt:number;expiresAt:number};
+export function launchExecutionMessage(a:LaunchExecutionAuthorization,now=Date.now()){
+ if(!a||Object.keys(a).sort().join()!=='action,expiresAt,issuedAt,nonce,payloadHash,version,wallet'||a.version!==1||!['prepare','refresh','load'].includes(a.action)||!isMint(a.wallet)||!/^[a-f0-9]{64}$/.test(a.payloadHash)||!/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/.test(a.nonce)||!Number.isSafeInteger(a.issuedAt)||!Number.isSafeInteger(a.expiresAt)||a.issuedAt>now+30000||a.expiresAt<=now||a.expiresAt<=a.issuedAt||a.expiresAt-a.issuedAt>300000)throw Error('Invalid or expired launch request.');
+ const operation={load:'Load the existing transaction for my published coin.',prepare:'Prepare and simulate a transaction for my published coin.',refresh:'Prepare a replacement after verifying the previous launch expired without landing and its mint does not exist.'}[a.action];
+ return ['Fub',operation,'This message does not authorize a transaction or move funds. Launching requires a separate wallet transaction signature.',`Site: ${LAUNCH_ASSET_ORIGIN}`,`Wallet: ${a.wallet}`,`Payload SHA-256: ${a.payloadHash}`,`Request: ${a.nonce}`,`Issued: ${a.issuedAt}`,`Expires: ${a.expiresAt}`].join('\n');
+}
+export async function launchExecutionAuthorization(action:LaunchExecutionAuthorization['action'],wallet:string,payload:object):Promise<LaunchExecutionAuthorization>{const now=Date.now();return {version:1,action,wallet,payloadHash:await launchHash(JSON.stringify(payload)),nonce:crypto.randomUUID(),issuedAt:now,expiresAt:now+300000};}

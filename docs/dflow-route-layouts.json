@@ -1,0 +1,1415 @@
+{
+  "program": "DF1ow4tspfHX9JwWJsAb9epbkA8hmpSEAtxXy1V27QBH",
+  "idlAddress": "Cp2dCjxCWdktak2JiSrh87X6sz31EnDVKoTGtsHJvhYq",
+  "slot": 449716239,
+  "idlSha256": "db6a05584a319ae449ec3fcdf7871f6126b17006a2292fe9c3eb8fbcf6893b13",
+  "instructions": [
+    {
+      "name": "swap",
+      "discriminator": [
+        248,
+        198,
+        158,
+        145,
+        225,
+        117,
+        135,
+        200
+      ],
+      "accounts": [
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "user_token_authority",
+          "signer": true
+        },
+        {
+          "name": "event_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "SwapParams"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "swap2",
+      "discriminator": [
+        65,
+        75,
+        63,
+        76,
+        235,
+        91,
+        91,
+        136
+      ],
+      "accounts": [
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "user_token_authority",
+          "signer": true
+        },
+        {
+          "name": "event_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "Swap2Params"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "swap2_with_destination",
+      "discriminator": [
+        95,
+        123,
+        213,
+        246,
+        122,
+        1,
+        86,
+        231
+      ],
+      "accounts": [
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "user_token_authority",
+          "signer": true
+        },
+        {
+          "name": "destination_token_account",
+          "writable": true
+        },
+        {
+          "name": "destination_token_authority"
+        },
+        {
+          "name": "destination_mint"
+        },
+        {
+          "name": "event_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "Swap2Params"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "swap_with_destination",
+      "discriminator": [
+        168,
+        172,
+        24,
+        77,
+        197,
+        156,
+        135,
+        101
+      ],
+      "accounts": [
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "user_token_authority",
+          "signer": true
+        },
+        {
+          "name": "destination_token_account",
+          "writable": true
+        },
+        {
+          "name": "destination_token_authority"
+        },
+        {
+          "name": "destination_mint"
+        },
+        {
+          "name": "event_authority",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  95,
+                  95,
+                  101,
+                  118,
+                  101,
+                  110,
+                  116,
+                  95,
+                  97,
+                  117,
+                  116,
+                  104,
+                  111,
+                  114,
+                  105,
+                  116,
+                  121
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "program"
+        }
+      ],
+      "args": [
+        {
+          "name": "params",
+          "type": {
+            "defined": {
+              "name": "SwapParams"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "actions": [
+    {
+      "index": 0,
+      "name": "WhirlpoolsSwap",
+      "fields": [
+        {
+          "defined": {
+            "name": "WhirlpoolsSwapOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 2,
+      "name": "RaydiumAmmSwap",
+      "fields": [
+        {
+          "defined": {
+            "name": "RaydiumAmmSwapOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 4,
+      "name": "MeteoraDlmmSwap",
+      "fields": [
+        {
+          "defined": {
+            "name": "MeteoraDlmmSwapOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 5,
+      "name": "RaydiumClmmSwap",
+      "fields": [
+        {
+          "defined": {
+            "name": "RaydiumClmmSwapOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 6,
+      "name": "RaydiumClmmSwapV2",
+      "fields": [
+        {
+          "defined": {
+            "name": "RaydiumClmmSwapV2Options"
+          }
+        }
+      ]
+    },
+    {
+      "index": 7,
+      "name": "PhoenixSwap",
+      "fields": [
+        {
+          "defined": {
+            "name": "PhoenixSwapOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 12,
+      "name": "PumpFunAmmBuy",
+      "fields": [
+        {
+          "defined": {
+            "name": "PumpFunAmmBuyOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 13,
+      "name": "PumpFunAmmSell",
+      "fields": [
+        {
+          "defined": {
+            "name": "PumpFunAmmSellOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 17,
+      "name": "RaydiumCpSwap",
+      "fields": [
+        {
+          "defined": {
+            "name": "RaydiumCpSwapOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 19,
+      "name": "TesseraVSwap",
+      "fields": [
+        {
+          "defined": {
+            "name": "TesseraVSwapOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 20,
+      "name": "MeteoraDammV2Swap",
+      "fields": [
+        {
+          "defined": {
+            "name": "MeteoraDammV2SwapOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 24,
+      "name": "WhirlpoolsSwapV2",
+      "fields": [
+        {
+          "defined": {
+            "name": "WhirlpoolsSwapV2Options"
+          }
+        }
+      ]
+    },
+    {
+      "index": 25,
+      "name": "MeteoraDlmmSwapV2",
+      "fields": [
+        {
+          "defined": {
+            "name": "MeteoraDlmmSwapV2Options"
+          }
+        }
+      ]
+    },
+    {
+      "index": 29,
+      "name": "SolFiV2Swap",
+      "fields": [
+        {
+          "defined": {
+            "name": "SolFiV2SwapOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 31,
+      "name": "DFlowDynamicRouteV1",
+      "fields": [
+        {
+          "defined": {
+            "name": "DFlowDynamicRouteV1Options"
+          }
+        }
+      ]
+    },
+    {
+      "index": 35,
+      "name": "TransferFee",
+      "fields": [
+        {
+          "defined": {
+            "name": "TransferFeeOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 36,
+      "name": "TransferFeeWithMint",
+      "fields": [
+        {
+          "defined": {
+            "name": "TransferFeeOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 37,
+      "name": "RecordId",
+      "fields": [
+        {
+          "defined": {
+            "name": "RecordIdOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 38,
+      "name": "RecordId2",
+      "fields": [
+        {
+          "defined": {
+            "name": "RecordId2Options"
+          }
+        }
+      ]
+    },
+    {
+      "index": 40,
+      "name": "BisonFiSwap",
+      "fields": [
+        {
+          "defined": {
+            "name": "BisonFiSwapOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 45,
+      "name": "IncludeAccount"
+    },
+    {
+      "index": 48,
+      "name": "SetMinimumLegOutputs",
+      "fields": [
+        {
+          "defined": {
+            "name": "SetMinimumLegOutputsOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 49,
+      "name": "SetMinimumLegPrices",
+      "fields": [
+        {
+          "defined": {
+            "name": "SetMinimumLegPricesOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 50,
+      "name": "SetSponsor"
+    },
+    {
+      "index": 60,
+      "name": "InitAtaIdempotent"
+    },
+    {
+      "index": 61,
+      "name": "SetMaxUnderconsumptionBps",
+      "fields": [
+        {
+          "defined": {
+            "name": "SetMaxUnderconsumptionBpsOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 63,
+      "name": "TransferFeeV2",
+      "fields": [
+        {
+          "defined": {
+            "name": "TransferFeeOptions"
+          }
+        }
+      ]
+    },
+    {
+      "index": 64,
+      "name": "TransferFeeWithMintV2",
+      "fields": [
+        {
+          "defined": {
+            "name": "TransferFeeOptions"
+          }
+        }
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "AlphaQDynamicRouteV1Options",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "BisonFiDynamicRouteV1Options",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "BisonFiSwapOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "orchestrator_flags",
+            "type": {
+              "defined": {
+                "name": "OrchestratorFlags"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "DFlowDynamicRouteV1Options",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "candidate_actions",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "DynamicRouteV1CandidateAction"
+                }
+              }
+            }
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "orchestrator_flags",
+            "type": {
+              "defined": {
+                "name": "OrchestratorFlags"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "DynamicRouteV1CandidateAction",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "SolFi",
+            "fields": [
+              {
+                "defined": {
+                  "name": "SolFiDynamicRouteV1Options"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Rubicon",
+            "fields": [
+              {
+                "defined": {
+                  "name": "RubiconDynamicRouteV1Options"
+                }
+              }
+            ]
+          },
+          {
+            "name": "TesseraV",
+            "fields": [
+              {
+                "defined": {
+                  "name": "TesseraVDynamicRouteV1Options"
+                }
+              }
+            ]
+          },
+          {
+            "name": "HumidiFi",
+            "fields": [
+              {
+                "defined": {
+                  "name": "HumidiFiDynamicRouteV1Options"
+                }
+              }
+            ]
+          },
+          {
+            "name": "SolFiV2",
+            "fields": [
+              {
+                "defined": {
+                  "name": "SolFiV2DynamicRouteV1Options"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Mozart",
+            "fields": [
+              {
+                "defined": {
+                  "name": "MozartDynamicRouteV1Options"
+                }
+              }
+            ]
+          },
+          {
+            "name": "ObricV2",
+            "fields": [
+              {
+                "defined": {
+                  "name": "ObricV2DynamicRouteV1Options"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Nexus",
+            "fields": [
+              {
+                "defined": {
+                  "name": "NexusDynamicRouteV1Options"
+                }
+              }
+            ]
+          },
+          {
+            "name": "BisonFi",
+            "fields": [
+              {
+                "defined": {
+                  "name": "BisonFiDynamicRouteV1Options"
+                }
+              }
+            ]
+          },
+          {
+            "name": "ZeroFi",
+            "fields": [
+              {
+                "defined": {
+                  "name": "ZeroFiDynamicRouteV1Options"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Manifest",
+            "fields": [
+              {
+                "defined": {
+                  "name": "ManifestDynamicRouteV1Options"
+                }
+              }
+            ]
+          },
+          {
+            "name": "AlphaQ",
+            "fields": [
+              {
+                "defined": {
+                  "name": "AlphaQDynamicRouteV1Options"
+                }
+              }
+            ]
+          },
+          {
+            "name": "Scorch",
+            "fields": [
+              {
+                "defined": {
+                  "name": "ScorchDynamicRouteV1Options"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "HumidiFiDynamicRouteV1Options",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "swap_id",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "LegPrice",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "output_atoms_per_input_token",
+            "type": "u64"
+          },
+          {
+            "name": "input_mint_decimals",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "ManifestDynamicRouteV1Options",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "include_global",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "MeteoraDammV2SwapOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "orchestrator_flags",
+            "type": {
+              "defined": {
+                "name": "OrchestratorFlags"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MeteoraDlmmSwapOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "num_bin_arrays",
+            "type": "u8"
+          },
+          {
+            "name": "orchestrator_flags",
+            "type": {
+              "defined": {
+                "name": "OrchestratorFlags"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MeteoraDlmmSwapV2Options",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "num_bin_arrays",
+            "type": "u8"
+          },
+          {
+            "name": "orchestrator_flags",
+            "type": {
+              "defined": {
+                "name": "OrchestratorFlags"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "MozartDynamicRouteV1Options",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "NexusDynamicRouteV1Options",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "ObricV2DynamicRouteV1Options",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "OrchestratorFlags",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "flags",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "PhoenixSwapOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "side",
+            "type": {
+              "defined": {
+                "name": "Side"
+              }
+            }
+          },
+          {
+            "name": "orchestrator_flags",
+            "type": {
+              "defined": {
+                "name": "OrchestratorFlags"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PumpFunAmmBuyOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "orchestrator_flags",
+            "type": {
+              "defined": {
+                "name": "OrchestratorFlags"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "PumpFunAmmSellOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "orchestrator_flags",
+            "type": {
+              "defined": {
+                "name": "OrchestratorFlags"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RaydiumAmmSwapOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "orchestrator_flags",
+            "type": {
+              "defined": {
+                "name": "OrchestratorFlags"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RaydiumClmmSwapOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "num_remaining_accounts",
+            "type": "u8"
+          },
+          {
+            "name": "orchestrator_flags",
+            "type": {
+              "defined": {
+                "name": "OrchestratorFlags"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RaydiumClmmSwapV2Options",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "num_remaining_accounts",
+            "type": "u8"
+          },
+          {
+            "name": "orchestrator_flags",
+            "type": {
+              "defined": {
+                "name": "OrchestratorFlags"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RaydiumCpSwapOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "orchestrator_flags",
+            "type": {
+              "defined": {
+                "name": "OrchestratorFlags"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RecordId2Options",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": {
+              "array": [
+                "u8",
+                4
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RecordIdOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": {
+              "array": [
+                "u8",
+                76
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "RubiconDynamicRouteV1Options",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "ScorchDynamicRouteV1Options",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "is_token_2022",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SetMaxUnderconsumptionBpsOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "max_underconsumption_bps",
+            "type": "u16"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SetMinimumLegOutputsOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "minimum_outputs",
+            "type": {
+              "vec": "u64"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "SetMinimumLegPricesOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "minimum_prices",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "LegPrice"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Side",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Bid"
+          },
+          {
+            "name": "Ask"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SolFiDynamicRouteV1Options",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "SolFiV2DynamicRouteV1Options",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "SolFiV2SwapOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "orchestrator_flags",
+            "type": {
+              "defined": {
+                "name": "OrchestratorFlags"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TesseraVDynamicRouteV1Options",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    },
+    {
+      "name": "TesseraVSwapOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "orchestrator_flags",
+            "type": {
+              "defined": {
+                "name": "OrchestratorFlags"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "TransferFeeOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WhirlpoolsSwapOptions",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "a_to_b",
+            "type": "bool"
+          },
+          {
+            "name": "orchestrator_flags",
+            "type": {
+              "defined": {
+                "name": "OrchestratorFlags"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "WhirlpoolsSwapV2Options",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "a_to_b",
+            "type": "bool"
+          },
+          {
+            "name": "orchestrator_flags",
+            "type": {
+              "defined": {
+                "name": "OrchestratorFlags"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "ZeroFiDynamicRouteV1Options",
+      "type": {
+        "kind": "struct",
+        "fields": []
+      }
+    }
+  ],
+  "params": [
+    {
+      "name": "Swap2Params",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "actions",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "Action"
+                }
+              }
+            }
+          },
+          {
+            "name": "quoted_out_amount",
+            "type": "u64"
+          },
+          {
+            "name": "slippage_bps",
+            "type": "u16"
+          },
+          {
+            "name": "platform_fee_bps",
+            "type": "u16"
+          },
+          {
+            "name": "positive_slippage_fee_limit_pct",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwapParams",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "actions",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "Action"
+                }
+              }
+            }
+          },
+          {
+            "name": "quoted_out_amount",
+            "type": "u64"
+          },
+          {
+            "name": "slippage_bps",
+            "type": "u16"
+          },
+          {
+            "name": "platform_fee_bps",
+            "type": "u16"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+CREATE TABLE IF NOT EXISTS fomo_launch_pair_tables (
+ id text PRIMARY KEY,
+ publication_id text NOT NULL UNIQUE REFERENCES fomo_launch_publications(id),
+ owner text NOT NULL,
+ mint text NOT NULL,
+ quote_mint text NOT NULL,
+ plan jsonb NOT NULL,
+ unsigned_history jsonb NOT NULL DEFAULT '[]'::jsonb,
+ state text NOT NULL DEFAULT 'prepared' CHECK(state IN('prepared','pending','confirmed','failed','expired_unresolved')),
+ signed_transaction text,
+ signature text UNIQUE,
+ lease_id uuid,
+ lease_until timestamptz,
+ receipt jsonb,
+ checked_at timestamptz,
+ created_at timestamptz NOT NULL DEFAULT clock_timestamp(),
+ CHECK((signed_transaction IS NULL)=(signature IS NULL)),
+ CHECK((state='prepared')=(signature IS NULL)),
+ CHECK((state IN('confirmed','failed'))=(receipt IS NOT NULL))
+);

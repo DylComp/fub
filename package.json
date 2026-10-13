@@ -1,0 +1,81 @@
+{
+  "name": "fomo-pay",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "node scripts/build-relay-order.mjs && tsc -b && node scripts/check-server-runtime.mjs && vite build",
+    "preview": "vite preview --host 127.0.0.1",
+    "test": "vitest run",
+    "build:worker": "tsc -p tsconfig.worker.json && node scripts/package-worker-vendor.mjs",
+    "start:worker": "node .worker-dist/workers/observer.js",
+    "start:executor": "node .worker-dist/workers/executor.js",
+    "check:workers": "node .worker-dist/workers/check.js",
+    "check:workers:runtime": "node scripts/check-worker-runtime.mjs",
+    "start:payouts": "node .worker-dist/workers/payouts.js",
+    "start:resolver": "node .worker-dist/workers/fomo-resolver.js",
+    "login:resolver": "node .worker-dist/workers/fomo-resolver.js --login",
+    "start:launch-recovery": "node .worker-dist/workers/launch-recovery.js",
+    "start:buybacks": "node .worker-dist/workers/buybacks.js",
+    "start:pay-issuer": "node .worker-dist/workers/pay-issuer.js",
+    "start:signer": "node .worker-dist/workers/signer.js"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0",
+    "@privy-io/react-auth": "3.45.0",
+    "@pump-fun/pump-sdk": "2.0.0",
+    "@pump-fun/pump-sdk-next": "npm:@pump-fun/pump-sdk@4.0.0",
+    "@pump-fun/pump-swap-sdk": "1.20.0",
+    "@relay-protocol/settlement-sdk": "0.0.146",
+    "@solana-program/memo": "0.15.0",
+    "@solana-program/system": "0.15.0",
+    "@solana-program/token": "0.17.0",
+    "@solana/kit": "^8.3.0",
+    "@solana/spl-token": "0.4.15",
+    "@solana/wallet-standard-features": "^1.5.0",
+    "@solana/web3.js": "1.99.0",
+    "@toon-format/toon": "4.1.1",
+    "@wallet-standard/app": "^1.1.1",
+    "@wallet-standard/base": "^1.1.1",
+    "@wallet-standard/features": "^1.1.1",
+    "bigint-buffer": "file:vendor/bigint-buffer",
+    "bs58": "^6.0.0",
+    "buffer": "6.0.3",
+    "canonicalize": "2.1.0",
+    "decode-uri-component": "file:vendor/decode-uri-component",
+    "jose": "6.2.12",
+    "lightweight-charts": "^5.2.1",
+    "lucide-react": "^0.468.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "sharp": "0.35.5",
+    "stripe": "22.6.2",
+    "viem": "2.56.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/bn.js": "5.2.0",
+    "@types/node": "^26.6.2",
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.5.0",
+    "esbuild": "0.25.12",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.5",
+    "vitest": "^4.1.11"
+  },
+  "overrides": {
+    "ws@^8.0.0": "^8.21.3",
+    "bigint-buffer": "$bigint-buffer",
+    "toml": "^5.0.0",
+    "rpc-websockets": {
+      "uuid": "11.1.1"
+    },
+    "decode-uri-component": "$decode-uri-component",
+    "uuid@>=8.0.0 <10.0.0": "11.1.1",
+    "tronweb": {
+      "axios": "1.20.0"
+    }
+  }
+}

@@ -1,0 +1,4 @@
+ALTER TABLE fomo_buyback_policy_history
+  DROP CONSTRAINT IF EXISTS fomo_buyback_policy_history_reason_check;
+ALTER TABLE fomo_buyback_policy_history ADD CONSTRAINT fomo_buyback_policy_history_reason_check
+  CHECK(reason IN ('engineering_acceptance_to_official','curve_acceptance_to_graduated'));
