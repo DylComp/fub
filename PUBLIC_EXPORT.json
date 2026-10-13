@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T03:55:17.116Z",
+  "generatedAt": "2026-10-13T09:43:04.481Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -1544,8 +1544,8 @@
     },
     {
       "path": "server/cash-return-quote.ts",
-      "sha256": "94a28a1a3d32a26a9a0bb952015f131b46f35429a15ef06e415dd50d3bf3243d",
-      "bytes": 1218
+      "sha256": "b382e520b203e028dbb757ea6044d16b0f222d4f28d225572cf33858f5d218c4",
+      "bytes": 1236
     },
     {
       "path": "server/cash-return-receipt.ts",

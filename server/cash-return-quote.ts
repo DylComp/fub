@@ -10,7 +10,7 @@ export async function prepareCashReturnQuote(intent:CashReturnIntent,quote:(body
  catch(error){
   // A provider may choose a pool outside our pinned factories. Keep that
   // rejection and independently inspect one supported alternative instead.
-  if(intent.network!=='bnb'||!(error instanceof Error)||error.message!=='Cash sale source pool changed.')throw error;
+  if(!['bnb','base'].includes(intent.network)||!(error instanceof Error)||error.message!=='Cash sale source pool changed.')throw error;
  }
  const alternative=await quote({...request,includedOriginSwapSources:['0x']});
  const simulation=await simulate(alternative,intent,rpc,now);
