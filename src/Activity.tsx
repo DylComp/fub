@@ -431,6 +431,13 @@ export function Activity({
                   </button>
                 }
               >
+                {g.kind === "burn" && current?.burnTotals?.map(total => (
+                  <div className="hub-burn-totals" key={total.mint} aria-label="All-time buyback totals">
+                    <div><span>Total bought &amp; burned</span><strong>{activityUnits(total.tokens, total.decimals)} <small>FUB</small></strong></div>
+                    <div><span>Total SOL spent</span><strong>{activityUnits(total.spent, 9)} <small>SOL</small></strong><small>Includes transaction fees and account costs</small></div>
+                    <p>{total.count.toLocaleString()} confirmed burns · All time</p>
+                  </div>
+                ))}
                 {rows.map((r) => (
                   <RecordRow key={r.id} row={r} />
                 ))}

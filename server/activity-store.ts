@@ -56,7 +56,20 @@ export async function readActivity(
         .slice(0, 25)
         .map((r) => ({ ...r, recipientAvatarUrl: fomoAvatar(r.recipientAvatarUrl), at: new Date(r.at).toISOString() })),
     ) as ActivityRecord[];
-  const report = { wallet, records, more, checkedAt: Date.now() };
+  // All-time totals are independent of the latest-25 feed and search filters.
+  const totals = wallet === null ? await sql`SELECT t.policy->>'mint' AS mint,
+    (a.plan->>'decimals')::integer AS decimals,
+    sum(a.burned_tokens)::text AS tokens, sum(a.debit_lamports)::text AS spent,
+    count(*)::integer AS count
+    FROM fomo_buyback_attempts a JOIN fomo_buyback_treasuries t ON t.treasury=a.treasury
+    WHERE t.policy->>'mint'<>${HIDDEN_PUBLIC_LAUNCH_MINT}
+      AND COALESCE(a.plan->'policy'->>'purpose','')<>'engineering'
+      AND a.state='confirmed' AND a.receipt->>'success'='true'
+      AND a.burned_tokens>0 AND a.burned_tokens::text=a.plan->>'tokens'
+      AND a.plan->'policy'->>'mint'=t.policy->>'mint'
+    GROUP BY t.policy->>'mint',(a.plan->>'decimals')::integer` : [];
+  const burnTotals = totals.map(t => ({mint: String(t.mint), decimals: Number(t.decimals), tokens: String(t.tokens), spent: String(t.spent), count: Number(t.count)}));
+  const report = { wallet, records, more, burnTotals, checkedAt: Date.now() };
   if (!validActivity(report, wallet))
     throw Error("Activity record validation failed");
   return report;

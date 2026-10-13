@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T20:50:58.478Z",
+  "generatedAt": "2026-10-13T21:00:39.736Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -164,8 +164,8 @@
     },
     {
       "path": "src/Activity.tsx",
-      "sha256": "af0fdfe8059ae358afb1e60a1e5b9f80b3aeef671fb4e8af5ec861a6ce652cc8",
-      "bytes": 17622
+      "sha256": "277221c0d71b32079a26fd0a05fce54cd816d347a93122ee50217477e966a400",
+      "bytes": 18269
     },
     {
       "path": "src/App.tsx",
@@ -519,8 +519,8 @@
     },
     {
       "path": "src/activity-model.ts",
-      "sha256": "00985b7245784b610a27bbe0a7c8425066686731f8ada96e111c75b6ca9a46c0",
-      "bytes": 4475
+      "sha256": "4a8b15e9621658461ba90ed85e7c4975cbca919d6d6276e86e591314bf8903e5",
+      "bytes": 4928
     },
     {
       "path": "src/activity.css",
@@ -1024,8 +1024,8 @@
     },
     {
       "path": "src/styles.css",
-      "sha256": "5aeca8550653832a5a6ea2f51b46c25d626a08f71aa3356464b5c69409b5b068",
-      "bytes": 85247
+      "sha256": "1e80efea17de93612ba41b4d4d424f9c72fb891bdf20d1f5c2348db594c000de",
+      "bytes": 85972
     },
     {
       "path": "src/task-completion.ts",
@@ -1159,8 +1159,8 @@
     },
     {
       "path": "server/activity-store.ts",
-      "sha256": "1b90c92673e570d5eff965b9866bb90aa5a59f987ff9aec6d69f479ae30976fa",
-      "bytes": 5722
+      "sha256": "64714e65d70f9a367261132bbd841717b6a64dce557b433efabe552b982b47d8",
+      "bytes": 6691
     },
     {
       "path": "server/application-ledger-backup.ts",

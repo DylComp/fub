@@ -4279,3 +4279,10 @@ a.word-link:focus-visible::after { transform: scaleX(1); }
 .copy-account > .copy-backup-description + button {
   margin-bottom: 8px;
 }
+
+.hub-burn-totals { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; padding:22px; margin:0 0 16px; border:1px solid rgba(166,116,255,.25); border-radius:16px; background:linear-gradient(120deg,rgba(132,82,224,.12),rgba(132,82,224,.025)); }
+.hub-burn-totals > div { display:flex; flex-direction:column; gap:7px; min-width:0; }
+.hub-burn-totals span,.hub-burn-totals small,.hub-burn-totals p { color:var(--muted); font-size:12px; }
+.hub-burn-totals strong { font-size:clamp(18px,2.2vw,26px); font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.hub-burn-totals p { grid-column:1/-1; margin:0; }
+@media(max-width:600px) { .hub-burn-totals { grid-template-columns:1fr; gap:16px; padding:18px; } }

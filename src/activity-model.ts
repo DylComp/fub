@@ -26,6 +26,7 @@ export type ActivityReport = {
   wallet: string | null;
   records: ActivityRecord[];
   more: ActivityKind[];
+  burnTotals?: {mint: string; decimals: number; tokens: string; spent: string; count: number}[];
   checkedAt: number;
 };
 export function validActivity(
@@ -37,6 +38,9 @@ export function validActivity(
     return (
       !!d &&
       d.wallet === wallet &&
+      (d.burnTotals === undefined || (Array.isArray(d.burnTotals) &&
+        (wallet === null || d.burnTotals.length === 0) &&
+        d.burnTotals.every(t => isMint(t.mint) && Number.isInteger(t.decimals) && t.decimals >= 0 && t.decimals <= 9 && directoryAmount(t.tokens) && directoryAmount(t.spent) && Number.isSafeInteger(t.count) && t.count >= 0))) &&
       Number.isSafeInteger(d.checkedAt) &&
       d.checkedAt > 0 &&
       d.checkedAt <= Date.now() + 30000 &&
