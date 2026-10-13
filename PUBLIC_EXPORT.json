@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-13T18:53:06.568Z",
+  "generatedAt": "2026-10-13T19:00:24.511Z",
   "source": "Fub clean source snapshot; no development Git history",
   "excluded": [
     "all private environment files",
@@ -229,8 +229,8 @@
     },
     {
       "path": "src/CopyAccount.tsx",
-      "sha256": "3dc4a6772126032071a3bd6f4b47965f13d28b5e10a9fd3db6cc98f7aedd14d7",
-      "bytes": 12531
+      "sha256": "48ef42f1cc21ade6366f5ddbab94fcf336be4aa432a8ae9cfed28778cb4cfe87",
+      "bytes": 10325
     },
     {
       "path": "src/CopyControls.tsx",
@@ -259,8 +259,8 @@
     },
     {
       "path": "src/CopyNativeApproval.tsx",
-      "sha256": "3cc0659272aed00ad048f4ea6ea590cc14d04f1970242f33d7e8f08810fa5cc0",
-      "bytes": 7130
+      "sha256": "8ddb310b443bdd202a8a3feaab774c4f51bdaee5c3471616fb64cf5307ee03ff",
+      "bytes": 7268
     },
     {
       "path": "src/CopyNativeHistory.tsx",
@@ -268,9 +268,14 @@
       "bytes": 8163
     },
     {
+      "path": "src/CopyPlanCreate.tsx",
+      "sha256": "15db9ba34cb6fecf8be2bfe924169dd9b27ed59eb4b86cb580deccece76d3382",
+      "bytes": 3746
+    },
+    {
       "path": "src/CopyTrading.tsx",
-      "sha256": "9ea0d305e34d73e54e4cb7d4f0ebfeaadfb355f5c2976ba4b0794df3a62ea078",
-      "bytes": 16341
+      "sha256": "e2344460d846de692e915f681384ccf3fe3f28acc2e5adb086459f5a703c9e38",
+      "bytes": 8699
     },
     {
       "path": "src/DirectExits.tsx",
@@ -284,8 +289,8 @@
     },
     {
       "path": "src/Docs.tsx",
-      "sha256": "93a3cdc20df0c6edb355abf895cee1a64ddfda6ca8d0236ceead9c9a3711eaf8",
-      "bytes": 21176
+      "sha256": "e3a0443aa63755cfe6111395f0216c1a379c6d1e65160c7b0fd3a42084052023",
+      "bytes": 21446
     },
     {
       "path": "src/EvmCashImport.tsx",
@@ -3864,8 +3869,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "d819fc12b2d21b2881651f744946fe6367cd3f32348ccc843c2c4d69cd584abf",
-      "bytes": 11430
+      "sha256": "9ac708d52bb08f44d69c5d580a559393e4c85b6248ed10bea3330beedef0e70c",
+      "bytes": 11696
     },
     {
       "path": "SECURITY.md",

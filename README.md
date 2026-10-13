@@ -37,6 +37,8 @@ As of October 13, 2026, supported Solana limit buys and sells and manual USDC bu
 
 Fub uses **Privy** for importing the existing wallet and requesting wallet signatures. The import form validates the address locally and passes the entered key to Privy’s SDK. Fub’s intended import path does not send the raw key to its own backend or save it in browser storage. The key still exists in the browser during setup, and importing adds a provider trust dependency.
 
+Copy setup requires a connected wallet. Plans are saved to the authenticated wallet on the server and proceed to signed trading limits; the site no longer offers browser-only inactive copy plans. An unsigned setup is labeled as needing approval and cannot execute.
+
 Background trading requires a separate provider signer delegation and signed order or copy limits. Fub’s service checks those limits before requesting signatures; importing a wallet is not blanket permission to trade. Users can pause plans and revoke background access, but neither action reverses a submitted transaction. Read [the full security model](WALLET-SECURITY.md), including browser exposure, service credentials and revocation limits. No independent security audit or risk-free custody claim is made.
 
 ## Wallet model

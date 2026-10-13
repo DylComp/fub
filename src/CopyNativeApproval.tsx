@@ -5,11 +5,11 @@ import {token22PermissionMessage,type Token22Permission} from './native-copy-per
 import {triggerRequest,TriggerError} from './trigger-api';
 import {tokenUnits} from './copy-inventory';
 const initial:NativeLimitDraft={buy:'0.0001',daily:'0.004',fee:'0.00001',rent:'0.0031',duration:3600000,mint:''};
-export function CopyNativeApproval({wallet,csrf,plan,sign,onChange}:{wallet:string;csrf:string;plan:AccountCopyPlan;sign:(scope:Token22Permission)=>Promise<string>;onChange:()=>void}){
- const [open,setOpen]=useState(false),[draft,setDraft]=useState(initial),[review,setReview]=useState<Token22Permission|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[retry,setRetry]=useState(false),[blocked,setBlocked]=useState(false);
+export function CopyNativeApproval({wallet,csrf,plan,sign,onChange,defaultOpen=false,onBusyChange}:{wallet:string;csrf:string;plan:AccountCopyPlan;sign:(scope:Token22Permission)=>Promise<string>;onChange:()=>void;defaultOpen?:boolean;onBusyChange?:(busy:boolean)=>void}){
+ const [open,setOpen]=useState(defaultOpen),[draft,setDraft]=useState(initial),[review,setReview]=useState<Token22Permission|null>(null),[busy,setBusy]=useState(false),[error,setError]=useState(''),[notice,setNotice]=useState(''),[retry,setRetry]=useState(false),[blocked,setBlocked]=useState(false);
  const alive=useRef(true),lock=useRef(false),signed=useRef<{scope:Token22Permission;signature:string}|null>(null);
  useEffect(()=>{alive.current=true;return()=>{alive.current=false;};},[]);
- async function run(fn:()=>Promise<void>){if(lock.current)return;lock.current=true;setBusy(true);setError('');try{await fn();}catch(e){if(alive.current){setError(e instanceof Error?e.message:'Approval could not be confirmed.');if(e instanceof TriggerError&&e.code.startsWith('native_approval_')){setBlocked(true);setRetry(false);}}}finally{lock.current=false;if(alive.current)setBusy(false);}}
+ async function run(fn:()=>Promise<void>){if(lock.current)return;lock.current=true;setBusy(true);onBusyChange?.(true);setError('');try{await fn();}catch(e){if(alive.current){setError(e instanceof Error?e.message:'Approval could not be confirmed.');if(e instanceof TriggerError&&e.code.startsWith('native_approval_')){setBlocked(true);setRetry(false);}}}finally{lock.current=false;if(alive.current){setBusy(false);onBusyChange?.(false);}}}
  async function requestReview(){const reply=await triggerRequest<{scope:Token22Permission;message:string}>('copy-native-prepare',{wallet,id:plan.id,limits:nativeLimits(draft)},csrf);return verifyNativeApproval(reply,wallet,plan,draft);}
  async function prepare(){const scope=await requestReview();if(alive.current){signed.current=null;setRetry(false);setBlocked(false);setReview(scope);setNotice('');}}
  async function approve(){

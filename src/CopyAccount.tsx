@@ -8,8 +8,6 @@ import { CopyFeed } from "./CopyFeed";
 import { CopyControls } from "./CopyControls";
 import { CopyInventory } from "./CopyInventory";
 import { useEffect, useRef, useState } from "react";
-import type { CopyPlan } from "./copy-model";
-import { draftFromPlan } from "./copy-model";
 import type { AccountCopyPlan } from "./copy-account";
 import type { TriggerSession } from "./live-orders";
 import { triggerRequest } from "./trigger-api";
@@ -17,16 +15,14 @@ import { shortAddress } from "./assets";
 export function CopyAccount({
   wallet,
   active,
-  plans,
-  onLoad,
+  externalRevision,
   signSession,
   onConnect,
   signNativeCopy,
 }: {
   wallet?: string;
   active: boolean;
-  plans: CopyPlan[];
-  onLoad: (plan: CopyPlan) => void;
+  externalRevision: number;
   signSession: (challenge:WalletLogin)=>Promise<string>;
   onConnect: () => void;
   signNativeCopy: (scope:Token22Permission)=>Promise<string>;
@@ -94,7 +90,7 @@ export function CopyAccount({
         !Array.isArray(reply.plans) ||
         reply.plans.some((plan) => plan.wallet !== wallet)
       )
-        throw new Error("Wallet backup mismatch.");
+        throw new Error("Wallet plan mismatch.");
       if (current) {
         setBackups(reply.plans);
         setLoaded(true);
@@ -102,69 +98,19 @@ export function CopyAccount({
     })().catch(() => {
       if (current)
         setError(
-          "Wallet backups could not be loaded. Your browser plans are unchanged.",
+          "Wallet plans could not be loaded. Refresh before creating another plan.",
         );
     });
     return () => {
       current = false;
       controller.abort();
     };
-  }, [wallet, active, revision]);
+  }, [wallet, active, revision, externalRevision]);
   const authorized =
     !!wallet &&
     session?.address === wallet &&
     !!session.csrf &&
     (session.expiresAt || 0) > now;
-  async function backUp() {
-    if (!authorized || !loaded || locked.current) return;
-    locked.current = true;
-    setBusy(true);
-    setError("");
-    setNotice("");
-    let count = 0;
-    try {
-      for (const plan of plans) {
-        if (!alive.current) break;
-        const old = backups.find((saved) => !saved.archived && saved.address === plan.address) || backups.find((saved) => saved.id === plan.id);
-        const saved: AccountCopyPlan = await triggerRequest<AccountCopyPlan>(
-          "copy-save",
-          {
-            wallet,
-            id: old?.id || plan.id,
-            version: old?.version || 0,
-            draft: draftFromPlan(plan),
-          },
-          session!.csrf,
-        );
-        if (!alive.current) return;
-        if (
-          saved.wallet !== wallet ||
-          saved.address !== plan.address ||
-          saved.enabled
-        )
-          throw new Error("Unexpected backup response.");
-        setBackups((current) => [
-          saved,
-          ...current.filter((item) => item.id !== saved.id),
-        ]);
-        count++;
-      }
-      if (alive.current)
-        setNotice(
-          `${count} ${count === 1 ? "plan" : "plans"} backed up to this wallet. No trades were activated.`,
-        );
-    } catch (error) {
-      if (alive.current) {
-        setError(
-          `${count} saved. ${error instanceof Error ? error.message : "Backup failed."} Refresh backups before trying again.`,
-        );
-        setLoaded(false);
-      }
-    } finally {
-      locked.current = false;
-      if (alive.current) setBusy(false);
-    }
-  }
   async function archive(plan: AccountCopyPlan) {
     if (locked.current || !authorized) return;
     locked.current = true;
@@ -188,7 +134,7 @@ export function CopyAccount({
           current.map((item) => (item.id === saved.id ? saved : item)),
         );
         setNotice(
-          "Backup archived. Browser plans and trade records were kept.",
+          "Plan archived. Trade records were kept.",
         );
       }
     } catch (error) {
@@ -202,18 +148,17 @@ export function CopyAccount({
     }
   }
   return (
-    <section className="copy-account" aria-label="Wallet copy backups">
+    <section className="copy-account" aria-label="Wallet copy plans">
       <div className="section-heading">
-        <h2>Wallet backups</h2>
+        <h2>Your wallet’s copy plans</h2>
         {wallet && <span className="muted small">{shortAddress(wallet)}</span>}
       </div>
       <p className="muted copy-backup-description">
-        Keep a private copy of your rules across browsers. Backups do not
-        authorize or run trades.
+        These plans are saved to your wallet. Check signed permissions and service status below; unfinished setups do not execute.
       </p>
       {!wallet ? (
         <button className="word-link" onClick={onConnect}>
-          Connect wallet for backups
+          Connect wallet to manage plans
         </button>
       ) : !authorized ? (
         <button className="button secondary compact" disabled={signingIn} onClick={()=>void authorize()}>
@@ -226,23 +171,16 @@ export function CopyAccount({
             wallet={wallet!}
             csrf={session!.csrf!}
             plans={backups}
-            revision={revision}
+            revision={revision+externalRevision}
             onChange={() => setRevision((value) => value + 1)}
           />
           <div className="live-order-actions">
-            <button
-              className="button secondary compact"
-              disabled={busy || !loaded || !plans.length}
-              onClick={() => void backUp()}
-            >
-              {busy ? "Saving…" : "Back up saved plans"}
-            </button>
             <button
               className="word-link"
               disabled={busy}
               onClick={() => setRevision((value) => value + 1)}
             >
-              Refresh backups
+              Refresh plans
             </button>
           </div>
           {active && (
@@ -257,32 +195,23 @@ export function CopyAccount({
               key={wallet}
               wallet={wallet!}
               csrf={session!.csrf!}
-              revision={revision}
+              revision={revision+externalRevision}
             />
           )}
           {loaded && !backups.length && (
-            <p className="muted">No backups for this wallet yet.</p>
+            <p className="muted">No plans for this wallet yet.</p>
           )}
           {backups.map((plan) => (
             <article className="copy-backup-row" key={plan.id}>
               <div>
                 <b>{plan.name || shortAddress(plan.address)}</b>
                 <small>
-                  {shortAddress(plan.address)} · $
-                  {(plan.buyCents / 100).toFixed(2)} per buy · $
-                  {(plan.dailyCents / 100).toFixed(2)} daily
+                  {shortAddress(plan.address)} · {plan.enabled?'Check execution status below':'Needs approval or renewal'}
                   {plan.archived ? " · Archived" : ""}
                 </small>
               </div>
               {!plan.archived&&<CopyNativeApproval key={`${wallet}:${plan.id}:${plan.version}`} wallet={wallet!} csrf={session!.csrf!} plan={plan} sign={signNativeCopy} onChange={()=>setRevision(v=>v+1)}/>}
               <div className="live-order-actions">
-                <button
-                  className="word-link"
-                  disabled={busy}
-                  onClick={() => onLoad(plan)}
-                >
-                  Load settings
-                </button>
                 <button
                   className="word-link"
                   disabled={busy || !loaded}
@@ -307,7 +236,7 @@ export function CopyAccount({
                     disabled={busy || !loaded}
                     onClick={() => void archive(plan)}
                   >
-                    Archive backup
+                    Archive plan
                   </button>
                 )}
               </div>
@@ -330,9 +259,7 @@ export function CopyAccount({
               />
             )}
           <p className="copy-help">
-            Removing a browser plan does not remove its backup. Backups stay
-            inactive when edited. Back up a loaded plan to restore an archived
-            backup.
+            Only a valid signed permission authorizes copying. Paused or expired plans require renewed approval; pending transactions remain tracked.
           </p>
         </>
       )}

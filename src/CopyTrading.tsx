@@ -4,21 +4,13 @@ import type {DiscoveredToken} from "./assets";
 import {useWalletSetup} from './WalletSetup';
 import type {Token22Permission} from "./native-copy-permission";
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, ArrowUpRight, Pencil, Trash2 } from "lucide-react";
+import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { CopyAccount } from "./CopyAccount";
 import { FomoLeaderPicker } from "./FomoLeaderPicker";
-import { Modal } from "./ui";
-import { shortAddress, isMint } from "./assets";
-import { usd } from "./model";
-import {
-  COPY_STORAGE_KEY,
-  copyError,
-  draftFromPlan,
-  emptyCopyDraft,
-  loadCopyPlans,
-  saveCopyPlan,
-} from "./copy-model";
-import type { CopyDraft, CopyPlan } from "./copy-model";
+import {CopyPlanCreate} from "./CopyPlanCreate";
+import { isMint } from "./assets";
+import {copyError,emptyCopyDraft} from './copy-model';
+import type {CopyDraft} from './copy-model';
 
 export function CopyTrading({
   initialAddress = "",
@@ -39,21 +31,17 @@ export function CopyTrading({
 }) {
   const setup=useWalletSetup();
   const [chartToken,setChartToken]=useState<DiscoveredToken|null>(null),[chartPicker,setChartPicker]=useState(false);
-  const [loaded] = useState(loadCopyPlans);
-  const [plans, setPlans] = useState(loaded.plans);
+  const [revision,setRevision]=useState(0);
   const [draft, setDraft] = useState(() => ({
     ...emptyCopyDraft(),
     address: initialAddress,
   }));
-  const [editing, setEditing] = useState<string>();
   const [review, setReview] = useState<CopyDraft | null>(null);
   const [error, setError] = useState("");
-  const [notice, setNotice] = useState(loaded.warning);
   const addressInput = useRef<HTMLInputElement>(null);
   useEffect(() => {
     if (!initialAddress) return;
     setDraft({ ...emptyCopyDraft(), address: initialAddress });
-    setEditing(undefined);
     setReview(null);
     setError("");
   }, [initialAddress]);
@@ -61,42 +49,14 @@ export function CopyTrading({
     setDraft((old) => ({ ...old, ...value }));
     setError("");
   };
-  function persist(next: CopyPlan[], message: string) {
-    try {
-      localStorage.setItem(
-        COPY_STORAGE_KEY,
-        JSON.stringify({ version: 1, plans: next }),
-      );
-    } catch {
-      setError("Browser storage is unavailable. This change was not saved.");
-      return false;
-    }
-    setPlans(next);
-    setNotice(message);
-    setError("");
-    return true;
-  }
-  function reset() {
-    setDraft(emptyCopyDraft());
-    setEditing(undefined);
-    setError("");
-  }
-  function edit(plan: CopyPlan) {
-    setDraft(draftFromPlan(plan));
-    setEditing(plan.id);
-    setError("");
-    addressInput.current?.scrollIntoView({
-      behavior: "smooth",
-      block: "center",
-    });
-    addressInput.current?.focus({ preventScroll: true });
-  }
+  useEffect(()=>{setReview(null);setError('');},[wallet]);
+  if(!wallet)return <section className="copy-workspace"><h2>Connect your wallet to copy a trader.</h2><p>Your plan belongs to your wallet. Approve its trading limits before automatic copying starts.</p><button className="button primary" onClick={onConnect}>Connect wallet</button></section>;
   return (
     <section className="copy-workspace" aria-label="Copy trading setup">
       <div className="copy-boundary">
         <strong>Choose a trader. Set your limits.</strong>
         <p>
-          Save a plan, sign in with your wallet, then approve its trading limits.
+          Connect your wallet, choose a trader, then approve its trading limits.
           Wallet access and an available trading service are required for execution.
         </p>
       </div>
@@ -111,18 +71,13 @@ export function CopyTrading({
         <section className="copy-builder" aria-label="Copy plan builder">
           <div className="section-heading">
             <h2>
-              {editing ? "Edit your copy plan." : "Choose a Fomo trader to follow."}
+              Choose a Fomo trader to follow.
             </h2>
-            {editing && (
-              <button className="word-link" onClick={reset}>
-                Cancel edit
-              </button>
-            )}
           </div>
           <form
             onSubmit={(event) => {
               event.preventDefault();
-              const issue = copyError(draft, plans, editing);
+              const issue = copyError(draft, []);
               if (issue) setError(issue);
               else setReview({ ...draft });
             }}
@@ -151,32 +106,7 @@ export function CopyTrading({
                 onChange={(e) => patch({ name: e.target.value })}
               />
             </label>
-            <div className="copy-amounts">
-              <label className="field">
-                <span>Per buy · USD</span>
-                <input
-                  aria-label="Copy buy amount"
-                  inputMode="decimal"
-                  value={draft.buyUsd}
-                  onChange={(e) => patch({ buyUsd: e.target.value })}
-                  required
-                />
-              </label>
-              <label className="field">
-                <span>Daily buy cap · USD</span>
-                <input
-                  aria-label="Daily copy cap"
-                  inputMode="decimal"
-                  value={draft.dailyUsd}
-                  onChange={(e) => patch({ dailyUsd: e.target.value })}
-                  required
-                />
-              </label>
-            </div>
-            <p className="copy-help copy-cap-note">
-              Per wallet, per UTC day. A buy that exceeds the remaining cap
-              would be skipped. Fees need a separate balance.
-            </p>
+            <p className="copy-help">Set your SOL buy amount, daily spending cap and expiry in the wallet approval step.</p>
             <label className="field copy-slippage">
               <span>
                 Maximum slippage <small>0.10–5.00%</small>
@@ -212,7 +142,7 @@ export function CopyTrading({
               </p>
             )}
             <button className="button primary full" type="submit">
-              Review copy plan <ArrowRight size={16} />
+              Set up Solana copying <ArrowRight size={16} />
             </button>
           </form>
           <button
@@ -258,194 +188,21 @@ export function CopyTrading({
             <p>
               Set up your Fomo or connected Solana wallet for automatic signing and approve the plan’s
               trading limits. Once activated, the service copies supported new
-              trades within those limits, even when you close Fub. Saving a plan
-              alone does not start trading.
+              trades within those limits, even when you close Fub. An unsigned setup is not an active plan.
             </p>
           </div>
         </aside>
       </div>
-      <section className="copy-saved" aria-label="Saved copy plans">
-        <div className="section-heading">
-          <h2>
-            Your copy plans <span>{plans.length}</span>
-          </h2>
-          <span className="muted small">Saved on this device</span>
-        </div>
-        {notice && (
-          <p className="copy-save-notice" role="status">
-            {notice}
-          </p>
-        )}
-        {!plans.length ? (
-          <div className="copy-empty">
-            <p>No wallets added yet.</p>
-            <span>Save a plan to keep its address and limits ready.</span>
-          </div>
-        ) : (
-          <div className="copy-plan-list">
-            {plans.map((plan) => (
-              <article className="copy-plan-row" key={plan.id}>
-                <div className="copy-plan-wallet">
-                  <h3>{plan.name || shortAddress(plan.address)}</h3>
-                  {plan.identity && <p className="copy-help">@{plan.identity.handle} · Profile link</p>}
-                  <a
-                    href={`https://solscan.io/account/${plan.address}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    title={plan.address}
-                  >
-                    {shortAddress(plan.address)} <ArrowUpRight size={12} />
-                  </a>
-                </div>
-                <dl>
-                  <div>
-                    <dt>Per buy</dt>
-                    <dd>{usd(plan.buyCents / 100)}</dd>
-                  </div>
-                  <div>
-                    <dt>Daily cap</dt>
-                    <dd>{usd(plan.dailyCents / 100)}</dd>
-                  </div>
-                  <div>
-                    <dt>Slippage</dt>
-                    <dd>{plan.slippageBps / 100}%</dd>
-                  </div>
-                  <div>
-                    <dt>Sells</dt>
-                    <dd>{plan.copySells ? "Proportional" : "Off"}</dd>
-                  </div>
-                </dl>
-                <div className="copy-plan-actions">
-                  <button
-                    className="icon-button"
-                    aria-label={`Inspect ${plan.name || shortAddress(plan.address)}`}
-                    onClick={() => onInspect(plan.address)}
-                  >
-                    <ArrowUpRight size={15} />
-                  </button>
-                  <button
-                    className="icon-button"
-                    aria-label={`Edit ${plan.name || shortAddress(plan.address)}`}
-                    onClick={() => edit(plan)}
-                  >
-                    <Pencil size={15} />
-                  </button>
-                  <button
-                    className="icon-button"
-                    aria-label={`Remove ${plan.name || shortAddress(plan.address)}`}
-                    onClick={() => {
-                      if (
-                        persist(
-                          plans.filter((p) => p.id !== plan.id),
-                          "Copy plan removed.",
-                        ) &&
-                        editing === plan.id
-                      )
-                        reset();
-                    }}
-                  >
-                    <Trash2 size={15} />
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
-      </section>
       <CopyAccount
         signNativeCopy={signNativeCopy}
         key={wallet || "disconnected"}
         wallet={wallet}
         active={active && !setup.modalOpen}
-        plans={plans}
+        externalRevision={revision}
         signSession={signSession}
         onConnect={onConnect}
-        onLoad={(plan) => {
-          setDraft(draftFromPlan(plan));
-          setEditing(plans.find((local) => local.address === plan.address)?.id);
-          setError("");
-          setReview(null);
-          addressInput.current?.scrollIntoView({
-            behavior: "smooth",
-            block: "center",
-          });
-          addressInput.current?.focus({ preventScroll: true });
-        }}
       />
-      {review && (
-        <Modal
-          title="Review your copy plan."
-          description="Save these settings only. This does not connect, monitor, or trade from a wallet."
-          close={() => {
-            setReview(null);
-            setError("");
-          }}
-        >
-          <p className="review-contract">
-            Leader’s Solana address<span>{review.address.trim()}</span>
-          </p>
-          {review.identity && (
-            <p className="copy-help">
-              @{review.identity.handle} · Profile link supplied by you.
-              This plan follows the exact address above.
-            </p>
-          )}
-          <dl className="review-details">
-            <div>
-              <dt>Each copied buy</dt>
-              <dd>{usd(Number(review.buyUsd))}</dd>
-            </div>
-            <div>
-              <dt>Daily buy cap · UTC</dt>
-              <dd>{usd(Number(review.dailyUsd))}</dd>
-            </div>
-            <div>
-              <dt>Maximum slippage</dt>
-              <dd>{review.slippage}%</dd>
-            </div>
-            <div>
-              <dt>Leader sells</dt>
-              <dd>
-                {review.copySells
-                  ? "Same fraction of copied positions"
-                  : "Do not copy"}
-              </dd>
-            </div>
-            <div>
-              <dt>Execution</dt>
-              <dd>Not connected</dd>
-            </div>
-          </dl>
-          {error && (
-            <p className="error-message" role="alert">
-              {error}
-            </p>
-          )}
-          <button
-            className="button primary full"
-            onClick={() => {
-              try {
-                const next = saveCopyPlan(plans, review, editing);
-                if (
-                  persist(
-                    next,
-                    "Copy plan saved. Monitoring and execution remain inactive.",
-                  )
-                ) {
-                  setReview(null);
-                  reset();
-                }
-              } catch (e) {
-                setError(
-                  e instanceof Error ? e.message : "Unable to save this plan.",
-                );
-              }
-            }}
-          >
-            Save inactive plan
-          </button>
-        </Modal>
-      )}
+      {review&&<CopyPlanCreate key={wallet} wallet={wallet} draft={review} signSession={signSession} signNativeCopy={signNativeCopy} close={()=>setReview(null)} onChange={()=>setRevision(v=>v+1)}/>}
     </section>
   );
 }
