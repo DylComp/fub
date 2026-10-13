@@ -7,9 +7,9 @@ function ratio(value:string){
 }
 function text(raw:bigint,places:number){const s=raw.toString().padStart(places+1,'0');return places?`${s.slice(0,-places)}.${s.slice(-places)}`.replace(/\.?0+$/,''):s;}
 export function tokenSolRate(m:TokenMarket,mint:string,now=Date.now()):number{
- if(!validTokenMarket(m,mint,now)||!m.price||!freshMarketTime(m.price.checkedAt,now))throw Error('A fresh SOL price is needed to size this sale.');
+ if(!validTokenMarket(m,mint,now)||!m.price||!freshMarketTime(m.price.checkedAt,now))throw Error('A fresh SOL price is needed to size this order.');
  const rate=m.price.sol??(m.price.usd&&m.solUsd&&freshMarketTime(m.solUsd.checkedAt,now)?m.price.usd/m.solUsd.value:null);
- if(!rate||!Number.isFinite(rate)||rate<=0)throw Error('A fresh SOL price is needed to size this sale.');return rate;
+ if(!rate||!Number.isFinite(rate)||rate<=0)throw Error('A fresh SOL price is needed to size this order.');return rate;
 }
 export function tokensForSol(amount:string,rate:number,decimals:number):string{
  if(!/^\d+(\.\d{1,9})?$/.test(amount)||!Number.isInteger(decimals)||decimals<0||decimals>18)throw Error('Enter a SOL amount with at most 9 decimal places.');

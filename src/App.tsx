@@ -1,5 +1,5 @@
 import {TASK_COMPLETED,type TaskCompletion} from "./task-completion";
-import {NativeSellAmount} from "./NativeSellAmount";
+import {NativeOrderAmount} from "./NativeSellAmount";
 import {MarketCapEntry} from "./MarketCapEntry";
 import { lazy, Suspense, useEffect, useRef, useState } from "react";
 import {
@@ -749,7 +749,7 @@ export default function App() {
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
-                    if(draft.side==="Sell"&&!amountReady){setFormError("Check the native-currency sell amount before reviewing.");return;}
+                    if(!amountReady){setFormError("Check the SOL amount before reviewing.");return;}
                     if (!mcReady) { setFormError("Check the market cap and fresh supply before reviewing."); return; }
                     if (error) {
                       setFormError(error);
@@ -786,42 +786,7 @@ export default function App() {
                       ))}
                     </div>
                   )}
-                  {draft.side === "Sell" ? <NativeSellAmount key={draft.symbol} mint={tokenFor(draft.symbol).address} quantity={Number.isFinite(draft.quantity)?String(draft.quantity):''} decimals={9} disabled={dialog==='review'} onChange={quantity=>patch({quantity:Number(quantity)})} onReady={setAmountReady}/> : <>
-                  <label className="field">
-                    <span>
-                      Amount to buy
-                      <small>
-                        ≈{" "}
-                        {usd(
-                          (Number.isFinite(draft.quantity)
-                            ? draft.quantity
-                            : 0) * price,
-                        )}
-                      </small>
-                    </span>
-                    <div className="input-shell">
-                      <input
-                        aria-label="Token amount"
-                        type="number"
-                        min="0"
-                        step="any"
-                        required
-                        value={
-                          Number.isFinite(draft.quantity) ? draft.quantity : ""
-                        }
-                        onChange={(e) =>
-                          patch({
-                            quantity:
-                              e.target.value === ""
-                                ? NaN
-                                : Number(e.target.value),
-                          })
-                        }
-                      />
-                      <span>{label(draft.symbol)}</span>
-                    </div>
-                  </label>
-                  </>}
+                  <NativeOrderAmount key={`${draft.symbol}:${draft.side}`} side={draft.side==='Buy'?'buy':'sell'} mint={tokenFor(draft.symbol).address} quantity={Number.isFinite(draft.quantity)?String(draft.quantity):''} decimals={9} disabled={dialog==='review'} onChange={quantity=>patch({quantity:Number(quantity)})} onReady={setAmountReady}/>
                   <div className="percent-buttons">
                     {[25, 50, 75, 100].map((p) => (
                       <button
